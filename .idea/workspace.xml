@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="18caa132-e367-42fb-b2e3-69439bd46031" name="Changes" comment="chore: commit unstaged changes before remote sync">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="18caa132-e367-42fb-b2e3-69439bd46031" name="Changes" comment="chore: commit unstaged changes before remote sync&#10;commit">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -36,12 +35,12 @@
     &quot;assignee&quot;: &quot;shubhmrj&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/shubhmrj/PhotoGeni&quot;,
-    &quot;accountId&quot;: &quot;4031434e-9a58-4e06-a2c2-0ac3742a72c5&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/shubhmrj/PhotoGraphy.git",
+    "accountId": "4031434e-9a58-4e06-a2c2-0ac3742a72c5"
   }
-}</component>
+}]]></component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -66,7 +65,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "com.codeium.enabled": "true",
-    "git-widget-placeholder": "my-feature-branch",
+    "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "E:/Photo Graphic/templates",
     "run.code.analysis.last.selected.profile": "pProject Default",
@@ -173,7 +172,15 @@
       <option name="project" value="LOCAL" />
       <updated>1748027646595</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="chore: commit unstaged changes before remote sync&#10;commit">
+      <option name="closed" value="true" />
+      <created>1748030199160</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1748030199160</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -189,6 +196,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="chore: commit unstaged changes before remote sync" />
-    <option name="LAST_COMMIT_MESSAGE" value="chore: commit unstaged changes before remote sync" />
+    <MESSAGE value="chore: commit unstaged changes before remote sync&#10;commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="chore: commit unstaged changes before remote sync&#10;commit" />
   </component>
 </project>
