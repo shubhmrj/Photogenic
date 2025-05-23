@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - PhotoGenic</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <style>
+        :root {
+            --primary: #6C63FF;
+            --primary-dark: #5A52D5;
+            --primary-light: #8F89FF;
+            --primary-dark-rgb: 90, 82, 213;
+            --text-dark: #333;
+            --text-light: #f5f5f5;
+            --bg-light: #f9f9f9;
+            --bg-dark: #333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+        }
+        
+        .profile-content-box {
+            padding: 20px 0;
+        }
+        
+        .settings-group {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .settings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+        
+        .settings-info h4 {
+            margin: 0 0 5px;
+            font-weight: 500;
+        }
+        
+        .settings-info p {
+            margin: 0;
+            color: #777;
+        }
+        
+        .settings-action {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .settings-action:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        .form-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .profile-image-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--primary);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .profile-image-preview:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .custom-file-upload {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .custom-file-upload:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(var(--primary-dark-rgb), 0.3);
+        }
+        
+        .custom-file-upload i {
+            margin-right: 8px;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+    
+    <!-- Include Header -->
+    {% include 'header.html' %}
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="flash-message flash-{{ category }}">
+            <div class="flash-content">
+                <div class="flash-icon">
+                    {% if category == 'success' %}
+                    <i class="fas fa-check-circle"></i>
+                    {% elif category == 'error' %}
+                    <i class="fas fa-exclamation-circle"></i>
+                    {% elif category == 'warning' %}
+                    <i class="fas fa-exclamation-triangle"></i>
+                    {% else %}
+                    <i class="fas fa-info-circle"></i>
+                    {% endif %}
+                </div>
+                <div class="flash-text">{{ message }}</div>
+                <button class="flash-close">&times;</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    
+    <div class="profile-container" id="main-content">
+        <div class="profile-content">
+            <div class="profile-sidebar">
+                <div class="sidebar-header">
+                    <h3>Account Settings</h3>
+                </div>
+                <ul class="sidebar-menu">
+                    <li><a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="{{ url_for('edit_profile') }}" class="active"><i class="fas fa-edit"></i> Edit Profile</a></li>
+                    <li><a href="{{ url_for('api_keys') }}"><i class="fas fa-key"></i> API Keys</a></li>
+                    <li><a href="#"><i class="fas fa-image"></i> My Creations</a></li>
+                    <li><a href="#"><i class="fas fa-bookmark"></i> Saved Items</a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </div>
+            
+            <div class="profile-main">
+                <div class="profile-section">
+                    <h2 class="profile-section-title">
+                        <i class="fas fa-edit"></i> Edit Profile
+                        <a href="{{ url_for('profile') }}" class="profile-btn profile-btn-outline" style="font-size: 14px; padding: 6px 12px;">
+                            <i class="fas fa-arrow-left"></i> Back to Profile
+                        </a>
+                    </h2>
+                    
+                    <form method="POST" action="{{ url_for('edit_profile') }}" enctype="multipart/form-data" class="profile-form">
+                        <div class="form-preview">
+                            {% if current_user.profile_image and current_user.profile_image != 'default_profile.jpg' %}
+                                <img src="{{ url_for('static', filename=current_user.profile_image) }}" alt="{{ current_user.username }}" class="profile-image-preview" id="imagePreview">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='img/default_profile.jpg') }}" alt="{{ current_user.username }}" class="profile-image-preview" id="imagePreview">
+                            {% endif %}
+                            
+                            <label for="profile_image" class="custom-file-upload">
+                                <i class="fas fa-camera"></i> Change Image
+                            </label>
+                            <input type="file" id="profile_image" name="profile_image" accept="image/*" onchange="previewImage(this);">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" value="{{ current_user.username }}" required>
+                            <div class="form-help">Your unique username cannot be changed.</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" value="{{ current_user.email }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bio">Bio</label>
+                            <textarea id="bio" name="bio" rows="4">{{ current_user.bio or '' }}</textarea>
+                            <div class="form-help">Tell others a bit about yourself.</div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <a href="{{ url_for('profile') }}" class="profile-btn profile-btn-outline">Cancel</a>
+                            <button type="submit" class="profile-btn profile-btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Preview image before upload
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        
+        // Handle flash messages
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(message => {
+                // Auto-dismiss after 5 seconds
+                setTimeout(() => {
+                    message.classList.add('fade-out');
+                    setTimeout(() => {
+                        message.remove();
+                    }, 500);
+                }, 5000);
+                
+                // Close on click
+                const closeButton = message.querySelector('.flash-close');
+                if (closeButton) {
+                    closeButton.addEventListener('click', () => {
+                        message.classList.add('fade-out');
+                        setTimeout(() => {
+                            message.remove();
+                        }, 500);
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

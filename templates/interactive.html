@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PhotoGenic | Interactive Features</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Preload critical hero image -->
+    <link rel="preload" href="/static/accommodations-hero.jpg" as="image">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Critical CSS inline -->
+    <style>
+        :root {
+            --primary: #e0e0e0;
+            --primary-rgb: 224, 224, 224;
+            --primary-dark: #bbbbbb;
+            --primary-light: #2d2d2d;
+            --secondary: #444444;
+            --secondary-rgb: 68, 68, 68;
+            --accent: #ffffff;
+            --accent-rgb: 255, 255, 255;
+            --text-color: #e0e0e0;
+            --text-main: #ffffff;
+            --secondary-text: #aaaaaa;
+            --bg-main: #121212;
+            --bg-card: #1a1a1a;
+            --bg-secondary: #252525;
+            --border-color: #333333;
+            --error: #ff5555;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --info: #2196f3;
+            --font-main: 'Poppins', sans-serif;
+            --heading-color: #ffffff;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-main);
+            color: var(--text-color);
+            line-height: 1.6;
+            background-color: var(--bg-main);
+            overflow-x: hidden;
+        }
+        
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .preloader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .preloader__content {
+            text-align: center;
+            color: var(--text-main);
+        }
+        
+        .preloader__spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--text-main);
+            animation: spin 0.8s ease-in-out infinite;
+            margin: 0 auto 20px;
+        }
+        
+        .preloader__text {
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: background-color 0.3s, padding 0.3s;
+            padding: 20px 0;
+            background-color: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header--scrolled {
+            background-color: var(--bg-card);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            padding: 15px 0;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header__content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav__link {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: opacity 0.3s;
+            position: relative;
+        }
+        
+        .nav__link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--text-main);
+            transition: width 0.3s;
+        }
+        
+        .nav__link:hover::after {
+            width: 100%;
+        }
+        
+        .nav__link:hover {
+            opacity: 0.8;
+        }
+        
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.5rem;
+        }
+        
+        .hero {
+            position: relative;
+            height: 70vh;
+            background-color: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--text-main);
+            margin-top: 0;
+        }
+        
+        .hero__overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.35);
+        }
+        
+        .hero__content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+        
+        .hero__welcome {
+            font-size: 1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s forwards 0.2s;
+        }
+        
+        .hero__title {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s forwards 0.4s;
+        }
+        
+        .hero__subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s forwards 0.6s;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .accommodation-section {
+            padding: 100px 0 80px;
+            background-color: var(--bg-secondary);
+            position: relative;
+        }
+        
+        .accommodation-section::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background-color: var(--bg-secondary);
+            clip-path: polygon(0 0, 100% 100%, 100% 100%, 0% 100%);
+        }
+        
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--text-main);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 60px;
+            font-size: 1.1rem;
+            color: var(--text-color);
+        }
+        
+        .accommodations-intro {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 60px;
+        }
+        
+        .room-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+        
+        .room-card {
+            background: var(--bg-card);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+        
+        .room-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+        
+        .room-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            background: linear-gradient(45deg, 
+                rgba(var(--secondary-rgb), 0) 0%, 
+                rgba(var(--secondary-rgb), 0) 50%, 
+                rgba(var(--secondary-rgb), 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .room-card:hover::after {
+            opacity: 1;
+        }
+        
+        .room-img-container {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .room-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+            loading: lazy;
+        }
+        
+        .room-card:hover .room-img {
+            transform: scale(1.05);
+        }
+        
+        .room-content {
+            padding: 30px;
+            position: relative;
+        }
+        
+        .room-tag {
+            position: absolute;
+            top: -20px;
+            right: 20px;
+            background-color: var(--secondary);
+            color: var(--primary-dark);
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border-radius: 30px;
+            letter-spacing: 1px;
+        }
+        
+        .room-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+        
+        .room-desc {
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+            color: var(--text-color);
+        }
+        
+        .feature-list {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .feature-icon {
+            color: var(--secondary);
+        }
+        
+        .room-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn-generate {
+            background: linear-gradient(45deg, var(--primary), var(--primary-light));
+            box-shadow: 0 4px 15px rgba(135, 107, 82, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-generate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(135, 107, 82, 0.4);
+        }
+        
+        .btn-browse {
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            display: inline-block;
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+        
+        .btn-browse::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary), var(--primary-light));
+            transition: all 0.4s cubic-bezier(0.42, 0, 0.58, 1);
+            z-index: -1;
+        }
+        
+        .btn-browse:hover::before {
+            left: 0;
+        }
+        
+        .btn-browse:hover {
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 5px 15px rgba(135, 107, 82, 0.3);
+            transform: translateY(-3px);
+        }
+        
+        .disabled-btn {
+            opacity: 0.7;
+            cursor: not-allowed;
+            background-color: #eee;
+            border-color: #ddd;
+            color: #999;
+        }
+        
+        .disabled-btn:hover {
+            background-color: #eee;
+            transform: none;
+            box-shadow: none;
+            color: #999;
+        }
+        
+        .disabled-btn::before {
+            display: none;
+        }
+        
+        .amenities-section {
+            background-color: var(--bg-secondary);
+            padding: 100px 0;
+            position: relative;
+        }
+        
+        .amenities-section::before, .amenities-section::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background-color: var(--bg-secondary);
+        }
+        
+        .amenities-section::before {
+            top: -80px;
+            clip-path: polygon(0 0, 100% 100%, 100% 100%, 0% 100%);
+        }
+        
+        .amenities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .amenity-item {
+            background-color: var(--bg-card);
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .amenity-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .amenity-icon {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        
+        .amenity-item:hover .amenity-icon {
+            transform: scale(1.2);
+            color: var(--info);
+        }
+        
+        .amenity-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+        
+        .amenity-desc {
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+        
+        .footer {
+            background-color: var(--bg-secondary);
+            color: var(--text-main);
+            padding: 80px 0 40px;
+            position: relative;
+        }
+        
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background-color: var(--bg-secondary);
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+        
+        .footer__grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+        }
+        
+        .footer__title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .footer__text {
+            color: var(--text-color);
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .footer__heading {
+            font-weight: 500;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        
+        .footer__link {
+            display: block;
+            color: var(--text-main);
+            text-decoration: none;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        
+        .footer__link:hover {
+            color: var(--accent);
+        }
+        
+        .footer__social {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .footer__social-link {
+            color: var(--text-main);
+            text-decoration: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: background-color 0.3s;
+        }
+        
+        .footer__social-link:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .footer__form {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .footer__input {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            outline: none;
+        }
+        
+        .footer__input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .footer__submit {
+            background-color: var(--secondary);
+            color: var(--primary-dark);
+            border: none;
+            padding: 0 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .footer__submit:hover {
+            background-color: var(--accent);
+        }
+        
+        .footer__bottom {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+        
+        .scroll-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary);
+            color: var(--text-main);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 999;
+        }
+        
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .scroll-top:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        /* Interactive elements */
+        .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+        
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        .btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.18);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.14);
+        }
+        
+        .feature-tag {
+            transition: all 0.3s ease;
+        }
+        
+        .feature-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Toast notifications */
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .toast {
+            min-width: 250px;
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            background-color: var(--bg-card);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: flex-start;
+            overflow: hidden;
+            animation: slideIn 0.3s ease forwards;
+            position: relative;
+        }
+        
+        .toast.info {
+            border-left: 4px solid var(--info);
+        }
+        
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+        
+        .toast.warning {
+            border-left: 4px solid var(--warning);
+        }
+        
+        .toast.error {
+            border-left: 4px solid var(--error);
+        }
+        
+        .toast__content {
+            flex: 1;
+        }
+        
+        .toast__title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+            color: var(--text-main);
+        }
+        
+        .toast__message {
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+        }
+        
+        .toast__close {
+            background: transparent;
+            border: none;
+            color: var(--secondary-text);
+            cursor: pointer;
+            font-size: 1.2rem;
+            margin-left: 0.5rem;
+            padding: 0;
+            line-height: 1;
+        }
+        
+        .toast__progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background-color: rgba(255, 255, 255, 0.2);
+            width: 100%;
+        }
+        
+        .toast__progress-bar {
+            height: 100%;
+            width: 100%;
+            background-color: currentColor;
+            transition: width linear;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        /* Animations for scroll reveal */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Staggered animations */
+        .stagger-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .stagger-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 992px) {
+            .room-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .footer__grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: var(--bg-secondary);
+                padding: 20px;
+                flex-direction: column;
+                align-items: center;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            }
+            
+            .nav.show {
+                display: flex;
+            }
+            
+            .hamburger {
+                display: block;
+            }
+            
+            .room-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .amenities-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .hero__title {
+                font-size: 3rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .amenities-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer__grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer__form {
+                flex-direction: column;
+            }
+            
+            .footer__input {
+                margin-bottom: 10px;
+            }
+            
+            .hero__title {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader__content">
+            <div class="preloader__spinner"></div>
+            <div class="preloader__text">Loading Experience</div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <header class="header" id="header">
+        <div class="container">
+            <div class="header__content">
+                <a href="{{ url_for('index') }}" class="logo">The Photogenic</a>
+                <nav class="nav">
+                    <a href="{{ url_for('index') }}" class="nav__link">Home</a>
+                    <a href="#" class="nav__link">Accommodations</a>
+                    <a href="{{ url_for('ai_story') }}" class="nav__link">AI Stories</a>
+                    <a href="#" class="nav__link">About</a>
+                    <a href="#" class="nav__link">Contact</a>
+                </nav>
+                <button class="hamburger">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero__overlay"></div>
+        <div class="hero__content">
+            <h1 class="hero__title">Accommodations</h1>
+            <p class="hero__subtitle">Explore our curated collection of experiences</p>
+        </div>
+    </section>
+    
+    <!-- Accommodations Section -->
+    <section class="accommodation-section">
+        <div class="container">
+            <div class="accommodations-intro">
+                <h2 class="section-title">Our Story Generation Options</h2>
+                <p>Choose from our variety of AI-powered tools designed to transform your photos and ideas into captivating narratives.</p>
+            </div>
+            
+            <div class="room-grid">
+                <!-- AI Driven Stories -->
+                <div class="room-card">
+                    <div class="room-img-container">
+                        <img src="/static/ai-story.jpg" alt="AI Driven Stories" class="room-img" onerror="this.src='/static/ai-story.jpeg'; this.onerror='';">
+                    </div>
+                    <div class="room-content">
+                        <span class="room-tag">Premium</span>
+                        <h3 class="room-name">AI Driven Stories</h3>
+                        <p class="room-desc">Our premium AI service analyzes your photos and creates personalized, emotionally resonant stories that capture the essence of your memories. Perfect for preserving special moments in a creative way.</p>
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <i class="fas fa-camera feature-icon"></i>
+                                Photo Analysis
+                            </li>
+                            <li class="feature-item">
+                                <i class="fas fa-pen feature-icon"></i>
+                                Custom Style
+                            </li>
+                        </ul>
+                        <div class="room-buttons">
+                            <a href="{{ url_for('ai_features') }}" class="btn btn-browse">Explore Collection</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Generic Collection Card -->
+                <div class="room-card">
+                    <div class="room-img-container">
+                        <img src="/static/generic.jpg" alt="Generic Collection" class="room-img" onerror="this.src='/static/generic.jpeg'; this.onerror='';">
+                    </div>
+                    <div class="room-content">
+                        <h3 class="room-name">Generic Collection</h3>
+                        <p class="room-desc">Explore our curated collection of pre-generated stories and templates. Find inspiration or use them as a starting point for your own creative projects and memory preservation.</p>
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <i class="fas fa-book feature-icon"></i>
+                                Multiple Genres
+                            </li>
+                            <li class="feature-item">
+                                <i class="fas fa-edit feature-icon"></i>
+                                Customizable
+                            </li>
+                        </ul>
+                        <div class="room-buttons">
+                            <a href="/collections" class="btn btn-browse" onclick="sessionStorage.setItem('lastPage', 'interactive')">Browse Collection</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Premium Suite -->
+                <div class="room-card">
+                    <div class="room-img-container">
+                        <img src="/static/coming-soon.jpg" alt="Premium Suite" class="room-img" onerror="this.src='/static/coming-soon.jpeg'; this.onerror='';">
+                    </div>
+                    <div class="room-content">
+                        <span class="room-tag">Coming Soon</span>
+                        <h3 class="room-name">Premium Suite</h3>
+                        <p class="room-desc">Our most exclusive offering combines advanced AI technology with professional storytelling techniques. Upload multiple photos to create connected narratives and mini-books.</p>
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <i class="fas fa-camera feature-icon"></i>
+                                Multi-photo Stories
+                            </li>
+                            <li class="feature-item">
+                                <i class="fas fa-book feature-icon"></i>
+                                Book Format
+                            </li>
+                        </ul>
+                        <div class="room-buttons">
+                            <a href="#" class="btn btn-browse disabled-btn">Coming Soon</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Amenities Section -->
+    <section class="amenities-section">
+        <div class="container">
+            <h2 class="section-title">Our Features</h2>
+            
+            <div class="amenities-grid">
+                <div class="amenity-item">
+                    <div class="amenity-icon">🖼️</div>
+                    <h3 class="amenity-title">Photo Analysis</h3>
+                    <p class="amenity-desc">Our AI can extract details and emotions from your photos to create meaningful stories.</p>
+                </div>
+                
+                <div class="amenity-item">
+                    <div class="amenity-icon">📝</div>
+                    <h3 class="amenity-title">Custom Prompts</h3>
+                    <p class="amenity-desc">Provide your own text prompts to guide the story creation process.</p>
+                </div>
+                
+                <div class="amenity-item">
+                    <div class="amenity-icon">💾</div>
+                    <h3 class="amenity-title">Save & Share</h3>
+                    <p class="amenity-desc">Download your stories or share them directly with friends and family.</p>
+                </div>
+                
+                <div class="amenity-item">
+                    <div class="amenity-icon">🔄</div>
+                    <h3 class="amenity-title">Regenerate</h3>
+                    <p class="amenity-desc">Not happy with the result? Regenerate your story with a single click.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer" id="footer">
+        <div class="footer__curve"></div>
+        <div class="container">
+            <div class="footer__grid">
+                <div class="footer__info">
+                    <h3 class="footer__logo">PhotoGenic</h3>
+                    <p class="footer__text">Explore the best AI-driven image processing platform with premium features designed to enhance your creativity.</p>
+                    <div class="footer__social">
+                        <a href="#" class="footer__social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="footer__social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="footer__social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="footer__social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer__links">
+                    <h4 class="footer__heading">Quick Links</h4>
+                    <a href="/" class="footer__link">Home</a>
+                    <a href="/interactive" class="footer__link">Accommodations</a>
+                    <a href="/ai_features" class="footer__link">AI Features</a>
+                    <a href="#" class="footer__link">About Us</a>
+                    <a href="#" class="footer__link">Contact</a>
+                </div>
+                <div class="footer__links">
+                    <h4 class="footer__heading">Features</h4>
+                    <a href="/ai_features" class="footer__link">AI Stories</a>
+                    <a href="/ai_features" class="footer__link">Animation</a>
+                    <a href="/ai_features" class="footer__link">Image Enhancement</a>
+                    <a href="/ai_features" class="footer__link">Creative Tools</a>
+                </div>
+                <div class="footer__newsletter">
+                    <h4 class="footer__heading">Stay Updated</h4>
+                    <p class="footer__text">Subscribe to our newsletter for the latest updates and offers.</p>
+                    <form class="footer__form">
+                        <input type="email" placeholder="Your email" class="footer__input">
+                        <button type="submit" class="footer__submit"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p>&copy; 2025 PhotoGenic. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll Top Button -->
+    <button class="scroll-top" id="scrollTop">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Load jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Main JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Preloader
+            setTimeout(function() {
+                const preloader = document.getElementById('preloader');
+                preloader.classList.add('fade-out');
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                    // Initialize animations once preloader is gone
+                    initAnimations();
+                }, 500);
+            }, 800);
+
+            // Header scroll effect
+            const header = document.getElementById('header');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    header.classList.add('header--scrolled');
+                } else {
+                    header.classList.remove('header--scrolled');
+                }
+            });
+
+            // Mobile menu
+            const menuToggle = document.getElementById('menuToggle');
+            const navMenu = document.getElementById('navMenu');
+            
+            if (menuToggle && navMenu) {
+                menuToggle.addEventListener('click', function() {
+                    navMenu.classList.toggle('nav__menu--open');
+                    menuToggle.classList.toggle('nav__toggle--active');
+                });
+            }
+
+            // Scroll to top
+            const scrollTop = document.getElementById('scrollTop');
+            
+            if (scrollTop) {
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY > 300) {
+                        scrollTop.classList.add('scroll-top--visible');
+                    } else {
+                        scrollTop.classList.remove('scroll-top--visible');
+                    }
+                });
+                
+                scrollTop.addEventListener('click', function() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+            }
+
+            // Initialize ripple effect on buttons
+            initRippleEffect();
+
+            // Initialize scroll animations
+            initScrollAnimations();
+            
+            // Initialize room card interactions
+            initRoomCardInteractions();
+            
+            // Show welcome toast
+            showNotification('Welcome', 'Explore our accommodations and AI features', 'info', 3000);
+        });
+        
+        // Function to add ripple effect to buttons
+        function initRippleEffect() {
+            const buttons = document.querySelectorAll('.btn, .footer__submit, .scroll-top');
+            
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const x = e.clientX - e.target.getBoundingClientRect().left;
+                    const y = e.clientY - e.target.getBoundingClientRect().top;
+                    
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple-effect');
+                    ripple.style.left = `${x}px`;
+                    ripple.style.top = `${y}px`;
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        }
+        
+        // Function to initialize scroll animations
+        function initScrollAnimations() {
+            const fadeElements = document.querySelectorAll('.fade-in');
+            const staggerItems = document.querySelectorAll('.stagger-item');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            fadeElements.forEach(element => {
+                observer.observe(element);
+            });
+            
+            // Add staggered delay to items
+            staggerItems.forEach((item, index) => {
+                item.style.transitionDelay = `${index * 0.1}s`;
+                observer.observe(item);
+            });
+        }
+        
+        // Function to initialize animations
+        function initAnimations() {
+            // Add fade-in class to section titles and descriptions
+            document.querySelectorAll('.section-title, .section-desc').forEach(el => {
+                el.classList.add('fade-in');
+            });
+            
+            // Add stagger-item class to room cards and amenity items
+            document.querySelectorAll('.room-card, .amenity-item').forEach(el => {
+                el.classList.add('stagger-item');
+            });
+            
+            // Initialize the scroll animations
+            initScrollAnimations();
+        }
+        
+        // Function to initialize room card interactions
+        function initRoomCardInteractions() {
+            const roomCards = document.querySelectorAll('.room-card');
+            
+            roomCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    // Create 3D tilt effect
+                    card.addEventListener('mousemove', handleCardTilt);
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    // Remove tilt effect
+                    card.removeEventListener('mousemove', handleCardTilt);
+                    resetCardTilt(card);
+                });
+                
+                // Add click event to show details toast
+                card.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('btn')) return; // Don't trigger if clicking a button
+                    
+                    const roomTitle = card.querySelector('.room-title').textContent;
+                    showNotification('Room Selected', `You selected ${roomTitle}`, 'success', 3000);
+                });
+            });
+            
+            // Add click events to buttons
+            document.querySelectorAll('.btn-primary').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const roomType = this.closest('.room-card').querySelector('.room-title').textContent;
+                    showNotification('Explore', `Exploring ${roomType}`, 'info');
+                    
+                    // Here you would add code to navigate to the correct page or show a modal
+                });
+            });
+            
+            document.querySelectorAll('.btn-secondary').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const roomType = this.closest('.room-card').querySelector('.room-title').textContent;
+                    showNotification('Collection', `Browsing ${roomType} collection`, 'info');
+                    
+                    // Here you would add code to navigate to the collection
+                });
+            });
+        }
+        
+        // Handle 3D card tilt effect
+        function handleCardTilt(e) {
+            const card = this;
+            const cardRect = card.getBoundingClientRect();
+            const cardWidth = cardRect.width;
+            const cardHeight = cardRect.height;
+            
+            // Calculate mouse position relative to card center
+            const centerX = cardWidth / 2;
+            const centerY = cardHeight / 2;
+            const mouseX = e.clientX - cardRect.left;
+            const mouseY = e.clientY - cardRect.top;
+            
+            // Calculate rotation based on mouse position
+            const rotateY = ((mouseX - centerX) / centerX) * 5; // Max 5 degrees
+            const rotateX = ((centerY - mouseY) / centerY) * 5; // Max 5 degrees
+            
+            // Apply transform
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px)`;
+        }
+        
+        // Reset card tilt
+        function resetCardTilt(card) {
+            card.style.transform = 'translateY(-10px)';
+        }
+        
+        // Function to show toast notifications
+        function showNotification(title, message, type = 'info', duration = 3000) {
+            const toastContainer = document.getElementById('toast-container');
+            
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.classList.add('toast', type);
+            
+            // Create content
+            const content = document.createElement('div');
+            content.classList.add('toast__content');
+            
+            // Add title if provided
+            if (title) {
+                const titleEl = document.createElement('div');
+                titleEl.classList.add('toast__title');
+                titleEl.textContent = title;
+                content.appendChild(titleEl);
+            }
+            
+            // Add message
+            const messageEl = document.createElement('div');
+            messageEl.classList.add('toast__message');
+            messageEl.textContent = message;
+            content.appendChild(messageEl);
+            
+            // Add close button
+            const closeBtn = document.createElement('button');
+            closeBtn.classList.add('toast__close');
+            closeBtn.innerHTML = '&times;';
+            closeBtn.addEventListener('click', () => {
+                removeToast(toast);
+            });
+            
+            // Add progress bar
+            const progress = document.createElement('div');
+            progress.classList.add('toast__progress');
+            
+            const progressBar = document.createElement('div');
+            progressBar.classList.add('toast__progress-bar');
+            progressBar.style.color = getColorForType(type);
+            progress.appendChild(progressBar);
+            
+            // Assemble toast
+            toast.appendChild(content);
+            toast.appendChild(closeBtn);
+            toast.appendChild(progress);
+            
+            // Add to container
+            toastContainer.appendChild(toast);
+            
+            // Start progress animation
+            setTimeout(() => {
+                progressBar.style.width = '0';
+                progressBar.style.transition = `width ${duration}ms linear`;
+            }, 10);
+            
+            // Remove after duration
+            setTimeout(() => {
+                removeToast(toast);
+            }, duration);
+            
+            // Function to remove toast with animation
+            function removeToast(toast) {
+                toast.style.animation = 'slideOut 0.3s forwards';
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }
+            
+            // Function to get color based on type
+            function getColorForType(type) {
+                switch(type) {
+                    case 'success': return 'var(--success)';
+                    case 'error': return 'var(--error)';
+                    case 'warning': return 'var(--warning)';
+                    default: return 'var(--info)';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

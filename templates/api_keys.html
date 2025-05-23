@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Keys - PhotoGenic</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <style>
+        :root {
+            --primary: #6C63FF;
+            --primary-dark: #5A52D5;
+            --primary-light: #8F89FF;
+            --primary-dark-rgb: 90, 82, 213;
+            --text-dark: #333;
+            --text-light: #f5f5f5;
+            --bg-light: #f9f9f9;
+            --bg-dark: #333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+        }
+        
+        .api-card-body {
+            padding: 20px;
+        }
+        
+        .api-info {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .api-info p {
+            margin: 0 0 10px;
+            color: #777;
+        }
+        
+        .api-info a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .api-info a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        .api-notice {
+            background-color: rgba(var(--primary-dark-rgb), 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .api-notice h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--primary-dark);
+        }
+        
+        .api-notice p {
+            margin: 0;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 300px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .api-key-input {
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+        
+        .api-key-input:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(var(--primary-dark-rgb), 0.1);
+        }
+        
+        .api-key-input input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            font-size: 16px;
+            background-color: rgba(var(--primary-dark-rgb), 0.02);
+            transition: all 0.3s ease;
+        }
+        
+        .api-key-input input:focus {
+            outline: none;
+            background-color: white;
+        }
+        
+        .api-key-input button {
+            background-color: #f0f0f0;
+            border: none;
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .api-key-input button:hover {
+            background-color: #e5e5e5;
+        }
+        
+        .api-key-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .api-key-actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .api-key-actions .save-btn {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .api-key-actions .save-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .api-key-actions .clear-btn {
+            background-color: #f5f5f5;
+            color: #777;
+        }
+        
+        .api-key-actions .clear-btn:hover {
+            background-color: #eee;
+            color: #555;
+        }
+        
+        .api-key-actions button i {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+    
+    <!-- Include Header -->
+    {% include 'header.html' %}
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="flash-message flash-{{ category }}">
+            <div class="flash-content">
+                <div class="flash-icon">
+                    {% if category == 'success' %}
+                    <i class="fas fa-check-circle"></i>
+                    {% elif category == 'error' %}
+                    <i class="fas fa-exclamation-circle"></i>
+                    {% elif category == 'warning' %}
+                    <i class="fas fa-exclamation-triangle"></i>
+                    {% else %}
+                    <i class="fas fa-info-circle"></i>
+                    {% endif %}
+                </div>
+                <div class="flash-text">{{ message }}</div>
+                <button class="flash-close">&times;</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    
+    <div class="profile-container" id="main-content">
+        <div class="profile-content">
+            <div class="profile-sidebar">
+                <div class="sidebar-header">
+                    <h3>Account Settings</h3>
+                </div>
+                <ul class="sidebar-menu">
+                    <li><a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="{{ url_for('edit_profile') }}"><i class="fas fa-edit"></i> Edit Profile</a></li>
+                    <li><a href="{{ url_for('api_keys') }}" class="active"><i class="fas fa-key"></i> API Keys</a></li>
+                    <li><a href="#"><i class="fas fa-image"></i> My Creations</a></li>
+                    <li><a href="#"><i class="fas fa-bookmark"></i> Saved Items</a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </div>
+            
+            <div class="profile-main">
+                <div class="profile-section">
+                    <h2 class="profile-section-title">
+                        <i class="fas fa-key"></i> API Keys
+                        <a href="{{ url_for('profile') }}" class="profile-btn profile-btn-outline" style="font-size: 14px; padding: 6px 12px;">
+                            <i class="fas fa-arrow-left"></i> Back to Profile
+                        </a>
+                    </h2>
+                    
+                    <div class="api-notice">
+                        <h4>AI Animation Feature Update</h4>
+                        <p>Good news! You no longer need to provide your own API keys for our AI animation features. We've integrated our own API keys to provide a seamless experience.</p>
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('api_keys') }}" class="profile-form">
+                        <div class="api-card">
+                            <div class="api-card-header">
+                                <h3>OpenAI API Key</h3>
+                                <span class="api-badge api-badge-default">Optional</span>
+                            </div>
+                            <div class="api-card-body">
+                                <div class="api-info">
+                                    <p>OpenAI powers our advanced AI features for text generation and image descriptions. While we provide a built-in key, you can use your own for custom settings and higher rate limits.</p>
+                                    <p>Don't have a key? <a href="https://platform.openai.com/account/api-keys" target="_blank">Get one from OpenAI <i class="fas fa-external-link-alt" style="font-size: 0.8em;"></i></a></p>
+                                </div>
+                                
+                                <div class="api-key-input">
+                                    <input type="password" id="openai_key" name="openai_key" placeholder="Enter your OpenAI API key" value="{{ current_user.openai_api_key or '' }}">
+                                    <button type="button" onclick="togglePasswordVisibility('openai_key')" title="Show/Hide API Key">
+                                        <i class="far fa-eye" id="openai_key_toggle"></i>
+                                    </button>
+                                </div>
+                                <div class="tooltip">
+                                    <i class="fas fa-info-circle"></i> What's this key used for?
+                                    <span class="tooltiptext">This key is used for generating AI stories, captions, and enhancing your images with descriptions.</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="api-card">
+                            <div class="api-card-header">
+                                <h3>Stability AI Key</h3>
+                                <span class="api-badge api-badge-default">Optional</span>
+                            </div>
+                            <div class="api-card-body">
+                                <div class="api-info">
+                                    <p>Stability AI powers our image generation features. You can use your own key for higher priority and better customization options.</p>
+                                    <p>Don't have a key? <a href="https://stability.ai/platform" target="_blank">Get one from Stability AI <i class="fas fa-external-link-alt" style="font-size: 0.8em;"></i></a></p>
+                                </div>
+                                
+                                <div class="api-key-input">
+                                    <input type="password" id="stability_key" name="stability_key" placeholder="Enter your Stability AI key" value="{{ current_user.stability_api_key or '' }}">
+                                    <button type="button" onclick="togglePasswordVisibility('stability_key')" title="Show/Hide API Key">
+                                        <i class="far fa-eye" id="stability_key_toggle"></i>
+                                    </button>
+                                </div>
+                                <div class="tooltip">
+                                    <i class="fas fa-info-circle"></i> What's this key used for?
+                                    <span class="tooltiptext">This key is used for generating AI images with various styles and options.</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="api-key-actions">
+                            <button type="submit" class="save-btn">
+                                <i class="fas fa-save"></i> Save API Keys
+                            </button>
+                            <button type="button" class="clear-btn" onclick="clearAllKeys()">
+                                <i class="fas fa-trash-alt"></i> Clear All
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Toggle password visibility
+        function togglePasswordVisibility(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(inputId + '_toggle');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        
+        // Clear all API keys
+        function clearAllKeys() {
+            if (confirm('Are you sure you want to clear all your API keys?')) {
+                document.getElementById('openai_key').value = '';
+                document.getElementById('stability_key').value = '';
+            }
+        }
+        
+        // Handle flash messages
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(message => {
+                // Auto-dismiss after 5 seconds
+                setTimeout(() => {
+                    message.classList.add('fade-out');
+                    setTimeout(() => {
+                        message.remove();
+                    }, 500);
+                }, 5000);
+                
+                // Close on click
+                const closeButton = message.querySelector('.flash-close');
+                if (closeButton) {
+                    closeButton.addEventListener('click', () => {
+                        message.classList.add('fade-out');
+                        setTimeout(() => {
+                            message.remove();
+                        }, 500);
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

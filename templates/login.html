@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - PhotoGenic</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0F5E4C;
+            --primary-light: #6bc6b8;
+            --primary-dark: #0a3e33;
+            --accent: #a9ce4e;
+            --accent-dark: #8fb236;
+            --text-dark: #333;
+            --text-light: #f5f5f5;
+            --bg-light: #ffffff;
+            --bg-dark: #0F2D40;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background: linear-gradient(-45deg, #23a6d5, #0F5E4C, #4ca2a8, #a9ce4e);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            position: relative;
+        }
+        
+        .animated-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .floating-leaf {
+            position: absolute;
+            opacity: 0.6;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .leaf-1 {
+            top: 10%;
+            left: 10%;
+            width: 120px;
+            height: 120px;
+            background: url('{{ url_for("static", filename="img/tropical-leaves.jpg") }}') no-repeat;
+            background-size: 800px;
+            background-position: -50px -150px;
+            border-radius: 60% 70% 80% 30%;
+            animation-delay: 0s;
+            filter: hue-rotate(30deg);
+        }
+        
+        .leaf-2 {
+            top: 30%;
+            right: 15%;
+            width: 150px;
+            height: 150px;
+            background: url('{{ url_for("static", filename="img/tropical-leaves.jpg") }}') no-repeat;
+            background-size: 900px;
+            background-position: -350px -250px;
+            border-radius: 70% 30% 60% 40%;
+            animation-delay: 1s;
+            filter: hue-rotate(60deg);
+        }
+        
+        .leaf-3 {
+            bottom: 20%;
+            left: 20%;
+            width: 180px;
+            height: 180px;
+            background: url('{{ url_for("static", filename="img/tropical-leaves.jpg") }}') no-repeat;
+            background-size: 1000px;
+            background-position: -450px -350px;
+            border-radius: 40% 60% 30% 70%;
+            animation-delay: 2s;
+            filter: hue-rotate(90deg);
+        }
+        
+        .leaf-4 {
+            bottom: 10%;
+            right: 10%;
+            width: 100px;
+            height: 100px;
+            background: url('{{ url_for("static", filename="img/tropical-leaves.jpg") }}') no-repeat;
+            background-size: 700px;
+            background-position: -150px -50px;
+            border-radius: 50% 40% 60% 30%;
+            animation-delay: 1.5s;
+            filter: hue-rotate(120deg);
+        }
+        
+        .login-container {
+            display: flex;
+            width: 900px;
+            max-height: 90vh;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 10px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            animation: fadeIn 1s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .login-container:hover {
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25) !important;
+        }
+        
+        .login-form-side {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) transparent;
+        }
+        
+        .login-form-side::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .login-form-side::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .login-form-side::-webkit-scrollbar-thumb {
+            background-color: var(--primary);
+            border-radius: 20px;
+        }
+        
+        .image-side {
+            flex: 1;
+            background-image: url('{{ url_for("static", filename="img/tropical-leaves.jpg") }}');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .image-side::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(15, 94, 76, 0.85), rgba(15, 45, 64, 0.95));
+        }
+        
+        .image-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+        }
+        
+        .image-content h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .image-content p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 300px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .text-logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .text-logo i {
+            font-size: 1.8rem;
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        
+        h1.welcome-text {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .welcome-subtext {
+            color: var(--text-dark);
+            opacity: 0.7;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+        
+        .social-login {
+            margin-bottom: 20px;
+        }
+        
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            text-align: center;
+            color: #444;
+        }
+        
+        .google-btn i {
+            font-size: 1.2rem;
+            margin-right: 10px;
+            color: #DB4437;
+        }
+        
+        .google-btn:hover {
+            background-color: #f8f8f8;
+            border-color: #ccc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .google-btn:hover i {
+            transform: rotate(15deg);
+        }
+        
+        .divider-text {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .divider-text::before,
+        .divider-text::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .divider-text::before {
+            margin-right: 10px;
+        }
+        
+        .divider-text::after {
+            margin-left: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            background-color: rgba(255, 255, 255, 0.8);
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .form-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(15, 94, 76, 0.1);
+            background-color: white;
+        }
+        
+        .password-input-container {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #777;
+            transition: color 0.3s ease;
+        }
+        
+        .password-toggle:hover {
+            color: var(--primary);
+        }
+        
+        .remember-forgot-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+        
+        .remember-me input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            vertical-align: middle;
+        }
+        
+        .remember-me input[type="checkbox"]:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .remember-me input[type="checkbox"]:checked::after {
+            content: '\2714';
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+        }
+        
+        .remember-me input[type="checkbox"]:hover {
+            border-color: var(--primary-light);
+            transform: scale(1.05);
+        }
+        
+        .forgot-password {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        
+        .forgot-password:hover {
+            text-decoration: underline;
+            transform: translateY(-1px);
+        }
+        
+        .buttons-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        }
+        
+        .btn-login {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(15, 94, 76, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-login::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .btn-login:hover::after {
+            left: 100%;
+        }
+        
+        .btn-login:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(15, 94, 76, 0.3);
+        }
+        
+        .btn-signup {
+            background-color: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        .btn-signup:hover {
+            background-color: rgba(15, 94, 76, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(15, 94, 76, 0.1);
+        }
+        
+        /* Ripple effect */
+        .ripple-effect {
+            position: relative;
+            overflow: hidden;
+            transform: translate3d(0, 0, 0);
+        }
+        
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+        
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .login-container {
+                width: 95%;
+                height: auto;
+                flex-direction: column-reverse;
+            }
+            
+            .image-side {
+                height: 200px;
+            }
+        }
+        
+        /* Input focus effect */
+        .input-focused input {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(15, 94, 76, 0.15) !important;
+        }
+        
+        /* Enhanced animations */
+        .login-container {
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .login-container:hover {
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25) !important;
+        }
+        
+        /* Enhanced form elements */
+        .form-group input {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        }
+        
+        /* Button enhancements */
+        .btn {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        }
+        
+        .btn-login {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-login::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .btn-login:hover::after {
+            left: 100%;
+        }
+        
+        /* Enhanced flash messages */
+        .flash-message {
+            animation: slideIn 0.5s ease forwards;
+            transform-origin: top center;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .flash-message.fade-out {
+            animation: slideOut 0.5s ease forwards;
+        }
+        
+        @keyframes slideOut {
+            to {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+        }
+        
+        /* Enhanced error message styling */
+        .form-error-container {
+            margin-bottom: 15px;
+            overflow: hidden;
+            border-radius: 6px;
+            max-height: 0;
+            transition: max-height 0.3s ease, margin 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+        }
+        
+        .form-error-container.show {
+            max-height: 60px;
+            opacity: 1;
+            margin-bottom: 20px;
+        }
+        
+        .form-error {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            border-left: 4px solid #dc3545;
+            display: flex;
+            align-items: center;
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        .form-error i {
+            margin-right: 10px;
+            font-size: 1rem;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .form-success {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            border-left: 4px solid #28a745;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-success i {
+            margin-right: 10px;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background with floating leaves -->
+    <div class="animated-background">
+        <div class="floating-leaf leaf-1"></div>
+        <div class="floating-leaf leaf-2"></div>
+        <div class="floating-leaf leaf-3"></div>
+        <div class="floating-leaf leaf-4"></div>
+    </div>
+    
+    <!-- We're removing the side panel flash messages and only keeping the in-form messages -->
+    
+    <div class="login-container">
+        <div class="login-form-side">
+            <div class="text-logo">
+                <i class="fas fa-camera-retro"></i>
+                <span>PhotoGenic</span>
+            </div>
+            
+            <h1 class="welcome-text">Welcome back</h1>
+            <p class="welcome-subtext">Thank you for getting back, please login to your account by filling these form:</p>
+            
+            <div class="social-login">
+                <a href="{{ url_for('login_google') }}" class="google-btn ripple-effect">
+                    <i class="fab fa-google"></i>
+                    <span>Continue with Google</span>
+                </a>
+            </div>
+            
+            <div class="divider-text">or login with email</div>
+            
+            <form method="POST" action="{{ url_for('login') }}">
+                <!-- Integrated error message container -->
+                <div class="form-error-container {% if get_flashed_messages(category_filter=['error']) %}show{% endif %}">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                {% if category == 'error' %}
+                                <div class="form-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ message }}
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="password-input-container">
+                        <input type="password" id="password" name="password" placeholder="••••••••••••" required>
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility()">
+                            <i class="far fa-eye" id="password-toggle-icon"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="remember-forgot-row">
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Remember me</label>
+                    </div>
+                    
+                    <a href="{{ url_for('reset_password_request') }}" class="forgot-password">Forgot password?</a>
+                </div>
+                
+                <div class="buttons-container">
+                    <button type="submit" class="btn btn-login ripple-effect">Login</button>
+                    <a href="{{ url_for('register') }}" class="btn btn-signup ripple-effect">Sign Up</a>
+                </div>
+            </form>
+        </div>
+        
+        <div class="image-side">
+            <div class="image-content">
+                <h2>PhotoGenic</h2>
+                <p>Transform your photos with cutting-edge AI tools and creative solutions</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Toggle password visibility
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('password-toggle-icon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+        
+        // Ripple effect for buttons
+        document.querySelectorAll('.ripple-effect').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                this.appendChild(ripple);
+                
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+                
+                ripple.classList.add('active');
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+        
+        // Handle flash messages
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(message => {
+                // Auto-dismiss after 5 seconds
+                setTimeout(() => {
+                    message.classList.add('fade-out');
+                    setTimeout(() => {
+                        message.remove();
+                    }, 500);
+                }, 5000);
+                
+                // Close on click
+                const closeButton = message.querySelector('.flash-close');
+                if (closeButton) {
+                    closeButton.addEventListener('click', () => {
+                        message.classList.add('fade-out');
+                        setTimeout(() => {
+                            message.remove();
+                        }, 500);
+                    });
+                }
+            });
+            
+            // Add input focus effects
+            const formInputs = document.querySelectorAll('.form-group input');
+            formInputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('input-focused');
+                    
+                    // Add subtle floating label effect
+                    const label = this.parentElement.querySelector('label') || 
+                                  this.parentElement.parentElement.querySelector('label');
+                    
+                    if (label) {
+                        label.style.transform = 'translateY(-3px) scale(0.9)';
+                        label.style.color = 'var(--primary)';
+                        label.style.transition = 'all 0.3s ease';
+                    }
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('input-focused');
+                    
+                    // Reset label if input is empty
+                    const label = this.parentElement.querySelector('label') || 
+                                  this.parentElement.parentElement.querySelector('label');
+                    
+                    if (label && !this.value) {
+                        label.style.transform = '';
+                        label.style.color = '';
+                    }
+                });
+            });
+            
+            // Add hover animations to buttons with enhanced effects
+            document.querySelectorAll('.btn').forEach(el => {
+                el.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-3px)';
+                    this.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.2)';
+                    
+                    // Add gradient overlay effect for login button
+                    if (this.classList.contains('btn-login')) {
+                        this.style.background = 'linear-gradient(45deg, var(--primary), var(--primary-dark))';
+                    }
+                });
+                
+                el.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '';
+                    
+                    // Reset background
+                    if (this.classList.contains('btn-login')) {
+                        this.style.background = 'var(--primary)';
+                    }
+                });
+                
+                // Add active/press effect
+                el.addEventListener('mousedown', function() {
+                    this.style.transform = 'translateY(-1px)';
+                    this.style.boxShadow = '0 3px 8px rgba(0, 0, 0, 0.15)';
+                });
+                
+                el.addEventListener('mouseup', function() {
+                    this.style.transform = 'translateY(-3px)';
+                    this.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.2)';
+                });
+            });
+            
+            // Add interactive leaf animation on hover
+            const leaves = document.querySelectorAll('.floating-leaf');
+            const loginContainer = document.querySelector('.login-container');
+            loginContainer.addEventListener('mouseenter', function() {
+                leaves.forEach(leaf => {
+                    leaf.style.animationPlayState = 'paused';
+                    
+                    // Slight movement toward cursor
+                    leaf.style.transition = 'transform 1s ease';
+                    leaf.style.transform = 'scale(1.1)';
+                });
+            });
+            
+            loginContainer.addEventListener('mouseleave', function() {
+                leaves.forEach(leaf => {
+                    leaf.style.animationPlayState = 'running';
+                    leaf.style.transform = '';
+                });
+            });
+            
+            // Enhance text logo with subtle animation
+            const textLogo = document.querySelector('.text-logo');
+            if (textLogo) {
+                textLogo.addEventListener('mouseenter', function() {
+                    const icon = this.querySelector('i');
+                    if (icon) {
+                        icon.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                        icon.style.transform = 'rotate(15deg) scale(1.2)';
+                    }
+                });
+                
+                textLogo.addEventListener('mouseleave', function() {
+                    const icon = this.querySelector('i');
+                    if (icon) {
+                        icon.style.transform = '';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

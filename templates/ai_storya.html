@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Story Generator | The Photogenic</title>
+    <!-- Preload critical assets -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Critical CSS inlined for faster render */
+        :root {
+            --primary: #876b52;
+            --primary-light: #a18967;
+            --primary-dark: #6e5741;
+            --secondary: #d4b586;
+            --text-dark: #6a5a47;
+            --bg-light: #f8f5f0;
+            --bg-medium: #eee6dc;
+            --accent-pink: #ff5678;
+            --accent-pink-light: #ff889a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        /* Preloader */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.2s;
+        }
+        
+        .preloader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .preloader__spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Header & Navigation */
+        .header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 0;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .header__content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav__link {
+            color: white;
+            text-decoration: none;
+            font-size: 0.95rem;
+            position: relative;
+        }
+        
+        .nav__link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: white;
+            transition: width 0.3s;
+        }
+        
+        .nav__link:hover::after {
+            width: 100%;
+        }
+
+        .nav__link--active::after {
+            width: 100%;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 60px 0;
+        }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+            text-align: center;
+        }
+        
+        .page-subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 50px;
+            color: var(--text-dark);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Story Generator Card */
+        .story-generator {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            max-width: 1000px;
+            margin: 0 auto 60px;
+        }
+        
+        .story-generator__header {
+            background: linear-gradient(to right, var(--accent-pink), var(--accent-pink-light));
+            padding: 30px;
+            color: white;
+            text-align: center;
+        }
+        
+        .story-generator__header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .story-generator__body {
+            padding: 40px;
+        }
+        
+        .input-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        
+        .method-separator {
+            text-align: center;
+            position: relative;
+            margin: 10px 0;
+        }
+        
+        .method-separator::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background-color: var(--bg-medium);
+            top: 50%;
+            left: 0;
+            z-index: 1;
+        }
+        
+        .method-separator span {
+            background-color: white;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        /* Input Method: Upload Image */
+        .input-method {
+            background-color: var(--bg-light);
+            border-radius: 10px;
+            padding: 30px;
+            position: relative;
+        }
+        
+        .input-method__title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .input-method__title i {
+            font-size: 1.1rem;
+            color: var(--primary-light);
+        }
+        
+        .file-upload {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .file-upload__area {
+            width: 100%;
+            border: 2px dashed var(--primary-light);
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            transition: border-color 0.3s, background-color 0.3s;
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .file-upload__area:hover {
+            border-color: var(--primary);
+            background-color: white;
+        }
+        
+        .file-upload__icon {
+            font-size: 3rem;
+            color: var(--primary-light);
+            margin-bottom: 15px;
+        }
+        
+        .file-upload__text {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .file-upload__hint {
+            font-size: 0.9rem;
+            color: #888;
+        }
+        
+        .file-upload input[type="file"] {
+            position: absolute;
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        /* Input Method: Pixabay Search */
+        .pixabay-search {
+            margin-bottom: 25px;
+        }
+        
+        .search-bar {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            flex-grow: 1;
+            padding: 12px 20px;
+            border: 2px solid var(--bg-medium);
+            border-radius: 50px 0 0 50px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3 s;
+        }
+        
+        .search-input:focus {
+            border-color: var(--primary-light);
+        }
+        
+        .search-button {
+            background: linear-gradient(45deg, var(--primary), var(--primary-light));
+            color: white;
+            border: none;
+            border-radius: 0 50px 50px 0;
+            padding: 12px 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .search-button:hover {
+            background: linear-gradient(45deg, var(--primary-dark), var(--primary));
+        }
+        
+        .search-button i {
+            margin-right: 5px;
+        }
+        
+        .pixabay-results {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .pixabay-item {
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            height: 0;
+            padding-bottom: 66.66%; /* 3:2 aspect ratio */
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .pixabay-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .pixabay-item img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .pixabay-item.selected {
+            border: 3px solid var(--accent-pink);
+        }
+        
+        .pixabay-item.selected::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--accent-pink);
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+        
+        /* Input Method: Text Prompt */
+        .text-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--bg-medium);
+            border-radius: 10px;
+            font-size: 1rem;
+            min-height: 120px;
+            resize: vertical;
+            font-family: 'Poppins', sans-serif;
+            transition: border-color 0.3s;
+        }
+        
+        .text-input:focus {
+            border-color: var(--primary-light);
+            outline: none;
+        }
+        
+        /* Generate Button */
+        .generate-btn-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .generate-btn {
+            display: inline-block;
+            background: linear-gradient(45deg, var(--accent-pink), var(--accent-pink-light));
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 86, 120, 0.3);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+        }
+        
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 86, 120, 0.4);
+        }
+        
+        .generate-btn i {
+            margin-right: 10px;
+        }
+        
+        /* Responsive designs */
+        @media (max-width: 992px) {
+            .pixabay-results {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .story-generator__header h2 {
+                font-size: 1.7rem;
+            }
+            
+            .story-generator__body {
+                padding: 25px;
+            }
+            
+            .input-method {
+                padding: 20px;
+            }
+            
+            .file-upload__area {
+                padding: 30px 20px;
+            }
+            
+            .file-upload__icon {
+                font-size: 2.5rem;
+            }
+            
+            .nav {
+                gap: 15px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .pixabay-results {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-bar {
+                flex-direction: column;
+            }
+            
+            .search-input, .search-button {
+                border-radius: 50px;
+            }
+            
+            .search-button {
+                margin-top: 10px;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* Loading Spinner */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 70px;
+            height: 70px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            position: absolute;
+            color: white;
+            font-size: 1.1rem;
+            margin-top: 120px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader__content">
+            <div class="preloader__spinner"></div>
+        </div>
+    </div>
+    
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <a href="{{ url_for('index') }}" class="logo">The Photogenic</a>
+                <nav class="nav" id="mainNav">
+                    <a href="{{ url_for('index') }}" class="nav__link">Home</a>
+                    <a href="{{ url_for('interactive') }}" class="nav__link">Accommodations</a>
+                    <a href="{{ url_for('ai_story') }}" class="nav__link nav__link--active">AI Stories</a>
+                    <a href="#" class="nav__link">About</a>
+                    <a href="#" class="nav__link">Contact</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <h1 class="page-title">AI Story Generator</h1>
+            <p class="page-subtitle">Create unique, imaginative stories with the help of AI. Upload your own image, select a Pixabay image, or simply enter a text prompt to begin your creative journey.</p>
+            
+            <div class="story-generator">
+                <div class="story-generator__header">
+                    <h2>Spark Your Imagination</h2>
+                    <p>Generate creative stories from images or text prompts</p>
+                </div>
+                
+                <div class="story-generator__body">
+                    <form action="{{ url_for('generate_story') }}" method="post" enctype="multipart/form-data" id="storyForm">
+                        <div class="input-methods">
+                            <!-- Method 1: Upload Image -->
+                            <div class="input-method">
+                                <h3 class="input-method__title"><i class="fas fa-image"></i> Upload Your Own Image</h3>
+                                <div class="file-upload">
+                                    <label for="image-upload" class="file-upload__area" id="drop-area">
+                                        <i class="fas fa-cloud-upload-alt file-upload__icon"></i>
+                                        <div class="file-upload__text">Drag & Drop an image or click to browse</div>
+                                        <div class="file-upload__hint">Supported formats: JPG, PNG, GIF (Max size: 5MB)</div>
+                                    </label>
+                                    <input type="file" name="image" id="image-upload" accept="image/*">
+                                    <div id="preview-container" style="display:none; width:100%; text-align:center;">
+                                        <img id="image-preview" style="max-width:100%; max-height:300px; border-radius:5px;">
+                                        <button type="button" id="remove-image" style="margin-top:10px; background:none; border:none; color:var(--primary); cursor:pointer;">
+                                            <i class="fas fa-times"></i> Remove image
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="method-separator">
+                                <span>OR</span>
+                            </div>
+                            
+                            <!-- Method 2: Search Pixabay -->
+                            <div class="input-method">
+                                <h3 class="input-method__title"><i class="fas fa-search"></i> Search Pixabay Images</h3>
+                                <div class="pixabay-search">
+                                    <div class="search-bar">
+                                        <input type="text" class="search-input" id="pixabay-search" placeholder="Search for images...">
+                                        <button type="button" class="search-button" id="search-button">
+                                            <i class="fas fa-search"></i> Search
+                                        </button>
+                                    </div>
+                                    <input type="hidden" name="pixabay_url" id="pixabay-url">
+                                </div>
+                                <div class="pixabay-results" id="pixabay-results">
+                                    {% if pixabay_images %}
+                                        {% for image in pixabay_images %}
+                                            <div class="pixabay-item" data-url="{{ image.webformatURL }}">
+                                                <img src="{{ image.webformatURL }}" alt="{{ image.tags }}">
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="method-separator">
+                                <span>OR</span>
+                            </div>
+                            
+                            <!-- Method 3: Text Prompt -->
+                            <div class="input-method">
+                                <h3 class="input-method__title"><i class="fas fa-keyboard"></i> Enter a Text Prompt</h3>
+                                <textarea name="custom_text" class="text-input" placeholder="Describe a scene, character, or concept for your story..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="generate-btn-container">
+                            <button type="submit" class="generate-btn" id="generate-btn">
+                                <i class="fas fa-magic"></i> Generate Story
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Generating your story and image...<br>This may take a moment</div>
+    </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const preloader = document.getElementById('preloader');
+        const imageInput = document.getElementById('image-upload');
+        const dropArea = document.getElementById('drop-area');
+        const preview = document.getElementById('image-preview');
+        const previewContainer = document.getElementById('preview-container');
+        const removeButton = document.getElementById('remove-image');
+        const pixabaySearch = document.getElementById('pixabay-search');
+        const searchButton = document.getElementById('search-button');
+        const pixabayResults = document.getElementById('pixabay-results');
+        const pixabayUrlInput = document.getElementById('pixabay-url');
+        const storyForm = document.getElementById('storyForm');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        
+        // Hide preloader
+        setTimeout(function() {
+            preloader.classList.add('fade-out');
+            setTimeout(function() {
+                preloader.style.display = 'none';
+            }, 200);
+        }, 300);
+        
+        // Image upload and preview
+        imageInput.addEventListener('change', previewImage);
+        
+        function previewImage() {
+            const file = imageInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                    dropArea.style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // Remove image
+        removeButton.addEventListener('click', function() {
+            imageInput.value = '';
+            preview.src = '';
+            previewContainer.style.display = 'none';
+            dropArea.style.display = 'block';
+        });
+        
+        // Drag & Drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropArea.classList.add('highlight');
+        }
+
+        function unhighlight() {
+            dropArea.classList.remove('highlight');
+        }
+        
+        dropArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            imageInput.files = files;
+            previewImage();
+        }
+        
+        // Pixabay search
+        searchButton.addEventListener('click', searchPixabay);
+        pixabaySearch.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                searchPixabay();
+            }
+        });
+        
+        function searchPixabay() {
+            const query = pixabaySearch.value.trim();
+            if (!query) return;
+            
+            // Show a loading indicator in the results area
+            pixabayResults.innerHTML = '<div style="text-align:center; width:100%; padding:30px;"><i class="fas fa-spinner fa-spin" style="font-size:2rem; color:var(--primary)"></i></div>';
+            
+            fetch(`/search-pixabay?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    pixabayResults.innerHTML = '';
+                    if (data.hits && data.hits.length > 0) {
+                        data.hits.forEach(image => {
+                            const div = document.createElement('div');
+                            div.className = 'pixabay-item';
+                            div.dataset.url = image.webformatURL;
+                            div.innerHTML = `<img src="${image.webformatURL}" alt="${image.tags}">`;
+                            div.addEventListener('click', selectPixabayImage);
+                            pixabayResults.appendChild(div);
+                        });
+                    } else {
+                        pixabayResults.innerHTML = '<div style="text-align:center; width:100%; padding:20px;">No images found. Try a different search term.</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error searching Pixabay:', error);
+                    pixabayResults.innerHTML = '<div style="text-align:center; width:100%; padding:20px;">Error searching images. Please try again.</div>';
+                });
+        }
+        
+        // Select Pixabay image
+        function selectPixabayImage() {
+            const items = document.querySelectorAll('.pixabay-item');
+            items.forEach(item => item.classList.remove('selected'));
+            this.classList.add('selected');
+            pixabayUrlInput.value = this.dataset.url;
+        }
+        
+        // Add click handlers to any initial Pixabay images
+        const initialPixabayItems = document.querySelectorAll('.pixabay-item');
+        initialPixabayItems.forEach(item => {
+            item.addEventListener('click', selectPixabayImage);
+        });
+        
+        // Show loading spinner on form submit
+        storyForm.addEventListener('submit', function(e) {
+            // Validation
+            const hasImage = imageInput.files.length > 0;
+            const hasPixabay = pixabayUrlInput.value !== '';
+            const hasText = document.querySelector('textarea[name="custom_text"]').value.trim() !== '';
+            
+            if (!hasImage && !hasPixabay && !hasText) {
+                e.preventDefault();
+                alert('Please either upload an image, select a Pixabay image, or enter a text prompt.');
+                return;
+            }
+            
+            loadingOverlay.classList.add('active');
+        });
+    });
+    </script>
+</body>
+</html>

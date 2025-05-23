@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Menu Example</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: #333;
+            min-height: 100vh;
+            padding-top: 100px;
+        }
+        
+        /* Navigation menu styling */
+        .main-nav {
+            background-color: rgba(50, 50, 50, 0.85);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 12px 0;
+            backdrop-filter: blur(8px);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .nav-list {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s ease;
+            padding: 5px 0;
+        }
+        
+        .nav-link:hover {
+            color: #e0e0e0;
+        }
+        
+        .nav-link.active {
+            font-weight: 600;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -3px;
+            left: 0;
+            background-color: white;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+        
+        .book-now-btn {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            border: 1px solid white;
+            border-radius: 30px;
+            padding: 8px 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .book-now-btn:hover {
+            background-color: white;
+            color: #333;
+        }
+        
+        /* Demo content */
+        .content {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Navigation Menu -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <ul class="nav-list">
+                <li><a href="/" class="nav-link active">Home</a></li>
+                <li><a href="/location" class="nav-link">Location</a></li>
+                <li><a href="/about" class="nav-link">About</a></li>
+                <li><a href="/book-now" class="book-now-btn">Book Now</a></li>
+                <li><a href="/gallery" class="nav-link">Gallery</a></li>
+                <li><a href="/blog" class="nav-link">Blog</a></li>
+                <li><a href="/contact" class="nav-link">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <h1>Navigation Menu Example</h1>
+    
+    <!-- You can remove everything below this line when adding to your site -->
+    <div class="content">
+        <h2>How to integrate this menu:</h2>
+        <p>
+            1. Copy the CSS from the &lt;style&gt; section that contains the navigation styles<br>
+            2. Copy the HTML for the navigation menu (the &lt;nav class="main-nav"&gt; element)<br>
+            3. Paste these into your ai_features.html file<br>
+            4. Update the links to match your actual routes
+        </p>
+    </div>
+</body>
+</html>

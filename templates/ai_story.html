@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Stories - PhotoGenic</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* Modern Pro AI Stories UI */
+        :root {
+            --primary: #0073e6;
+            --primary-light: #e6f4ff;
+            --primary-dark: #0050a0;
+            --secondary: #34a853;
+            --accent: #fbbc05;
+            --danger: #ea4335;
+            --dark: #202124;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            --font-serif: 'Georgia', 'Times New Roman', serif;
+            --book-color: #8B4513;
+            --book-spine: #6b3009;
+            --page-color: #f8f5e6;
+            --book-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--gray-100);
+            color: var(--gray-800);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* === Header Styling === */
+        .header {
+            background-color: white;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            transition: var(--transition);
+        }
+
+        .header.scrolled {
+            padding: 0.5rem 1.5rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--dark);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            color: var(--primary);
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 1.6rem;
+        }
+
+        /* === Content Area === */
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* === Button Styling === */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--radius);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            text-decoration: none;
+        }
+
+        .btn i {
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 115, 230, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            box-shadow: 0 4px 8px rgba(0, 115, 230, 0.3);
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: var(--dark);
+            box-shadow: 0 2px 4px rgba(251, 188, 5, 0.3);
+            border: none;
+        }
+
+        .btn-accent:hover {
+            background-color: #e6a800;
+            box-shadow: 0 4px 8px rgba(251, 188, 5, 0.4);
+        }
+
+        .btn-light {
+            background-color: white;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+
+        .btn-light:hover {
+            background-color: var(--gray-100);
+            color: var(--gray-900);
+        }
+
+        /* === AI Stories UI === */
+        .story-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+
+        .story-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .story-description {
+            color: var(--gray-600);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .story-container {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        /* Form Styling */
+        .story-form {
+            padding: 2rem;
+            background-color: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            background-color: white;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: var(--transition);
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 115, 230, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--gray-500);
+        }
+
+        .form-textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+            background-color: var(--gray-100);
+            transition: var(--transition);
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-area:hover,
+        .upload-area.highlight {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        .upload-icon {
+            font-size: 2.5rem;
+            color: var(--gray-400);
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+
+        .upload-area:hover .upload-icon,
+        .upload-area.highlight .upload-icon {
+            color: var(--primary);
+        }
+
+        .upload-text {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+        }
+
+        .upload-text .browse-btn { /* Style for button inside upload text */
+            background: none;
+            border: none;
+            color: var(--primary);
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+            font-size: inherit;
+        }
+        .upload-text .browse-btn:hover {
+            color: var(--primary-dark);
+        }
+
+        .upload-subtext { /* Renamed from upload-instructions for clarity */
+            font-size: 0.9rem;
+            color: var(--gray-500);
+        }
+
+        .upload-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: center;
+        }
+
+        .upload-preview-item { /* Renamed from preview-item for consistency */
+            width: 100px;
+            height: 100px;
+            border-radius: var(--radius);
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--shadow);
+        }
+
+        .upload-preview-item img { /* Renamed from preview-image */
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: var(--gray-200);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-top: 1rem;
+            height: 20px; /* Added height */
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%; /* Changed from 20px to 100% */
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+            text-align: center;
+            line-height: 20px; /* Match container height */
+            color: white;
+            font-size: 0.8rem;
+        }
+        .progress-text { /* This class was in HTML but not CSS, added basic styling */
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            margin-top: 0.5rem;
+        }
+
+
+        /* Toggle switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+            background-color: var(--gray-100);
+            border-radius: var(--radius-lg);
+            padding: 0.5rem;
+        }
+
+        .toggle-option {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            text-align: center;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            color: var(--gray-600);
+        }
+
+        .toggle-option.active {
+            background-color: white;
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .toggle-option i {
+            margin-right: 0.5rem;
+        }
+
+        /* Results area styling */
+        .results-area {
+            display: none;
+            margin-top: 2rem;
+            padding: 1.5rem; /* Added padding */
+            background-color: #fff; /* Added background */
+            border-radius: var(--radius-lg); /* Added radius */
+            box-shadow: var(--shadow); /* Added shadow */
+        }
+
+        .results-area.active {
+            display: block;
+        }
+
+        /* 3D Book Styling - Enhanced version */
+        .book-container {
+            display: flex;
+            flex-direction: column; /* Allow button to be below book */
+            align-items: center;
+            justify-content: center;
+            perspective: 1200px; /* Increased perspective for more depth */
+            width: 100%;
+            margin: 2rem auto;
+            min-height: 450px; /* Adjusted to fit book and controls */
+            position: relative;
+        }
+
+        @keyframes initAnimation {
+            0% {
+                transform: rotateY(0deg) rotateX(5deg); /* Slight initial tilt */
+            }
+            100% {
+                transform: rotateY(-30deg) rotateX(5deg); /* Maintain slight tilt */
+            }
+        }
+
+        .book-3d {
+            width: 250px;
+            height: 350px;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateY(-30deg) rotateX(5deg); /* Initial perspective */
+            transition: transform 1s ease;
+            /* animation: 1s ease 0s 1 initAnimation; */ /* Can be enabled if desired */
+            cursor: pointer;
+        }
+
+        .book-3d.book-closed {
+             transform: rotateY(-30deg) rotateX(5deg);
+        }
+
+        .book-3d.book-open {
+            transform: rotateY(0deg) rotateX(0deg); /* Face forward when open */
+        }
+
+        .book-cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 350px;
+            transform-origin: 0% 50%; /* Hinge on the left */
+            transform: translateZ(20px); /* Cover thickness */
+            background-color: var(--book-color);
+            border-radius: 0 4px 4px 0;
+            box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.3);
+            backface-visibility: hidden;
+            transition: transform 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Smoother open */
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .book-cover.closed {
+            transform: translateZ(20px) rotateY(0deg);
+        }
+
+        .book-cover.open {
+            transform: translateZ(0px) rotateY(-170deg); /* Open further, adjust Z for flatness */
+        }
+
+        .book-spine {
+            position: absolute;
+            left: 0; /* Position spine correctly */
+            top: 0;
+            width: 40px; /* Spine thickness */
+            height: 350px;
+            transform: rotateY(90deg) translateX(-20px); /* Position relative to back */
+            background: linear-gradient(90deg,
+                var(--book-spine) 0%,
+                #8B5A2B 40%,
+                #A67C52 50%,
+                #8B5A2B 60%,
+                var(--book-spine) 100%);
+            box-shadow: inset 0px 0px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            color: rgba(255, 255, 255, 0.8);
+            font-family: var(--font-serif);
+            font-size: 1.2rem;
+            padding: 10px 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            z-index: 5; /* Behind cover, in front of back */
+        }
+
+        .book-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 350px;
+            transform: translateZ(-20px) rotateY(0deg); /* Back cover thickness, no rotation */
+            background-color: var(--book-color);
+            border-radius: 4px 0 0 4px; /* Rounded corners for back */
+            box-shadow: -10px 0 50px 10px rgba(0, 0, 0, 0.2);
+            z-index: 0; /* Furthest back */
+        }
+
+        .book-pages {
+            position: absolute;
+            top: 5px;  /* Slight inset for pages */
+            left: 5px; /* Slight inset for pages */
+            width: 240px; /* Slightly smaller than cover */
+            height: 340px;/* Slightly smaller than cover */
+            transform: translateZ(0px); /* Pages sit between cover and back */
+            background-color: var(--page-color);
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+            display: none; /* Hidden until book is open */
+            overflow: hidden;
+            z-index: 5; /* Above back, below open cover */
+        }
+
+        .book-3d.book-open .book-pages {
+            display: block;
+        }
+
+        .book-page { /* This class seems unused, page-spread is used */
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            padding: 15px;
+            box-sizing: border-box;
+            font-family: var(--font-serif);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #333;
+            background-color: var(--page-color);
+            background-image:
+                linear-gradient(90deg, rgba(0,0,0,0.03) 0%, transparent 10%, transparent 90%, rgba(0,0,0,0.03) 100%);
+            overflow: hidden;
+        }
+
+        .book-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(var(--page-color) 0.8px, transparent 0.9 px),
+                linear-gradient(90deg, #e0decd 0.8 px, transparent 0.9 px);
+            background-size: 20px 20px;
+            opacity: 0.07;
+            pointer-events: none;
+        }
+
+        .page-content { /* Content within a page */
+            height: 100%;
+            overflow-y: auto; /* Allow scrolling if content overflows */
+            padding-right: 5px; /* Space for scrollbar */
+        }
+
+        .book-page-spread {
+            display: none; /* Hidden by default */
+            width: 100%;
+            height: 100%;
+        }
+
+        .book-page-spread.active { /* Active spread is visible */
+            display: flex;
+        }
+
+        .page-left, .page-right {
+            width: 50%;
+            height: 100%;
+            padding: 20px; /* Increased padding */
+            box-sizing: border-box;
+            overflow: hidden; /* Managed by .page-content */
+            position: relative; /* For pseudo-elements if needed */
+        }
+
+        .page-left {
+            border-right: 1px solid rgba(0,0,0,0.1); /* Center gutter */
+            box-shadow: inset -3px 0 5px -3px rgba(0,0,0,0.1); /* Inner shadow for depth */
+        }
+        .page-right {
+             box-shadow: inset 3px 0 5px -3px rgba(0,0,0,0.1); /* Inner shadow for depth */
+        }
+
+
+        .cover-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+            color: #fff;
+            background: linear-gradient(135deg, var(--book-color) 0%, #9c6a44 100%);
+        }
+
+        .cover-content h1 { /* Renamed from book-title for specificity */
+            font-family: var(--font-serif);
+            font-size: 1.8rem; /* Adjusted for space */
+            margin-bottom: 0.5rem; /* Adjusted spacing */
+            text-shadow: 2px 2px 3px rgba(0,0,0,0.3);
+            max-width: 90%; /* Prevent overflow */
+            word-wrap: break-word;
+        }
+
+        .cover-content h2 { /* Renamed from book-subtitle for specificity */
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: normal;
+            font-size: 1rem; /* Adjusted for space */
+            margin-top: 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            opacity: 0.9;
+            max-width: 90%; /* Prevent overflow */
+            word-wrap: break-word;
+        }
+
+        .cover-decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 8px solid rgba(255,255,255,0.1);
+            box-sizing: border-box;
+            pointer-events: none;
+        }
+
+        .page-turn-overlay {
+            position: absolute;
+            width: 100px; /* Wider click area */
+            height: 100%; /* Full height of the book pages area */
+            top: 0;
+            right: 0; /* Position on the right side of the book pages */
+            /* background-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.01) 100%); */ /* Subtle gradient if desired */
+            transform: translateZ(1px); /* Slightly in front of pages */
+            z-index: 20; /* Above pages */
+            display: none; /* Hidden until book is open */
+            cursor: pointer;
+        }
+
+        .book-3d.book-open .page-turn-overlay {
+            display: block;
+        }
+
+        .page-turn-animation { /* For visual page flip effect */
+            position: absolute;
+            top: 5px; /* Align with book-pages */
+            left: 5px; /* Align with book-pages */
+            width: 240px; /* Match book-pages width */
+            height: 340px; /* Match book-pages height */
+            background-color: var(--page-color);
+            box-shadow: -5px 0 10px rgba(0,0,0,0.1);
+            transform-origin: left center;
+            transform-style: preserve-3d;
+            transition: transform 0.8s ease;
+            z-index: 15; /* Above pages, below overlay */
+            display: none; /* Controlled by JS */
+        }
+
+        .book-navigation {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center navigation items */
+            gap: 1rem; /* Space between buttons and counter */
+            width: 100%;
+            max-width: 400px;
+            margin: 1.5rem auto 0; /* More space above */
+        }
+
+        .book-nav-btn {
+            background-color: var(--primary); /* Use primary color */
+            color: white;
+            border: none;
+            border-radius: var(--radius); /* Consistent radius */
+            padding: 0.6rem 1rem; /* Adjusted padding */
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem; /* Space between icon and text */
+            transition: var(--transition);
+        }
+
+        .book-nav-btn:hover:not(:disabled) {
+            background-color: var(--primary-dark); /* Darken on hover */
+            transform: translateY(-2px);
+        }
+
+        .book-nav-btn:disabled {
+            background-color: var(--gray-400); /* Clearer disabled state */
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.7;
+        }
+
+        .book-nav-btn i {
+            font-size: 0.9rem; /* Adjusted icon size */
+        }
+
+        .page-counter {
+            font-family: var(--font-main); /* Consistent font */
+            text-align: center;
+            font-style: normal; /* Remove italic if not desired */
+            color: var(--gray-700); /* Darker for readability */
+            font-weight: 500;
+            font-size: 1rem; /* Slightly larger */
+            padding: 0.5rem;
+        }
+
+
+        @keyframes turnPage {
+            0% {
+                transform: rotateY(0deg);
+            }
+            100% {
+                transform: rotateY(-180deg);
+            }
+        }
+
+        .turning { /* Class to apply turning animation */
+            animation: turnPage 0.8s ease forwards;
+        }
+
+        @media (max-width: 768px) {
+            .book-3d {
+                width: 200px;
+                height: 300px;
+            }
+
+            .book-cover, .book-back {
+                width: 200px;
+                height: 300px;
+            }
+
+            .book-spine {
+                height: 300px;
+                width: 30px; /* Adjust spine for smaller book */
+                transform: rotateY(90deg) translateX(-15px); /* Adjust spine position */
+            }
+
+            .book-pages {
+                width: 190px;
+                height: 290px;
+            }
+
+            .page-turn-overlay {
+                height: 290px; /* Match page height */
+            }
+
+            .cover-content h1 {
+                font-size: 1.4rem;
+            }
+
+            .cover-content h2 {
+                font-size: 0.9rem;
+            }
+            .page-left, .page-right {
+                padding: 15px;
+            }
+        }
+
+
+        /* Read Button specific styling (if different from .btn-primary) */
+        #read-btn { /* Targets the specific button */
+            margin-top: 1rem; /* Space above the button */
+             /* Uses general .btn and .btn-primary styles */
+        }
+        .text-center { text-align: center; }
+        .my-3 { margin-top: 1rem; margin-bottom: 1rem; }
+
+
+        /* Page content styling */
+        .page-content { /* Already defined, ensure it's styled well */
+            font-family: var(--font-serif);
+            line-height: 1.7; /* Slightly more spacing */
+            color: #333;
+            font-size: 0.95rem; /* Base font size for pages */
+        }
+
+        .page-content h1, .page-content h2 {
+            font-family: var(--font-serif);
+            margin-bottom: 1rem; /* Adjusted spacing */
+            color: #1c3968; /* Dark blue for headings */
+        }
+        .page-content h1 { font-size: 1.5rem; }
+        .page-content h2 { font-size: 1.2rem; }
+
+
+        .page-content p {
+            margin-bottom: 1rem;
+            text-align: justify;
+            text-indent: 1.5em; /* Standard indent */
+        }
+
+        .page-content p:first-of-type:first-letter {
+            initial-letter: 2; /* Drop cap size */
+            -webkit-initial-letter: 2;
+            margin-right: 0.3em; /* Space after drop cap */
+            color: #1c3968;
+            font-family: var(--font-serif); /* Ensure serif for drop cap */
+            font-weight: bold;
+            font-size: 2.5em; /* Relative size of drop cap */
+            float: left;
+            line-height: 0.8; /* Adjust line height for drop cap */
+            padding-top: 0.1em; /* Fine-tune vertical alignment */
+        }
+
+        .page-image {
+            max-width: 90%; /* Slightly less than full width */
+            height: auto;
+            display: block;
+            margin: 1rem auto 1.5rem; /* Centered with more bottom margin */
+            border-radius: 4px; /* Softer radius */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Softer shadow */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .page-image:hover {
+            transform: scale(1.03); /* Slightly larger hover effect */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Loading spinner overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255,255,255,0.85); /* Slightly more opaque */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000; /* Ensure it's on top */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0s linear 0.3s; /* Correct transition */
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s ease, visibility 0s linear 0s;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 60px; /* Slightly smaller */
+            height: 60px;
+            border: 6px solid var(--primary-light);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Form buttons */
+        .form-actions { /* Container for form buttons */
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: flex-start; /* Align to start or center as preferred */
+        }
+        .form-btn { /* General form button styling */
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-btn.btn-primary { /* Already styled by .btn-primary */
+            /* background-color: var(--primary);
+            color: white; */
+        }
+
+        .form-btn.btn-primary:hover {
+            /* background-color: var(--primary-dark); */
+        }
+        .form-btn.btn-outline { /* Style for outline/reset button */
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        .form-btn.btn-outline:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 3000; /* Above everything */
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background-color: var(--dark);
+            color: white;
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: toast-in 0.5s forwards;
+            font-size: 0.9rem;
+            min-width: 250px;
+        }
+
+        .toast.info { background-color: var(--primary); }
+        .toast.success { background-color: var(--secondary); }
+        .toast.error { background-color: var(--danger); }
+        .toast.warning { background-color: var(--accent); color: var(--dark); }
+
+
+        .toast.hide {
+            animation: toast-out 0.5s forwards;
+        }
+
+        @keyframes toast-in {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes toast-out {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+        .upload-instructions { /* Renamed to upload-subtext in HTML, ensure consistency or remove */
+             font-size: 0.9rem;
+             color: var(--gray-500);
+        }
+        .style-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 0.5rem;
+        }
+
+        .style-option {
+            display: flex;
+            align-items: center;
+            background-color: var(--gray-100);
+            padding: 8px 12px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border: 1px solid var(--gray-300);
+        }
+
+        .style-option:hover {
+            background-color: var(--gray-200);
+        }
+
+        .style-option input[type="radio"] {
+            margin-right: 8px;
+            accent-color: var(--primary);
+        }
+
+        .style-option input[type="radio"]:checked + .style-name {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .form-hint {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            margin-top: 0.5rem;
+        }
+
+
+    </style>
+</head>
+<body>
+    <!-- Pro Header with Modern UI -->
+    <header class="header">
+        <a href="/" class="logo">
+            <i class="fas fa-camera"></i>
+            <span>PhotoGenic</span>
+        </a>
+        <div class="action-bar">
+            <a href="/collections" class="btn btn-light">
+                <i class="fas fa-photo-video"></i> Collections
+            </a>
+            <a href="/ai-features" class="btn btn-accent">
+                <i class="fas fa-robot"></i> AI Features
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content">
+        <div class="story-header">
+            <h1 class="story-title">Create AI Stories</h1>
+            <p class="story-description">Turn your photos or text into captivating stories with AI. Generate unique narratives that capture the essence of your memories.</p>
+        </div>
+
+        <div class="story-container">
+            <form id="story-form" class="story-form">
+                <div class="toggle-container">
+                    <div class="toggle-option active" id="toggle-image" onclick="setMode('image')">
+                        <i class="fas fa-image"></i> Generate from Image
+                    </div>
+                    <div class="toggle-option" id="toggle-text" onclick="setMode('text')">
+                        <i class="fas fa-font"></i> Generate from Text
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="form-story-title" class="form-label">Story Title</label>
+                    <input type="text" id="form-story-title" class="form-input" placeholder="Enter a title for your story" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="form-story-subtitle" class="form-label">Story Subtitle (optional)</label>
+                    <input type="text" id="form-story-subtitle" class="form-input" placeholder="Enter a subtitle for your story">
+                </div>
+
+                <div class="form-group" id="image-upload-group">
+                    <label class="form-label">Upload Images</label>
+                    <div class="upload-area" id="image-upload-area">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="upload-text">
+                            Drag &amp; drop your images here or
+                            <button type="button" class="browse-btn" id="browse-btn">Browse Files</button>
+                            <input type="file" id="file-input" accept="image/*" multiple style="display: none;">
+                        </div>
+                        <div class="upload-subtext"> <!-- Was upload-instructions -->
+                            You can upload up to 5 images. Supported formats: JPG, PNG, GIF
+                        </div>
+                    </div>
+                    <div class="upload-preview" id="upload-preview"></div>
+                    <div class="progress-container" id="progress-container" style="display: none;">
+                        <div class="progress-bar" id="progress-bar">0%</div>
+                        <!-- <div class="progress-text" id="progress-text-label">Uploading...</div> -->
+                    </div>
+                </div>
+
+                <div class="form-group" id="text-prompt-group" style="display: none;">
+                    <label class="form-label" for="text-prompt">Describe Your Story</label>
+                    <textarea id="text-prompt" class="form-input form-textarea" rows="5" placeholder="Describe what you want your story to be about..."></textarea>
+                    <div class="form-hint">
+                        For best results, include details about characters, settings, themes, and any specific plot elements.
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Story Style</label>
+                    <div class="style-options">
+                        <label class="style-option">
+                            <input type="radio" name="style" value="fantasy" checked>
+                            <span class="style-name">Fantasy</span>
+                        </label>
+                        <label class="style-option">
+                            <input type="radio" name="style" value="mystery">
+                            <span class="style-name">Mystery</span>
+                        </label>
+                        <label class="style-option">
+                            <input type="radio" name="style" value="romance">
+                            <span class="style-name">Romance</span>
+                        </label>
+                        <label class="style-option">
+                            <input type="radio" name="style" value="adventure">
+                            <span class="style-name">Adventure</span>
+                        </label>
+                        <label class="style-option">
+                            <input type="radio" name="style" value="scifi">
+                            <span class="style-name">Sci-Fi</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="form-btn btn-primary" id="generate-btn">
+                        <i class="fas fa-wand-magic-sparkles"></i> Generate Story
+                    </button>
+                    <button type="button" class="form-btn btn-outline" id="reset-btn">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="results-area" id="story-result">
+            <div class="book-container">
+                <div id="book-3d" class="book-3d book-closed">
+                    <!-- Book cover -->
+                    <div id="book-cover" class="book-cover closed">
+                        <div class="cover-content">
+                            <h1 id="cover-title-text">Your Story</h1> <!-- Changed ID for clarity -->
+                            <h2 id="cover-subtitle-text">A Tale of Imagination</h2> <!-- Changed ID for clarity -->
+                            <div class="cover-decoration"></div>
+                        </div>
+                    </div>
+
+                    <!-- Book spine -->
+                    <div class="book-spine" id="book-spine-text">Your Story</div> <!-- Changed ID for clarity -->
+
+                    <!-- Book back cover -->
+                    <div class="book-back"></div>
+
+                    <!-- Book pages -->
+                    <div class="book-pages" id="book-pages-container"> <!-- Changed ID for clarity -->
+                        <!-- Pages will be dynamically added here -->
+                    </div>
+
+                    <!-- Page turn overlay (for clicking on right side of book to turn page) -->
+                    <div class="page-turn-overlay" id="page-turn-overlay"></div>
+                    <!-- <div class="page-turn-animation" id="page-turn-animation"></div> --> <!-- Optional: for visual flip -->
+                </div>
+            </div>
+
+            <!-- Book navigation -->
+            <div class="book-navigation" id="book-navigation-controls"> <!-- Changed ID for clarity -->
+                <button id="prev-page-btn" class="book-nav-btn" disabled>
+                    <i class="fas fa-arrow-left"></i> Previous
+                </button>
+                <div class="page-counter">
+                    Page <span id="current-page-num">1</span> of <span id="total-pages-num">1</span> <!-- Changed IDs -->
+                </div>
+                <button id="next-page-btn" class="book-nav-btn" disabled>
+                    Next <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- Read button -->
+            <div class="text-center my-3">
+                <button id="read-btn" class="btn btn-primary">
+                    <i class="fas fa-book-open"></i> Open Book
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Font Awesome script (if not using kit.fontawesome.com) -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script> -->
+    <script>
+        // Global variables for DOM elements
+        let storyForm, resetBtn, generateBtn, fileInput, browseBtn, uploadArea, uploadPreview,
+            imageUploadGroup, textPromptGroup, toggleImage, toggleText, loadingOverlay,
+            progressContainer, progressBar,
+            book3d, bookCover, coverTitleText, coverSubtitleText, bookSpineText, bookPagesContainer,
+            prevPageBtn, nextPageBtn, currentPageNum, totalPagesNum, readBtn, pageTurnOverlay,
+            formStoryTitle, formStorySubtitle, textPromptInput;
+
+        let isImageMode = true;
+        let uploadedImages = [];
+        let currentSpreadIndex = 0;
+        let totalSpreadsCount = 0;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Initializing AI Stories page');
+
+            // Initialize DOM elements
+            storyForm = document.getElementById('story-form');
+            resetBtn = document.getElementById('reset-btn');
+            generateBtn = document.getElementById('generate-btn');
+            fileInput = document.getElementById('file-input');
+            browseBtn = document.getElementById('browse-btn');
+            uploadArea = document.getElementById('image-upload-area');
+            uploadPreview = document.getElementById('upload-preview');
+            imageUploadGroup = document.getElementById('image-upload-group');
+            textPromptGroup = document.getElementById('text-prompt-group');
+            toggleImage = document.getElementById('toggle-image');
+            toggleText = document.getElementById('toggle-text');
+            loadingOverlay = document.getElementById('loading-overlay');
+            progressContainer = document.getElementById('progress-container');
+            progressBar = document.getElementById('progress-bar');
+
+            formStoryTitle = document.getElementById('form-story-title');
+            formStorySubtitle = document.getElementById('form-story-subtitle');
+            textPromptInput = document.getElementById('text-prompt');
+
+            // Book elements
+            book3d = document.getElementById('book-3d');
+            bookCover = document.getElementById('book-cover');
+            coverTitleText = document.getElementById('cover-title-text');
+            coverSubtitleText = document.getElementById('cover-subtitle-text');
+            bookSpineText = document.getElementById('book-spine-text');
+            bookPagesContainer = document.getElementById('book-pages-container');
+            prevPageBtn = document.getElementById('prev-page-btn');
+            nextPageBtn = document.getElementById('next-page-btn');
+            currentPageNum = document.getElementById('current-page-num');
+            totalPagesNum = document.getElementById('total-pages-num');
+            readBtn = document.getElementById('read-btn');
+            pageTurnOverlay = document.getElementById('page-turn-overlay');
+
+            if (resetBtn) resetBtn.addEventListener('click', resetForm);
+            if (storyForm) storyForm.addEventListener('submit', handleGenerateStory);
+
+            if (browseBtn && fileInput) {
+                browseBtn.addEventListener('click', () => fileInput.click());
+                fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+            }
+
+            if (uploadArea) {
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(event => {
+                    uploadArea.addEventListener(event, (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    });
+                });
+                ['dragenter', 'dragover'].forEach(event => {
+                    uploadArea.addEventListener(event, () => uploadArea.classList.add('highlight'));
+                });
+                ['dragleave', 'drop'].forEach(event => {
+                    uploadArea.addEventListener(event, () => uploadArea.classList.remove('highlight'));
+                });
+                uploadArea.addEventListener('drop', (e) => handleFiles(e.dataTransfer.files));
+            }
+
+            if (toggleImage) toggleImage.addEventListener('click', () => setMode('image'));
+            if (toggleText) toggleText.addEventListener('click', () => setMode('text'));
+
+            initBookInteractions();
+            setMode('image'); // Default mode
+            showImagePreviews(); // Initial call for empty state
+            console.log('AI Stories initialization complete');
+        });
+
+        function initBookInteractions() {
+            if (prevPageBtn) prevPageBtn.addEventListener('click', () => goToPage('prev'));
+            if (nextPageBtn) nextPageBtn.addEventListener('click', () => goToPage('next'));
+            if (readBtn) {
+                readBtn.addEventListener('click', () => {
+                    animateBookOpening();
+                    goToPage(0); // Go to the first spread (index 0)
+                });
+            }
+            if (pageTurnOverlay) {
+                pageTurnOverlay.addEventListener('click', () => goToPage('next'));
+            }
+        }
+
+        function setMode(mode) {
+            isImageMode = mode === 'image';
+            if (toggleImage) toggleImage.classList.toggle('active', isImageMode);
+            if (toggleText) toggleText.classList.toggle('active', !isImageMode);
+            if (imageUploadGroup) imageUploadGroup.style.display = isImageMode ? 'block' : 'none';
+            if (textPromptGroup) textPromptGroup.style.display = isImageMode ? 'none' : 'block';
+
+            // Update required attributes based on mode
+            if (formStoryTitle) formStoryTitle.required = true; // Title always required
+            if (textPromptInput) textPromptInput.required = !isImageMode;
+            // Image upload doesn't have a single 'required' input, validated in handleGenerateStory
+
+            console.log('Mode switched to:', isImageMode ? 'image' : 'text');
+        }
+
+        function resetForm() {
+            if (storyForm) storyForm.reset();
+            uploadedImages = [];
+            showImagePreviews(); // Clears and updates preview
+
+            const storyResult = document.getElementById('story-result');
+            if (storyResult) storyResult.classList.remove('active');
+
+            setMode('image'); // Reset to default mode
+            if (book3d) book3d.classList.add('book-closed');
+            if (book3d) book3d.classList.remove('book-open');
+            if (bookCover) bookCover.classList.add('closed');
+            if (bookCover) bookCover.classList.remove('open');
+
+            showToast('Form reset successfully', 'info');
+        }
+
+        function handleFiles(files) {
+            if (!files || files.length === 0) return;
+            setMode('image'); // Switch to image mode if files are dropped/selected
+
+            const validFiles = Array.from(files)
+                .filter(file => file.type.startsWith('image/'))
+                .slice(0, 5 - uploadedImages.length); // Limit total to 5
+
+            if (validFiles.length === 0 && files.length > 0) {
+                showToast('Please upload image files (JPG, PNG, GIF). Max 5 images.', 'warning');
+                return;
+            }
+            if (validFiles.length === 0) return;
+
+            if (progressContainer) progressContainer.style.display = 'block';
+            if (progressBar) progressBar.style.width = '0%';
+            if (progressBar) progressBar.textContent = '0%';
+
+
+            let filesProcessed = 0;
+            validFiles.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedImages.push({
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                        dataUrl: e.target.result
+                    });
+                    filesProcessed++;
+                    let currentProgress = (filesProcessed / validFiles.length) * 100;
+                    if (progressBar) progressBar.style.width = `${currentProgress}%`;
+                    if (progressBar) progressBar.textContent = `${Math.round(currentProgress)}%`;
+
+                    if (filesProcessed === validFiles.length) {
+                        showImagePreviews();
+                        setTimeout(() => {
+                            if (progressContainer) progressContainer.style.display = 'none';
+                        }, 500);
+                        showToast(`${validFiles.length} image(s) added. Total: ${uploadedImages.length}`, 'success');
+                    }
+                };
+                reader.onerror = () => {
+                    filesProcessed++; // Count as processed even on error
+                     if (progressBar) progressBar.style.width = `${(filesProcessed / validFiles.length) * 100}%`;
+                    console.error('Error reading file:', file.name);
+                    if (filesProcessed === validFiles.length) {
+                         if (progressContainer) progressContainer.style.display = 'none';
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function showImagePreviews() {
+            if (!uploadPreview) return;
+            uploadPreview.innerHTML = ''; // Clear existing previews
+
+            if (uploadedImages.length === 0) {
+                const noImagesMsg = document.createElement('div');
+                noImagesMsg.textContent = 'No images uploaded yet.';
+                noImagesMsg.style.textAlign = 'center';
+                noImagesMsg.style.width = '100%';
+                noImagesMsg.style.padding = '1rem';
+                noImagesMsg.style.color = 'var(--gray-500)';
+                uploadPreview.appendChild(noImagesMsg);
+            } else {
+                uploadedImages.forEach((image, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'upload-preview-item';
+
+                    const img = document.createElement('img');
+                    img.src = image.dataUrl;
+                    img.alt = image.name;
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.innerHTML = '&times;';
+                    removeBtn.title = 'Remove image';
+                    removeBtn.style.cssText = `position:absolute; top:5px; right:5px; background:rgba(0,0,0,0.6); color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; line-height:20px; text-align:center; font-size:14px;`;
+                    removeBtn.onclick = (e) => {
+                        e.preventDefault();
+                        uploadedImages.splice(index, 1);
+                        showImagePreviews(); // Refresh previews
+                        showToast('Image removed', 'info');
+                    };
+
+                    item.appendChild(img);
+                    item.appendChild(removeBtn);
+                    uploadPreview.appendChild(item);
+                });
+            }
+            if (browseBtn) browseBtn.disabled = uploadedImages.length >= 5;
+            if (fileInput) fileInput.disabled = uploadedImages.length >= 5;
+        }
+
+        function handleGenerateStory(event) {
+            if (event) event.preventDefault();
+            if (!storyForm.checkValidity()) {
+                storyForm.reportValidity();
+                showToast('Please fill in all required fields.', 'error');
+                return;
+            }
+
+            const title = formStoryTitle.value.trim();
+            const subtitle = formStorySubtitle.value.trim();
+            const textPrompt = textPromptInput.value.trim();
+
+            if (!title) {
+                showToast('Please enter a story title', 'error');
+                return;
+            }
+
+            if (isImageMode && uploadedImages.length === 0) {
+                showToast('Please upload at least one image for image mode', 'error');
+                return;
+            }
+            if (!isImageMode && !textPrompt) {
+                showToast('Please enter a story description for text mode', 'error');
+                return;
+            }
+             if (!isImageMode && textPrompt.length < 10) {
+                showToast('Please provide a more detailed description (at least 10 characters).', 'warning');
+                return;
+            }
+
+            if (loadingOverlay) loadingOverlay.classList.add('active');
+
+            const styleOptions = document.querySelector('input[name="style"]:checked');
+            const selectedStyle = styleOptions ? styleOptions.value : 'fantasy';
+
+            // Mock API call
+            setTimeout(() => {
+                const story = {
+                    title: title,
+                    subtitle: subtitle || `A ${selectedStyle} Tale`,
+                    style: selectedStyle,
+                    intro: `In a realm of ${selectedStyle}, where ${title} was whispered in hushed tones, our story begins. ${subtitle ? 'It was subtitled "' + subtitle + '".' : ''}`,
+                    content: [
+                        `The air crackled with anticipation, a classic sign in any ${selectedStyle} adventure. Characters moved with purpose, their destinies intertwined with the fate of ${title}.`,
+                        `Page after page, the narrative unfolded. ${isImageMode && uploadedImages.length > 0 ? 'Visions inspired by your images danced within the words.' : 'The prompt you provided painted vivid scenes: "' + textPrompt.substring(0,50) + '..."'}`,
+                        `Mysteries deepened, romances blossomed, or perhaps spaceships soared, all depending on the chosen ${selectedStyle} path. The core of the story, ${title}, remained central.`,
+                        `Challenges arose, testing the mettle of our protagonists. Each paragraph built upon the last, weaving a rich tapestry of events.`,
+                        `The climax approached, a culmination of all that had transpired in this ${selectedStyle} world. Would ${title} find its resolution?`
+                    ],
+                    conclusion: `And so, with a final flourish, the story of ${title} reached its end, leaving echoes in the ${selectedStyle} landscape. The tale was told.`,
+                    images: uploadedImages // Pass uploaded images to the story object
+                };
+
+                updateBookWithStory(story);
+
+                const storyResult = document.getElementById('story-result');
+                if (storyResult) {
+                    storyResult.classList.add('active');
+                    storyResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+
+                animateBookOpening(); // Automatically open the book
+
+                if (loadingOverlay) loadingOverlay.classList.remove('active');
+                showToast('Story generated successfully!', 'success');
+            }, 2000);
+        }
+
+        function updateBookWithStory(story) {
+            if (coverTitleText) coverTitleText.textContent = story.title;
+            if (coverSubtitleText) coverSubtitleText.textContent = story.subtitle || 'A Tale of Imagination';
+            if (bookSpineText) bookSpineText.textContent = story.title.substring(0, 20) + (story.title.length > 20 ? '...' : ''); // Spine text limit
+
+            document.documentElement.style.setProperty('--book-color', getRandomBookColor());
+            document.documentElement.style.setProperty('--book-spine', getRandomBookColor(0.8));
+
+            if (!bookPagesContainer) return;
+            bookPagesContainer.innerHTML = ''; // Clear existing pages
+
+            const pagesContent = [story.intro, ...story.content, story.conclusion];
+            totalSpreadsCount = Math.ceil(pagesContent.length / 2);
+            let contentIndex = 0;
+
+            for (let i = 0; i < totalSpreadsCount; i++) {
+                const spread = document.createElement('div');
+                spread.className = 'book-page-spread';
+                spread.dataset.spreadIndex = i;
+
+                const leftPage = document.createElement('div');
+                leftPage.className = 'page-left';
+                const leftPageContent = document.createElement('div');
+                leftPageContent.className = 'page-content';
+                if (contentIndex < pagesContent.length) {
+                    leftPageContent.innerHTML = `<p>${pagesContent[contentIndex++]}</p>`;
+                }
+                leftPage.appendChild(leftPageContent);
+
+                const rightPage = document.createElement('div');
+                rightPage.className = 'page-right';
+                const rightPageContent = document.createElement('div');
+                rightPageContent.className = 'page-content';
+                if (contentIndex < pagesContent.length) {
+                    // Add image to the first right page if available
+                    if (i === 0 && story.images && story.images.length > 0) {
+                        const imgEl = document.createElement('img');
+                        imgEl.src = story.images[0].dataUrl;
+                        imgEl.alt = story.title + " illustration";
+                        imgEl.className = 'page-image';
+                        rightPageContent.appendChild(imgEl);
+                    }
+                    rightPageContent.innerHTML += `<p>${pagesContent[contentIndex++]}</p>`;
+                }
+                rightPage.appendChild(rightPageContent);
+
+                spread.appendChild(leftPage);
+                spread.appendChild(rightPage);
+                bookPagesContainer.appendChild(spread);
+            }
+
+            currentSpreadIndex = 0; // Reset to first spread
+            goToPage(currentSpreadIndex); // Display the first spread and update nav
+        }
+
+        function animateBookOpening() {
+            if (!book3d || !bookCover) {
+                console.error('Book 3D or Book Cover element not found for animation.');
+                return;
+            }
+            // If already open and trying to re-animate, close it first for effect
+            if (book3d.classList.contains('book-open')) {
+                book3d.classList.remove('book-open');
+                bookCover.classList.remove('open');
+                book3d.classList.add('book-closed');
+                bookCover.classList.add('closed');
+                void book3d.offsetWidth; // Force reflow
+            }
+
+            setTimeout(() => {
+                book3d.classList.remove('book-closed');
+                book3d.classList.add('book-open');
+                bookCover.classList.remove('closed');
+                bookCover.classList.add('open');
+                console.log('Book opened/re-opened');
+            }, 50);
+        }
+
+        function goToPage(directionOrIndex) {
+            const spreads = bookPagesContainer.querySelectorAll('.book-page-spread');
+            if (spreads.length === 0) return;
+
+            let targetIndex = currentSpreadIndex;
+            if (directionOrIndex === 'prev') {
+                targetIndex = Math.max(0, currentSpreadIndex - 1);
+            } else if (directionOrIndex === 'next') {
+                targetIndex = Math.min(totalSpreadsCount - 1, currentSpreadIndex + 1);
+            } else if (typeof directionOrIndex === 'number') {
+                targetIndex = Math.max(0, Math.min(totalSpreadsCount - 1, directionOrIndex));
+            }
+
+            if (targetIndex === currentSpreadIndex && spreads[targetIndex] && spreads[targetIndex].classList.contains('active') && directionOrIndex !== 0) {
+                 // No change if already on the target page (unless explicitly navigating to index 0)
+                return;
+            }
+
+            spreads.forEach((s, idx) => {
+                s.classList.toggle('active', idx === targetIndex);
+            });
+            currentSpreadIndex = targetIndex;
+            updatePageNavigationControls();
+        }
+
+        function updatePageNavigationControls() {
+            if (currentPageNum) currentPageNum.textContent = totalSpreadsCount > 0 ? currentSpreadIndex + 1 : 0;
+            if (totalPagesNum) totalPagesNum.textContent = totalSpreadsCount;
+            if (prevPageBtn) prevPageBtn.disabled = currentSpreadIndex === 0;
+            if (nextPageBtn) nextPageBtn.disabled = currentSpreadIndex >= totalSpreadsCount - 1;
+        }
+
+        function getRandomBookColor(opacity = 1) {
+            const colors = ["139,69,19", "128,0,0", "25,25,112", "0,100,0", "72,61,139", "47,79,79"];
+            return `rgba(${colors[Math.floor(Math.random() * colors.length)]}, ${opacity})`;
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('hide');
+                toast.addEventListener('animationend', () => toast.remove());
+            }, 3000);
+        }
+    </script>
+</body>

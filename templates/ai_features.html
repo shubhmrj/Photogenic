@@ -1,0 +1,3645 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Driven Features - PhotoGenic</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Modern Pro AI Features UI */
+        :root {
+            --primary: #e0e0e0;
+            --primary-rgb: 224, 224, 224;
+            --primary-dark: #bbbbbb;
+            --primary-light: #2d2d2d;
+            --secondary: #444444;
+            --secondary-rgb: 68, 68, 68;
+            --accent: #ffffff;
+            --accent-rgb: 255, 255, 255;
+            --text-color: #e0e0e0;
+            --text-main: #ffffff;
+            --secondary-text: #aaaaaa;
+            --bg-main: #121212;
+            --bg-card: #1a1a1a;
+            --bg-secondary: #252525;
+            --border-color: #333333;
+            --error: #ff5555;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --info: #2196f3;
+            --font-main: 'Poppins', sans-serif;
+            --heading-color: #ffffff;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+        
+        /* Dark mode colors */
+        body.dark-mode {
+            --bg-main: #121212;
+            --text-main: #e0e0e0;
+            --card-bg: #1a1a1a;
+            --header-bg: #1a1a1a;
+            --gray-100: #1a1a1a;
+            --gray-200: #2c2c2c;
+            --gray-300: #333333;
+            --gray-700: #bbbbbb;
+            --gray-800: #dddddd;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        /* === Header Styling === */
+        .header {
+            background-color: var(--header-bg);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            transition: var(--transition);
+        }
+
+        .header.scrolled {
+            padding: 0.5rem 1.5rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--dark);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            color: var(--primary);
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 1.6rem;
+        }
+
+        /* === Content Area === */
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #121212;
+            box-shadow: none;
+            backdrop-filter: none;
+        }
+
+        /* === Button Styling === */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.65rem 1.4rem;
+            border-radius: var(--radius);
+            border: none;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            white-space: nowrap;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            z-index: 1;
+        }
+
+        .btn i {
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.4s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.2), 0 5px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover:before {
+            opacity: 1;
+        }
+
+        .btn:hover i {
+            transform: translateX(3px);
+        }
+
+        .btn:active {
+            transform: translateY(1px) scale(0.98);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Ripple effect */
+        .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Loading state */
+        .btn.loading {
+            position: relative;
+            color: transparent !important;
+            pointer-events: none;
+        }
+
+        .btn.loading::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn.loading::before {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: calc(50% - 10px);
+            left: calc(50% - 10px);
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* === AI Features Showcase === */
+        .ai-features-container {
+            margin-top: 2rem;
+        }
+
+        .ai-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            padding: 1rem;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(10px);
+        }
+
+        .ai-site-tag {
+            color: var(--gray-600);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .ai-site-tag::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 1px;
+            background-color: var(--gray-300);
+        }
+
+        .ai-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+            color: var(--dark);
+        }
+
+        .ai-title span {
+            color: var(--primary);
+        }
+
+        .ai-search {
+            margin-top: 1.5rem;
+            width: 100%;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+        }
+
+        .ai-search input {
+            flex: 1;
+            border: none;
+            padding: 0.5rem;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            outline: none;
+            color: var(--gray-800);
+            background: transparent;
+        }
+
+        .ai-search-icon {
+            color: var(--gray-500);
+            margin-right: 0.5rem;
+        }
+
+        .ai-features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        box-shadow 0.4s ease,
+                        background-color 0.3s ease;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            will-change: transform, box-shadow;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+        }
+        
+        .feature-card:active {
+            transform: translateY(-4px) scale(0.98);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .premium-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 0;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 2;
+        }
+        
+        .premium-badge::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.3) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shimmer 3s infinite;
+            will-change: transform;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(30deg); }
+            100% { transform: translateX(100%) rotate(30deg); }
+        }
+
+        .feature-image {
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .feature-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .feature-card:hover .feature-image img {
+            transform: scale(1.05);
+        }
+
+        .feature-like {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: rgba(255, 255, 255, 0.8);
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            color: var(--gray-500);
+        }
+
+        .feature-like:hover,
+        .feature-like.liked {
+            background-color: white;
+            color: var(--danger);
+            box-shadow: var(--shadow);
+        }
+
+        .feature-details {
+            padding: 1.5rem;
+            flex: 1;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #a07955; /* Premium brown color */
+            margin-bottom: 1rem;
+        }
+
+        .feature-description {
+            color: var(--gray-700);
+            line-height: 1.6;
+            margin-bottom: 1.2rem;
+        }
+
+        .feature-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-tag {
+            font-size: 0.85rem;
+            color: var(--gray-700);
+            background-color: var(--gray-100);
+            padding: 0.3rem 0.7rem;
+            border-radius: 50px;
+        }
+
+        .feature-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .feature-time {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+
+        .feature-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-left: auto;
+        }
+
+        .feature-rating-score {
+            color: var(--gray-800);
+            font-weight: 500;
+        }
+
+        .feature-rating-icon {
+            color: var(--accent);
+        }
+
+        /* === Action Button === */
+        .feature-action {
+            padding: 0 1.5rem 1.5rem;
+            margin-top: auto;
+        }
+
+        .feature-action .btn {
+            width: 100%;
+            border: 1px solid #a07955;
+            color: #a07955;
+            background-color: transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-action .btn:hover {
+            background-color: #a07955;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(160, 121, 85, 0.3);
+        }
+        
+        .feature-action .btn:active {
+            transform: translateY(0);
+        }
+        
+        .feature-action .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .feature-action .btn:hover::after {
+            left: 100%;
+        }
+
+        /* Add category filters */
+        .ai-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 30px;
+            max-width: 1200px;
+            margin: 0 auto 40px;
+            padding: 0 20px;
+        }
+        
+        .filter-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-color);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-radius: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--text-color);
+        }
+        
+        .filter-btn i {
+            font-size: 0.9rem;
+        }
+
+        /* === Status Bar === */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #0a0a0a;
+            border-top: 1px solid #333;
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #aaa;
+            z-index: 100;
+            transition: var(--transition);
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #aaa;
+        }
+        
+        .status-item i {
+            font-size: 0.9rem;
+        }
+        
+        .status-section {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        /* === Keyboard Shortcuts Modal === */
+        .shortcuts-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            backdrop-filter: blur(3px);
+        }
+        
+        .shortcuts-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .shortcuts-content {
+            background-color: rgba(26, 26, 26, 0.98);
+            border-radius: 0;
+            border: 1px solid #333;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 2rem;
+            animation: modalIn 0.3s forwards;
+        }
+        
+        @keyframes modalIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .shortcuts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--gray-300);
+            padding-bottom: 1rem;
+        }
+        
+        .shortcuts-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin: 0;
+        }
+        
+        .close-shortcuts {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-600);
+            transition: var(--transition);
+        }
+        
+        .close-shortcuts:hover {
+            color: var(--danger);
+        }
+        
+        .shortcuts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .shortcut-category {
+            margin-bottom: 1.5rem;
+        }
+        
+        .shortcut-category-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+        
+        .shortcut-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .shortcut-keys {
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+        .key {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            color: #e0e0e0;
+            text-transform: uppercase;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        /* === Toast notifications === */
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-width: 350px;
+        }
+        
+        .toast {
+            background-color: rgba(26, 26, 26, 0.95);
+            border-left: none;
+            border-radius: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: toastIn 0.3s forwards;
+        }
+        
+        @keyframes toastIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .toast-icon {
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+        
+        .toast-content {
+            flex: 1;
+        }
+        
+        .toast-title {
+            font-weight: 600;
+            margin: 0 0 0.25rem 0;
+        }
+        
+        .toast-message {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            margin: 0;
+        }
+        
+        .close-toast {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--gray-500);
+            transition: var(--transition);
+        }
+        
+        .close-toast:hover {
+            color: var(--gray-700);
+        }
+        
+        /* === Command palette styles === */
+        .command-palette-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 3000;
+            display: flex;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+        }
+        
+        .command-palette-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .command-palette {
+            position: relative;
+            top: 20%;
+            width: 600px;
+            max-width: 90%;
+            background-color: rgba(26, 26, 26, 0.98);
+            border-radius: 0;
+            border: 1px solid #333;
+            overflow: hidden;
+            transform: translateY(-20px);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .command-palette-overlay.active .command-palette {
+            transform: translateY(0);
+        }
+        
+        .command-input-wrapper {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid var(--gray-300);
+        }
+        
+        .command-input-icon {
+            color: var(--gray-600);
+            margin-right: 12px;
+            font-size: 1.2rem;
+        }
+        
+        .command-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            color: var(--text-main);
+            outline: none;
+            padding: 8px 0;
+        }
+        
+        .command-input::placeholder {
+            color: var(--gray-500);
+        }
+        
+        .command-results {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        
+        .command-group {
+            padding: 8px 0;
+        }
+        
+        .command-group-title {
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            text-transform: uppercase;
+        }
+        
+        .command-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+        
+        .command-item:hover, .command-item.selected {
+            background-color: var(--gray-200);
+        }
+        
+        .command-item-icon {
+            width: 32px;
+            text-align: center;
+            color: var(--gray-600);
+            margin-right: 12px;
+        }
+        
+        .command-item-content {
+            flex: 1;
+        }
+        
+        .command-item-title {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .command-item-subtitle {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+        
+        .command-item-shortcut {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .command-item-shortcut .key {
+            padding: 1px 6px;
+            font-size: 0.7rem;
+        }
+        
+        /* === Context Menu === */
+        .context-menu {
+            position: fixed;
+            z-index: 3500;
+            background-color: rgba(26, 26, 26, 0.98);
+            border-radius: 0;
+            border: 1px solid #333;
+            padding: 8px 0;
+            min-width: 220px;
+            opacity: 0;
+            transform: scale(0.95);
+            transform-origin: top left;
+            pointer-events: none;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+        
+        .context-menu.active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+        
+        .context-menu-item {
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+            color: var(--text-main);
+        }
+        
+        .context-menu-item:hover {
+            background-color: var(--gray-200);
+        }
+        
+        .context-menu-icon {
+            width: 20px;
+            margin-right: 12px;
+            color: var(--gray-600);
+            text-align: center;
+        }
+        
+        .context-menu-text {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+        
+        .context-menu-divider {
+            height: 1px;
+            background-color: var(--gray-300);
+            margin: 6px 0;
+        }
+        
+        /* === Feature Comparison === */
+        .comparison-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .comparison-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .comparison-modal {
+            background-color: rgba(26, 26, 26, 0.98);
+            border-radius: 0;
+            border: 1px solid #333;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .comparison-overlay.active .comparison-modal {
+            transform: translateY(0);
+        }
+        
+        .comparison-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-300);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .comparison-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin: 0;
+        }
+        
+        .comparison-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-600);
+        }
+        
+        .comparison-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .comparison-table th {
+            text-align: left;
+            padding: 12px 20px;
+            background-color: var(--gray-200);
+            color: var(--text-main);
+            font-weight: 500;
+            border-bottom: 2px solid var(--gray-300);
+        }
+        
+        .comparison-table td {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--gray-300);
+            color: var(--text-main);
+        }
+        
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+        
+        .feature-check {
+            color: var(--secondary);
+            font-size: 1.2rem;
+        }
+        
+        .feature-cross {
+            color: var(--gray-500);
+            font-size: 1.2rem;
+        }
+        
+        .feature-star {
+            color: var(--accent);
+            font-size: 1rem;
+        }
+        
+        /* === Feature badges === */
+        .feature-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        
+        .badge-new {
+            background: linear-gradient(135deg, #6366F1, #4F46E5);
+            color: white;
+        }
+        
+        .badge-premium {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: white;
+        }
+        
+        .badge-beta {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+        }
+        
+        /* === Progress/activity feed === */
+        .activity-feed {
+            position: fixed;
+            bottom: 40px;
+            right: 20px;
+            width: 300px;
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: rgba(26, 26, 26, 0.98);
+            border: 1px solid #333;
+            border-radius: 0;
+            z-index: 1100;
+            display: flex;
+            flex-direction: column;
+            padding: 12px 0;
+            transform: translateY(120%);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .activity-feed.active {
+            transform: translateY(0);
+        }
+        
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px 8px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--gray-300);
+        }
+        
+        .activity-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            margin: 0;
+        }
+        
+        .activity-close {
+            background: none;
+            border: none;
+            color: var(--gray-600);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .activity-item {
+            padding: 10px 16px;
+            display: flex;
+            align-items: flex-start;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+            font-size: 0.8rem;
+            color: white;
+        }
+        
+        .activity-icon.info {
+            background-color: var(--primary);
+        }
+        
+        .activity-icon.success {
+            background-color: var(--secondary);
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-event {
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+            color: var(--text-main);
+        }
+        
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+        }
+        
+        .activity-toggle {
+            position: fixed;
+            bottom: 40px;
+            right: 20px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            z-index: 1200;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        
+        .activity-toggle:hover {
+            transform: scale(1.05);
+            background-color: var(--primary-dark);
+        }
+        
+        .activity-counter {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* === Tooltip styles === */
+        [data-tooltip] {
+            position: relative;
+        }
+
+        [data-tooltip]::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-5px);
+            padding: 5px 10px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+
+        [data-tooltip]:hover::before {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-10px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Navigation Menu -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <header class="header">
+        <a href="/" class="logo">
+            <i class="fas fa-camera"></i>
+            <span>PhotoGenic</span>
+        </a>
+
+         </header>
+            <a href="/" class="menu-link">Home</a>
+            <a href="/about" class="menu-link">About</a>
+            <a href="/book-now" class="menu-link book-now">Collection</a>
+<!--            <a href="/gallery" class="menu-link">Gallery</a>-->
+            <a href="/blog" class="menu-link">Blog</a>
+            <a href="/contact" class="menu-link">Contact</a>
+<!--            <div class="header-actions">-->
+            <button id="theme-toggle" class="btn">
+                <i class="fas fa-moon"></i>
+            </button>
+
+        </div>
+    </nav>
+    
+    <style>
+        /* Main Navigation Menu Styling */
+        .main-nav {
+            background-color: rgba(84, 88, 82, 0.95);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+        }
+        
+        .menu-link {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.05rem;
+            font-weight: 400;
+            transition: color 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+        
+        .menu-link:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .book-now {
+            border: 2px solid #fff;
+            border-radius: 50px;
+            padding: 10px 30px;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+                padding: 10px;
+            }
+        }
+    </style>
+    
+    <!-- Pro Header with Modern UI -->
+
+
+    <main class="content">
+        <!-- AI Features Header -->
+        <div class="ai-header">
+            <div class="ai-site-tag">@PhotoGenic</div>
+            <h1 class="ai-title">TO <span>GROW AND GAIN</span></h1>
+            <p class="ai-description">You have to overcome the fear of failure and struggles while you are at it to win the race</p>
+            
+            <!-- Inspirational Quote Section -->
+            <div class="inspirational-quote">
+                <div class="quote-image">
+                    <img src="https://images.unsplash.com/photo-1510784722466-f2aa9c52fff6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80" width="800px" height="500px" alt="Silhouette in window">
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="ai-filters">
+            <button class="filter-btn active" data-filter="all">
+                <i class="fas fa-th-large"></i>
+                <span>All Features</span>
+            </button>
+            <button class="filter-btn" data-filter="text">
+                <i class="fas fa-font"></i>
+                <span>Text</span>
+            </button>
+            <button class="filter-btn" data-filter="visual">
+                <i class="fas fa-image"></i>
+                <span>Visual</span>
+            </button>
+            <button class="filter-btn" data-filter="animation">
+                <i class="fas fa-film"></i>
+                <span>Animation</span>
+            </button>
+            <button class="filter-btn" data-filter="premium">
+                <i class="fas fa-crown"></i>
+                <span>Premium Only</span>
+            </button>
+        </div>
+        
+        <!-- AI Features Grid -->
+        <div class="ai-features-section">
+            <h2 class="section-title">Our AI Features</h2>
+            <p class="section-description">Explore our powerful AI-driven tools designed to enhance your creative workflow</p>
+            
+            <!-- AI Features in Row Layout -->
+            <div class="features-row">
+                <!-- AI Stories Feature -->
+                <div class="feature-row-item" id="stories-card" data-categories="text premium">
+                    <div class="feature-image">
+                        <img src="https://images.unsplash.com/photo-1519791883288-dc8bd696e667?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8c3Rvcnl8ZW58MHx8MHx8&auto=format&fit=crop&w=600&q=60" style="margin-right: 20px;" alt="AI Stories">
+                        <div class="premium-badge">Premium</div>
+                    </div>
+                    <div class="feature-content">
+                        <h3 class="feature-title">AI Stories</h3>
+                        <p class="feature-description">Generate compelling narratives with our cutting-edge AI storytelling technology. Turn your ideas into rich, detailed stories with just a few prompts.</p>
+                        <div class="feature-details">
+                            <div class="feature-tags">
+                                <span class="feature-tag">AI-powered</span>
+                                <span class="feature-tag">Creative</span>
+                                <span class="feature-tag">Writing</span>
+                            </div>
+                            <div class="feature-meta">
+                                <div class="feature-time">
+                                    <i class="fas fa-clock"></i>
+                                    <span>20 sec</span>
+                                </div>
+                                <div class="feature-rating">
+                                    <i class="fas fa-star feature-rating-icon"></i>
+                                    <span class="feature-rating-score">4.8</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="feature-action">
+                            <a href="/ai-stories" class="btn btn-interactive ripple-effect" data-action="try">
+                                <span>Generate Stories</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Image Generation -->
+                <div class="feature-row-item" id="image-card" data-categories="visual">
+                    <div class="feature-image">
+                        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8YWJzdHJhY3R8ZW58MHx8MHx8&auto=format&fit=crop&w=600&q=60" alt="AI Image Generation">
+                    </div>
+                    <div class="feature-content">
+                        <h3 class="feature-title">AI Image Generation</h3>
+                        <p class="feature-description">Create stunning, unique images from text prompts using state-of-the-art AI technology. Perfect for illustrations, concept art, or creative inspiration.</p>
+                        <div class="feature-details">
+                            <div class="feature-tags">
+                                <span class="feature-tag">AI-powered</span>
+                                <span class="feature-tag">Visual</span>
+                                <span class="feature-tag">Creative</span>
+                            </div>
+                            <div class="feature-meta">
+                                <div class="feature-time">
+                                    <i class="fas fa-clock"></i>
+                                    <span>30 sec</span>
+                                </div>
+                                <div class="feature-rating">
+                                    <i class="fas fa-star feature-rating-icon"></i>
+                                    <span class="feature-rating-score">4.9</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="feature-action">
+                            <a href="/ai-image-generation" class="btn btn-interactive ripple-effect" data-action="try">
+                                <span>Generate Images</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Animation -->
+                <div class="feature-row-item" id="animation-card" data-categories="visual animation premium">
+                    <div class="feature-image">
+                        <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8YW5pbWF0aW9ufGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=600&q=60" alt="AI Animation">
+                        <div class="premium-badge">Premium</div>
+                    </div>
+                    <div class="feature-content">
+                        <h3 class="feature-title">AI Animation</h3>
+                        <p class="feature-description">Bring your photos to life with stunning motion effects and transitions. Our AI-powered animation tools add natural movement to static images, creating engaging content with minimal effort.</p>
+                        <div class="feature-details">
+                            <div class="feature-tags">
+                                <span class="feature-tag">AI-powered</span>
+                                <span class="feature-tag">Motion</span>
+                                <span class="feature-tag">Dynamic</span>
+                            </div>
+                            <div class="feature-meta">
+                                <div class="feature-time">
+                                    <i class="fas fa-clock"></i>
+                                    <span>1 min</span>
+                                </div>
+                                <div class="feature-rating">
+                                    <i class="fas fa-star feature-rating-icon"></i>
+                                    <span class="feature-rating-score">4.7</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="feature-action">
+                            <a href="/ai-animation" class="btn btn-interactive ripple-effect" data-action="try">
+                                <span>Create Animation</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast container -->
+    <div id="toast-container"></div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-section">
+            <div class="status-item">
+                <i class="fas fa-code-branch"></i>
+                <span id="branch-info">main</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-server"></i>
+                <span id="api-status">API: Connected</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-brain"></i>
+                <span id="ai-model">GPT-3.5</span>
+            </div>
+        </div>
+        <div class="status-section">
+            <div class="status-item">
+                <i class="fas fa-keyboard"></i>
+                <span>Press ? for shortcuts</span>
+            </div>
+            <div class="status-item">
+                <i class="far fa-clock"></i>
+                <span id="current-time">--:--:--</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Keyboard Shortcuts Modal -->
+    <div class="shortcuts-modal" id="shortcuts-modal">
+        <div class="shortcuts-content">
+            <div class="shortcuts-header">
+                <h3 class="shortcuts-title">Keyboard Shortcuts</h3>
+                <button class="close-shortcuts" id="close-shortcuts">×</button>
+            </div>
+            <div class="shortcuts-grid">
+                <div class="shortcut-category">
+                    <h4 class="shortcut-category-title">Navigation</h4>
+                    <div class="shortcut-item">
+                        <span>Go to Home</span>
+                        <div class="shortcut-keys">
+                            <span class="key">H</span>
+                        </div>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>Go to Collections</span>
+                        <div class="shortcut-keys">
+                            <span class="key">C</span>
+                        </div>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>Search</span>
+                        <div class="shortcut-keys">
+                            <span class="key">/</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="shortcut-category">
+                    <h4 class="shortcut-category-title">Features</h4>
+                    <div class="shortcut-item">
+                        <span>AI Stories</span>
+                        <div class="shortcut-keys">
+                            <span class="key">Alt</span>
+                            <span class="key">S</span>
+                        </div>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>AI Image Generation</span>
+                        <div class="shortcut-keys">
+                            <span class="key">Alt</span>
+                            <span class="key">I</span>
+                        </div>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>AI Animation</span>
+                        <div class="shortcut-keys">
+                            <span class="key">Alt</span>
+                            <span class="key">A</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="shortcut-category">
+                    <h4 class="shortcut-category-title">UI</h4>
+                    <div class="shortcut-item">
+                        <span>Toggle Dark Mode</span>
+                        <div class="shortcut-keys">
+                            <span class="key">Alt</span>
+                            <span class="key">D</span>
+                        </div>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>Show Shortcuts</span>
+                        <div class="shortcut-keys">
+                            <span class="key">?</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Command Palette -->
+    <div class="command-palette-overlay" id="command-palette-overlay">
+        <div class="command-palette">
+            <div class="command-input-wrapper">
+                <div class="command-input-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <input type="text" class="command-input" id="command-input" placeholder="Type a command or search..." autofocus>
+            </div>
+            <div class="command-results" id="command-results">
+                <div class="command-group">
+                    <div class="command-group-title">Features</div>
+                    <div class="command-item" data-action="navigate" data-url="/ai-stories">
+                        <div class="command-item-icon"><i class="fas fa-book"></i></div>
+                        <div class="command-item-content">
+                            <div class="command-item-title">AI Stories</div>
+                            <div class="command-item-description">Generate AI-powered stories</div>
+                        </div>
+                        <div class="command-item-shortcut">
+                            <span class="key">S</span>
+                        </div>
+                    </div>
+                    <div class="command-item" data-action="navigate" data-url="/ai-image-generation">
+                        <div class="command-item-icon"><i class="fas fa-image"></i></div>
+                        <div class="command-item-content">
+                            <div class="command-item-title">AI Image Generation</div>
+                            <div class="command-item-description">Generate images with AI</div>
+                        </div>
+                        <div class="command-item-shortcut">
+                            <span class="key">I</span>
+                        </div>
+                    </div>
+                    <div class="command-item" data-action="navigate" data-url="/ai-animation">
+                        <div class="command-item-icon"><i class="fas fa-film"></i></div>
+                        <div class="command-item-content">
+                            <div class="command-item-title">AI Animation</div>
+                            <div class="command-item-description">Create animations with AI</div>
+                        </div>
+                        <div class="command-item-shortcut">
+                            <span class="key">A</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="command-group">
+                    <div class="command-group-title">Actions</div>
+                    <div class="command-item" data-action="theme">
+                        <div class="command-item-icon"><i class="fas fa-moon"></i></div>
+                        <div class="command-item-content">
+                            <div class="command-item-title">Toggle Dark Mode</div>
+                            <div class="command-item-description">Switch between light and dark themes</div>
+                        </div>
+                        <div class="command-item-shortcut">
+                            <span class="key">Alt</span>
+                            <span class="key">D</span>
+                        </div>
+                    </div>
+                    <div class="command-item" data-action="help">
+                        <div class="command-item-icon"><i class="fas fa-question-circle"></i></div>
+                        <div class="command-item-content">
+                            <div class="command-item-title">View Keyboard Shortcuts</div>
+                            <div class="command-item-description">Display all available keyboard shortcuts</div>
+                        </div>
+                        <div class="command-item-shortcut">
+                            <span class="key">?</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Context Menu -->
+    <div class="context-menu" id="context-menu">
+        <div class="context-menu-item" data-action="open">
+            <div class="context-menu-icon"><i class="fas fa-external-link-alt"></i></div>
+            <div class="context-menu-text">Open Feature</div>
+        </div>
+        <div class="context-menu-item" data-action="compare">
+            <div class="context-menu-icon"><i class="fas fa-columns"></i></div>
+            <div class="context-menu-text">Compare Features</div>
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" data-action="favorite">
+            <div class="context-menu-icon"><i class="far fa-heart"></i></div>
+            <div class="context-menu-text">Add to Favorites</div>
+        </div>
+        <div class="context-menu-item" data-action="share">
+            <div class="context-menu-icon"><i class="fas fa-share-alt"></i></div>
+            <div class="context-menu-text">Share Feature</div>
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" data-action="feedback">
+            <div class="context-menu-icon"><i class="fas fa-comment-alt"></i></div>
+            <div class="context-menu-text">Send Feedback</div>
+        </div>
+    </div>
+    
+    <!-- Feature Comparison Modal -->
+    <div class="comparison-overlay" id="comparison-overlay">
+        <div class="comparison-modal">
+            <div class="comparison-header">
+                <h3 class="comparison-title">Feature Comparison</h3>
+                <button class="comparison-close" id="comparison-close">×</button>
+            </div>
+            <div class="comparison-content">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>AI Stories</th>
+                            <th>AI Image Generation</th>
+                            <th>AI Animation</th>
+                            <th>Style Transfer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Text to Creative Content</td>
+                            <td><i class="fas fa-check feature-check"></i></td>
+                            <td><i class="fas fa-check feature-check"></i></td>
+                            <td><i class="fas fa-check feature-check"></i></td>
+                            <td><i class="fas fa-times feature-cross"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Visual Output</td>
+                            <td><i class="fas fa-times feature-cross"></i></td>
+                            <td><i class="fas fa-check feature-check"></i> <i class="fas fa-star feature-star"></i></td>
+                            <td><i class="fas fa-check feature-check"></i> <i class="fas fa-star feature-star"></i></td>
+                            <td><i class="fas fa-check feature-check"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Motion/Animation</td>
+                            <td><i class="fas fa-times feature-cross"></i></td>
+                            <td><i class="fas fa-times feature-cross"></i></td>
+                            <td><i class="fas fa-check feature-check"></i> <i class="fas fa-star feature-star"></i></td>
+                            <td><i class="fas fa-times feature-cross"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Multiple AI Providers</td>
+                            <td><i class="fas fa-check feature-check"></i></td>
+                            <td><i class="fas fa-check feature-check"></i></td>
+                            <td><i class="fas fa-check feature-check"></i></td>
+                            <td><i class="fas fa-times feature-cross"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Custom Controls</td>
+                            <td><i class="fas fa-check feature-check"></i></td>
+                            <td><i class="fas fa-check feature-check"></i> <i class="fas fa-star feature-star"></i></td>
+                            <td><i class="fas fa-check feature-check"></i></td>
+                            <td><i class="fas fa-check feature-check"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Batch Processing</td>
+                            <td><i class="fas fa-check feature-check"></i></td>
+                            <td><i class="fas fa-check feature-check"></i></td>
+                            <td><i class="fas fa-times feature-cross"></i></td>
+                            <td><i class="fas fa-check feature-check"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Premium Feature</td>
+                            <td><i class="fas fa-times feature-cross"></i></td>
+                            <td><i class="fas fa-times feature-cross"></i></td>
+                            <td><i class="fas fa-check feature-check"></i></td>
+                            <td><i class="fas fa-check feature-check"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="text-align: center; margin-top: 20px; color: var(--gray-600);">
+                    <i class="fas fa-star feature-star"></i> Indicates exceptional capability in this category
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Activity Feed -->
+    <div class="activity-feed" id="activity-feed">
+        <div class="activity-header">
+            <h4 class="activity-title">Recent Activity</h4>
+            <button class="activity-close" id="activity-close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="activity-item">
+            <div class="activity-icon info"><i class="fas fa-info"></i></div>
+            <div class="activity-content">
+                <div class="activity-event">You viewed AI Animation feature</div>
+                <div class="activity-time">Just now</div>
+            </div>
+        </div>
+        <div class="activity-item">
+            <div class="activity-icon success"><i class="fas fa-check"></i></div>
+            <div class="activity-content">
+                <div class="activity-event">New AI Story models added</div>
+                <div class="activity-time">10 minutes ago</div>
+            </div>
+        </div>
+        <div class="activity-item">
+            <div class="activity-icon info"><i class="fas fa-info"></i></div>
+            <div class="activity-content">
+                <div class="activity-event">Theme preference saved</div>
+                <div class="activity-time">25 minutes ago</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="activity-toggle" id="activity-toggle">
+        <i class="fas fa-bell"></i>
+        <div class="activity-counter">3</div>
+    </div>
+
+    <style>
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .feature-row-item {
+                flex-direction: column;
+            }
+            
+            .feature-image {
+                flex: 0 0 200px;
+                width: 100%;
+            }
+            
+            .feature-details {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .feature-tags {
+                justify-content: center;
+            }
+        }
+    </style>
+
+    <style>
+        /* Animation Styles */
+        .card-clicked {
+            animation: card-pulse 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        @keyframes card-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Bounce animation for cards */
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0); }
+        }
+        
+        /* Feature card fade animations for filtering */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(20px); }
+        }
+        
+        /* Ripple effect styles */
+        .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+        
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        /* Card pulse effect on click */
+        .card-pulse {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(0);
+            opacity: 1;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .card-pulse.active {
+            animation: pulse 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(0);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        /* Filter button click effect */
+        .filter-btn-clicked {
+            animation: filter-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        @keyframes filter-pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Button with icon animation */
+        .btn i {
+            transition: transform 0.3s ease;
+        }
+        
+        .btn:hover i {
+            transform: translateX(4px);
+        }
+    </style>
+    
+    <script>
+        // Simple toast notification function
+        function showNotification(title, message, type = 'info', duration = 3000) {
+            // Remove any existing toasts
+            const existing = document.querySelector('.toast-notification');
+            if (existing) existing.remove();
+            
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            
+            let iconClass = 'fas fa-info-circle';
+            if (type === 'success') iconClass = 'fas fa-check-circle';
+            if (type === 'warning') iconClass = 'fas fa-exclamation-triangle';
+            if (type === 'error') iconClass = 'fas fa-times-circle';
+            
+            toast.innerHTML = `
+                <div class="toast-icon"><i class="${iconClass}"></i></div>
+                <div class="toast-content">
+                    <h4 class="toast-title">${title}</h4>
+                    <p class="toast-message">${message}</p>
+                </div>
+                <button class="close-toast"><i class="fas fa-times"></i></button>
+            `;
+            
+            // Add to container
+            const container = document.getElementById('toast-container');
+            container.appendChild(toast);
+            
+            // Auto remove
+            const timeout = setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    container.removeChild(toast);
+                }, 300);
+            }, duration);
+            
+            // Close button
+            toast.querySelector('.close-toast').addEventListener('click', () => {
+                clearTimeout(timeout);
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    container.removeChild(toast);
+                }, 300);
+            });
+        }
+        
+        // Alias for backward compatibility
+        function showToast(type, title, message, duration = 3000) {
+            showNotification(title, message, type, duration);
+        }
+    </script>
+
+    <script>
+        // Function to handle button interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Initializing button handlers');
+            
+            // Get all feature buttons
+            const featureButtons = document.querySelectorAll('.feature-action .btn');
+            console.log('Found ' + featureButtons.length + ' feature buttons');
+            
+            // Add click handler to each button
+            featureButtons.forEach((button, index) => {
+                console.log('Setting up button ' + (index + 1) + ': ' + button.getAttribute('href'));
+                
+                button.addEventListener('click', function(e) {
+                    console.log('Button clicked:', this.getAttribute('href'));
+                    
+                    // Get the URL to navigate to
+                    const href = this.getAttribute('href');
+                    
+                    // Only handle if href exists and isn't just a hash
+                    if (href && href !== '#') {
+                        // Prevent default navigation
+                        e.preventDefault();
+                        
+                        // Get feature title
+                        const featureCard = this.closest('.feature-row-item');
+                        let featureTitle = 'AI Feature';
+                        if (featureCard) {
+                            const titleElement = featureCard.querySelector('.feature-title');
+                            if (titleElement) {
+                                featureTitle = titleElement.textContent;
+                            }
+                        }
+                        
+                        // Create a ripple effect
+                        const ripple = document.createElement('span');
+                        ripple.classList.add('ripple');
+                        
+                        // Position the ripple based on click location
+                        const rect = this.getBoundingClientRect();
+                        const size = Math.max(rect.width, rect.height) * 1.5;
+                        ripple.style.width = ripple.style.height = `${size}px`;
+                        ripple.style.left = `${e.clientX - rect.left - size/2}px`;
+                        ripple.style.top = `${e.clientY - rect.top - size/2}px`;
+                        
+                        // Add ripple to button
+                        this.appendChild(ripple);
+                        
+                        // Change button text to loading
+                        const buttonSpan = this.querySelector('span');
+                        const originalText = buttonSpan.textContent;
+                        buttonSpan.textContent = 'Loading...';
+                        
+                        // Change icon to spinner
+                        const buttonIcon = this.querySelector('i');
+                        const originalClass = buttonIcon.className;
+                        buttonIcon.className = 'fas fa-spinner fa-spin';
+                        
+                        // Show a notification toast
+                        if (typeof showNotification === 'function') {
+                            showNotification(
+                                'Navigation,'
+                                `Opening ${featureTitle}...`, 
+                                'info', 
+                                7000
+                            );
+                        }
+                        
+                        console.log('Will navigate to ' + href + ' after 500ms');
+                        
+                        // Navigate after a delay for visual feedback
+                        setTimeout(() => {
+                            console.log('Navigating now to:', href);
+                            window.location.href = href;
+                        }, 500);
+                    }
+                });
+            });
+            
+            // For command palette buttons
+            const commandItems = document.querySelectorAll('.command-item[data-action="navigate"]');
+            commandItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const url = this.getAttribute('data-url');
+                    if (url) {
+                        console.log('Command palette navigation to:', url);
+                        window.location.href = url;
+                    }
+                });
+            });
+            
+            // Alternative button click handler if needed
+            document.querySelectorAll('.feature-row-item').forEach(card => {
+                // Add interactive hover state to show procedure
+                card.addEventListener('mouseenter', () => {
+                    card.querySelector('.feature-details')?.classList.add('highlight');
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.querySelector('.feature-details')?.classList.remove('highlight');
+                });
+                
+                // Add click interaction to show full procedure
+                card.addEventListener('click', (e) => {
+                    // Don't trigger if clicking a button or link
+                    if (e.target.closest('.btn') || e.target.closest('a')) return;
+                    
+                    const details = card.querySelector('.feature-details');
+                    if (details) {
+                        // Toggle expanded state
+                        details.classList.toggle('expanded');
+                        
+                        // Show notification
+                        if (typeof showNotification === 'function') {
+                            if (details.classList.contains('expanded')) {
+                                showNotification('Info', 'Showing detailed procedure', 'info', 3000);
+                            }
+                        }
+                    }
+                });
+            });
+        });
+        
+        // Toggle like functionality
+        function toggleLike(element, event) {
+            event.stopPropagation(); // Prevent card click
+            element.classList.toggle('liked');
+            
+            // Update the count
+            const count = element.querySelector('.like-count');
+            let currentCount = parseInt(count.textContent);
+            
+            if (element.classList.contains('liked')) {
+                count.textContent = currentCount + 1;
+                showNotification('Feature Liked', 'Added to your favorites list', 'success');
+            } else {
+                count.textContent = currentCount - 1;
+                showNotification('Feature Unliked', 'Removed from your favorites list', 'info');
+            }
+        }
+    </script>
+    
+    <script>
+        // Initialize all components when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            commandPalette.init();
+            contextMenu.init();
+            featureComparison.init();
+            activityFeed.init();
+            
+            // Initialize keyboard shortcuts
+            initializeKeyboardShortcuts();
+            
+            // Add feature badges
+            addFeatureBadges();
+            
+            // Add interactions and effects
+            addFeatureCardInteractions();
+            addProgressIndicators();
+            addLoadingEffects();
+            
+            // Add shortcut info to status bar
+            const statusBar = document.querySelector('.status-bar');
+            if (statusBar) {
+                const shortcutInfo = document.createElement('div');
+                shortcutInfo.className = 'status-section';
+                shortcutInfo.innerHTML = `
+                    <div class="status-item">
+                        <i class="fas fa-keyboard"></i>
+                        <span>Press <kbd>?</kbd> for shortcuts</span>
+                    </div>
+                `;
+                statusBar.appendChild(shortcutInfo);
+                
+                // Add click event to show keyboard shortcuts
+                shortcutInfo.addEventListener('click', function() {
+                    showNotification(
+                        'Keyboard Shortcuts', 
+                        'ALT+1: All features, ALT+2: Visual features, ALT+3: Text features, /: Search, ESC: Close modals', 
+                        'info', 
+                        7000
+                    );
+                });
+            }
+            
+            // Welcome notification with delay
+            setTimeout(() => {
+                showNotification(
+                    'Welcome to AI Features', 
+                    'Explore our powerful AI capabilities with this interactive interface', 
+                    'info', 
+                    5000
+                );
+            }, 1000);
+        });
+    </script>
+    
+    <script>
+        // Command Palette 
+        const commandPalette = {
+            overlay: document.getElementById('command-palette-overlay'),
+            input: document.getElementById('command-input'),
+            results: document.getElementById('command-results'),
+            items: [],
+            selectedIndex: -1,
+            
+            init: function() {
+                // Get all command items
+                this.items = Array.from(document.querySelectorAll('.command-item'));
+                
+                // Open command palette with Ctrl+K or Cmd+K
+                document.addEventListener('keydown', (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                        e.preventDefault();
+                        this.open();
+                    }
+                    
+                    // Close with Escape
+                    if (e.key === 'Escape' && this.isOpen()) {
+                        this.close();
+                    }
+                });
+                
+                // Handle clicks on the overlay (close)
+                this.overlay.addEventListener('click', (e) => {
+                    if (e.target === this.overlay) {
+                        this.close();
+                    }
+                });
+                
+                // Handle input for filtering
+                this.input.addEventListener('input', () => {
+                    this.filterItems();
+                });
+                
+                // Handle keyboard navigation
+                this.input.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        this.selectNext();
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        this.selectPrevious();
+                    } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.executeSelected();
+                    }
+                });
+                
+                // Handle clicks on items
+                this.items.forEach(item => {
+                    item.addEventListener('click', () => {
+                        this.executeCommand(item);
+                    });
+                });
+                
+                // Add to status bar
+                document.querySelector('.status-bar .status-section:first-child').innerHTML += `
+                    <div class="status-item">
+                        <i class="fas fa-terminal"></i>
+                        <span>Press Ctrl+K for commands</span>
+                    </div>
+                `;
+            },
+            
+            open: function() {
+                this.overlay.classList.add('active');
+                setTimeout(() => {
+                    this.input.focus();
+                }, 100);
+                this.selectedIndex = -1;
+                this.input.value = '';
+                this.filterItems();
+                showToast('info', 'Command Palette', 'Type a command or use arrow keys to navigate');
+            },
+            
+            close: function() {
+                this.overlay.classList.remove('active');
+            },
+            
+            isOpen: function() {
+                return this.overlay.classList.contains('active');
+            },
+            
+            filterItems: function() {
+                const query = this.input.value.toLowerCase();
+                let visibleCount = 0;
+                
+                this.items.forEach(item => {
+                    const title = item.querySelector('.command-item-title').textContent.toLowerCase();
+                    const subtitle = item.querySelector('.command-item-subtitle').textContent.toLowerCase();
+                    
+                    if (title.includes(query) || subtitle.includes(query)) {
+                        item.style.display = 'flex';
+                        visibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                // Show/hide group titles based on whether they have visible items
+                const groups = document.querySelectorAll('.command-group');
+                groups.forEach(group => {
+                    const hasVisibleItems = Array.from(group.querySelectorAll('.command-item'))
+                        .some(item => item.style.display !== 'none');
+                    
+                    const groupTitle = group.querySelector('.command-group-title');
+                    if (groupTitle) {
+                        groupTitle.style.display = hasVisibleItems ? 'block' : 'none';
+                    }
+                });
+                
+                // Reset selection
+                this.clearSelection();
+                if (visibleCount > 0) {
+                    this.selectFirst();
+                }
+            },
+            
+            clearSelection: function() {
+                this.items.forEach(item => {
+                    item.classList.remove('selected');
+                });
+                this.selectedIndex = -1;
+            },
+            
+            selectFirst: function() {
+                const visibleItems = this.items.filter(item => item.style.display !== 'none');
+                if (visibleItems.length > 0) {
+                    this.selectedIndex = this.items.indexOf(visibleItems[0]);
+                    visibleItems[0].classList.add('selected');
+                    this.scrollToSelected();
+                }
+            },
+            
+            selectNext: function() {
+                const visibleItems = this.items.filter(item => item.style.display !== 'none');
+                if (visibleItems.length === 0) return;
+                
+                this.clearSelection();
+                
+                let currentIndex = this.items.indexOf(visibleItems[0]);
+                for (let i = 0; i < visibleItems.length; i++) {
+                    if (this.items.indexOf(visibleItems[i]) > this.selectedIndex) {
+                        currentIndex = this.items.indexOf(visibleItems[i]);
+                        break;
+                    }
+                }
+                
+                this.selectedIndex = currentIndex;
+                this.items[this.selectedIndex].classList.add('selected');
+                this.scrollToSelected();
+            },
+            
+            selectPrevious: function() {
+                const visibleItems = this.items.filter(item => item.style.display !== 'none');
+                if (visibleItems.length === 0) return;
+                
+                this.clearSelection();
+                
+                let currentIndex = this.items.indexOf(visibleItems[visibleItems.length - 1]);
+                for (let i = visibleItems.length - 1; i >= 0; i--) {
+                    if (this.items.indexOf(visibleItems[i]) < this.selectedIndex) {
+                        currentIndex = this.items.indexOf(visibleItems[i]);
+                        break;
+                    }
+                }
+                
+                this.selectedIndex = currentIndex;
+                this.items[this.selectedIndex].classList.add('selected');
+                this.scrollToSelected();
+            },
+            
+            scrollToSelected: function() {
+                if (this.selectedIndex === -1) return;
+                
+                const selected = this.items[this.selectedIndex];
+                if (!selected) return;
+                
+                const container = this.results;
+                const containerRect = container.getBoundingClientRect();
+                const selectedRect = selected.getBoundingClientRect();
+                
+                if (selectedRect.bottom > containerRect.bottom) {
+                    container.scrollTop += selectedRect.bottom - containerRect.bottom;
+                } else if (selectedRect.top < containerRect.top) {
+                    container.scrollTop -= containerRect.top - selectedRect.top;
+                }
+            },
+            
+            executeSelected: function() {
+                if (this.selectedIndex === -1) return;
+                this.executeCommand(this.items[this.selectedIndex]);
+            },
+            
+            executeCommand: function(item) {
+                const action = item.dataset.action;
+                
+                switch (action) {
+                    case 'navigate':
+                        window.location.href = item.dataset.url;
+                        break;
+                    case 'theme':
+                        document.getElementById('theme-toggle').click();
+                        this.close();
+                        break;
+                    case 'help':
+                        this.close();
+                        document.getElementById('shortcuts-modal').classList.add('active');
+                        break;
+                    default:
+                        console.log('Unknown command:', action);
+                }
+            }
+        };
+        
+        // Initialize command palette
+        document.addEventListener('DOMContentLoaded', function() {
+            commandPalette.init();
+        });
+        
+        // Context Menu
+        const contextMenu = {
+            menu: document.getElementById('context-menu'),
+            targetCard: null,
+            
+            init: function() {
+                // Add event listeners
+                document.addEventListener('contextmenu', this.handleContextMenu.bind(this));
+                document.addEventListener('click', this.hideMenu.bind(this));
+                window.addEventListener('resize', this.hideMenu.bind(this));
+                window.addEventListener('scroll', this.hideMenu.bind(this));
+                
+                // Handle menu item clicks
+                const menuItems = document.querySelectorAll('.context-menu-item');
+                menuItems.forEach(item => {
+                    item.addEventListener('click', this.handleMenuItemClick.bind(this));
+                });
+            },
+            
+            handleContextMenu: function(e) {
+                // Only show context menu on feature cards
+                const featureCard = e.target.closest('.feature-card');
+                if (!featureCard) {
+                    this.hideMenu();
+                    return true;
+                }
+                
+                // Store the target card
+                this.targetCard = featureCard;
+                
+                // Prevent default context menu
+                e.preventDefault();
+                
+                // Position and show menu
+                const x = e.clientX;
+                const y = e.clientY;
+                
+                // Set menu position
+                const menuWidth = this.menu.offsetWidth;
+                const menuHeight = this.menu.offsetHeight;
+                const windowWidth = window.innerWidth;
+                const windowHeight = window.innerHeight;
+                
+                // Check if menu goes outside viewport
+                let menuX = x;
+                let menuY = y;
+                
+                if (x + menuWidth > windowWidth) {
+                    menuX = windowWidth - menuWidth - 10;
+                }
+                
+                if (y + menuHeight > windowHeight) {
+                    menuY = windowHeight - menuHeight - 10;
+                }
+                
+                this.menu.style.left = menuX + 'px';
+                this.menu.style.top = menuY + 'px';
+                this.menu.classList.add('active');
+                
+                // Update favorite menu item text based on state
+                const isFavorite = featureCard.classList.contains('favorited');
+                const favoriteMenuItem = this.menu.querySelector('[data-action="favorite"] .context-menu-text');
+                const favoriteIcon = this.menu.querySelector('[data-action="favorite"] .context-menu-icon i');
+                
+                if (isFavorite) {
+                    favoriteMenuItem.textContent = 'Remove from Favorites';
+                    favoriteIcon.className = 'fas fa-heart';
+                } else {
+                    favoriteMenuItem.textContent = 'Add to Favorites';
+                    favoriteIcon.className = 'far fa-heart';
+                }
+                
+                return false;
+            },
+            
+            hideMenu: function() {
+                this.menu.classList.remove('active');
+            },
+            
+            handleMenuItemClick: function(e) {
+                const action = e.currentTarget.dataset.action;
+                
+                if (!this.targetCard) {
+                    this.hideMenu();
+                    return;
+                }
+                
+                // Execute the appropriate action
+                switch (action) {
+                    case 'open':
+                        const link = this.targetCard.dataset.link;
+                        if (link) {
+                            window.location.href = link;
+                        }
+                        break;
+                    case 'compare':
+                        document.getElementById('comparison-overlay').classList.add('active');
+                        showToast('info', 'Feature Comparison', 'Compare different AI features side by side');
+                        break;
+                    case 'favorite':
+                        const isFavorite = this.targetCard.classList.contains('favorited');
+                        if (isFavorite) {
+                            this.targetCard.classList.remove('favorited');
+                            showToast('info', 'Removed from Favorites', 'Feature removed from your favorites');
+                        } else {
+                            this.targetCard.classList.add('favorited');
+                            showToast('success', 'Added to Favorites', 'Feature added to your favorites');
+                        }
+                        break;
+                    case 'share':
+                        showToast('info', 'Share Feature', 'Sharing options coming soon');
+                        break;
+                    case 'feedback':
+                        showToast('info', 'Feedback', 'Thanks for your feedback on this feature');
+                        break;
+                }
+                
+                this.hideMenu();
+            }
+        };
+        
+        // Feature Comparison
+        const featureComparison = {
+            overlay: document.getElementById('comparison-overlay'),
+            
+            init: function() {
+                // Close button
+                document.getElementById('comparison-close').addEventListener('click', () => {
+                    this.overlay.classList.remove('active');
+                });
+                
+                // Close on click outside
+                this.overlay.addEventListener('click', (e) => {
+                    if (e.target === this.overlay) {
+                        this.overlay.classList.remove('active');
+                    }
+                });
+                
+                // Add comparison button to filter section
+                const filterSection = document.querySelector('.filter-section');
+                const compareButton = document.createElement('button');
+                compareButton.className = 'filter-btn';
+                compareButton.innerHTML = '<i class="fas fa-columns"></i> Compare';
+                compareButton.addEventListener('click', () => {
+                    this.overlay.classList.add('active');
+                });
+                filterSection.appendChild(compareButton);
+            }
+        };
+        
+        // Activity Feed
+        const activityFeed = {
+            feed: document.getElementById('activity-feed'),
+            toggle: document.getElementById('activity-toggle'),
+            
+            init: function() {
+                // Toggle button
+                this.toggle.addEventListener('click', () => {
+                    this.feed.classList.toggle('active');
+                    // Remove counter when viewed
+                    this.toggle.querySelector('.activity-counter').style.display = 'none';
+                });
+                
+                // Close button
+                document.getElementById('activity-close').addEventListener('click', () => {
+                    this.feed.classList.remove('active');
+                });
+                
+                // Log feature card views
+                document.querySelectorAll('.feature-card').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const title = card.querySelector('.feature-title').textContent;
+                        this.addActivity('info', `You viewed ${title} feature`, 'Just now');
+                    });
+                });
+            },
+            
+            addActivity: function(type, event, time) {
+                const activityItem = document.createElement('div');
+                activityItem.className = 'activity-item';
+                activityItem.innerHTML = `
+                    <div class="activity-icon ${type}"><i class="fas fa-${type === 'info' ? 'info' : 'check'}"></i></div>
+                    <div class="activity-content">
+                        <div class="activity-event">${event}</div>
+                        <div class="activity-time">${time}</div>
+                    </div>
+                `;
+                
+                // Add to the top
+                const firstItem = this.feed.querySelector('.activity-item');
+                if (firstItem) {
+                    this.feed.insertBefore(activityItem, firstItem);
+                } else {
+                    this.feed.appendChild(activityItem);
+                }
+                
+                // Update counter
+                const counter = this.toggle.querySelector('.activity-counter');
+                counter.style.display = 'flex';
+                counter.textContent = parseInt(counter.textContent || 0) + 1;
+            }
+        };
+        
+        // Add feature badges to some cards for visual enhancement
+        function addFeatureBadges() {
+            const featureCards = document.querySelectorAll('.feature-card');
+            
+            // Add badges to select cards
+            featureCards[0].innerHTML += '<div class="feature-badge badge-new">New</div>';
+            featureCards[2].innerHTML += '<div class="feature-badge badge-premium">Premium</div>';
+            featureCards[3].innerHTML += '<div class="feature-badge badge-beta">Beta</div>';
+        }
+        
+        // Initialize all components when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            commandPalette.init();
+            contextMenu.init();
+            featureComparison.init();
+            activityFeed.init();
+            
+            // Initialize keyboard shortcuts
+            initializeKeyboardShortcuts();
+            
+            // Add feature badges
+            addFeatureBadges();
+            
+            // Add interactions and effects
+            addFeatureCardInteractions();
+            addProgressIndicators();
+            addLoadingEffects();
+            
+            // Add shortcut info to status bar
+            const statusBar = document.querySelector('.status-bar');
+            if (statusBar) {
+                const shortcutInfo = document.createElement('div');
+                shortcutInfo.className = 'status-section';
+                shortcutInfo.innerHTML = `
+                    <div class="status-item">
+                        <i class="fas fa-keyboard"></i>
+                        <span>Press <kbd>?</kbd> for shortcuts</span>
+                    </div>
+                `;
+                statusBar.appendChild(shortcutInfo);
+                
+                // Add click event to show keyboard shortcuts
+                shortcutInfo.addEventListener('click', function() {
+                    showNotification(
+                        'Keyboard Shortcuts', 
+                        'ALT+1: All features, ALT+2: Visual features, ALT+3: Text features, /: Search, ESC: Close modals', 
+                        'info', 
+                        7000
+                    );
+                });
+            }
+            
+            // Welcome notification with delay
+            setTimeout(() => {
+                showNotification(
+                    'Welcome to AI Features', 
+                    'Explore our powerful AI capabilities with this interactive interface', 
+                    'info', 
+                    5000
+                );
+            }, 1000);
+        });
+    </script>
+    
+    <script>
+        // Advanced staggered scroll animations with consistent left-to-right layout
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Setting up consistent left-to-right animations");
+            
+            // Reset any conflicting styles
+            document.head.insertAdjacentHTML('beforeend', `
+                <style>
+                    /* Reset previous animation styles */
+                    .feature-row-item, .feature-image, .feature-content, 
+                    .feature-title, .feature-description, .feature-details, .feature-action {
+                        opacity: 1 !important;
+                        transform: none !important;
+                        transition: none !important;
+                    }
+                    
+                    /* Special styling for portrait images */
+                    #stories-card .feature-image img {
+                        object-position: center;
+                        max-height: 480px;
+                    }
+                    
+                    /* Add hover effects for interactivity */
+                    .feature-row-item {
+                        transition: transform 0.3s ease, box-shadow 0.3s ease;
+                    }
+                    
+                    .feature-row-item:hover {
+                        transform: translateY(-5px);
+                        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+                    }
+                </style>
+            `);
+            
+            // Setup Intersection Observer for scroll animations
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Get the feature card that was scrolled into view
+                        const card = entry.target;
+                        const cardId = card.id;
+                        
+                        // Start the animation sequence for this card
+                        animateCard(cardId);
+                        
+                        // Unobserve once animated
+                        observer.unobserve(card);
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe all feature cards
+            document.querySelectorAll('.feature-row-item').forEach(card => {
+                // Reset all cards initially
+                resetCard(card.id);
+                // Start observing
+                observer.observe(card);
+            });
+            
+            // Function to reset a card before animation
+            function resetCard(cardId) {
+                const card = document.getElementById(cardId);
+                if (!card) return;
+                
+                const image = card.querySelector('.feature-image');
+                const title = card.querySelector('.feature-title');
+                const description = card.querySelector('.feature-description');
+                const details = card.querySelector('.feature-details');
+                const action = card.querySelector('.feature-action');
+                
+                // All images come from left, all content from right (consistent layout)
+                if (image) {
+                    image.style.opacity = '0';
+                    image.style.transform = 'translateX(-100px)'; // Always from left
+                }
+                
+                if (title) {
+                    title.style.opacity = '0';
+                    title.style.transform = 'translateX(100px)'; // Always from right
+                }
+                
+                if (description) {
+                    description.style.opacity = '0';
+                    description.style.transform = 'translateX(100px)'; // Always from right
+                }
+                
+                if (details) {
+                    details.style.opacity = '0';
+                    details.style.transform = 'translateX(100px)'; // Always from right
+                }
+                
+                if (action) {
+                    action.style.opacity = '0';
+                    action.style.transform = 'translateX(100px)'; // Always from right
+                }
+            }
+            
+            // Function to animate a card sequentially
+            function animateCard(cardId) {
+                console.log(`Animating card: ${cardId}`);
+                const card = document.getElementById(cardId);
+                if (!card) return;
+                
+                const image = card.querySelector('.feature-image');
+                const title = card.querySelector('.feature-title');
+                const description = card.querySelector('.feature-description');
+                const details = card.querySelector('.feature-details');
+                const action = card.querySelector('.feature-action');
+                
+                // Add transition to all elements
+                [image, title, description, details, action].forEach(el => {
+                    if (el) {
+                        el.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    }
+                });
+                
+                // Animate image first
+                setTimeout(() => {
+                    if (image) {
+                        image.style.transform = 'translateX(0)';
+                        image.style.opacity = '1';
+                    }
+                }, 100);
+                
+                // Then animate title
+                setTimeout(() => {
+                    if (title) {
+                        title.style.transform = 'translateX(0)';
+                        title.style.opacity = '1';
+                    }
+                }, 400);
+                
+                // Then animate description 
+                setTimeout(() => {
+                    if (description) {
+                        description.style.transform = 'translateX(0)';
+                        description.style.opacity = '1';
+                    }
+                }, 700);
+                
+                // Then animate details (procedure)
+                setTimeout(() => {
+                    if (details) {
+                        details.style.transform = 'translateX(0)';
+                        details.style.opacity = '1';
+                    }
+                }, 1000);
+                
+                // Finally animate action button
+                setTimeout(() => {
+                    if (action) {
+                        action.style.transform = 'translateX(0)';
+                        action.style.opacity = '1';
+                    }
+                }, 1300);
+            }
+            
+            // Add interactive elements
+            document.querySelectorAll('.feature-row-item').forEach(card => {
+                // Add interactive hover state to show procedure
+                card.addEventListener('mouseenter', () => {
+                    card.querySelector('.feature-details')?.classList.add('highlight');
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.querySelector('.feature-details')?.classList.remove('highlight');
+                });
+                
+                // Add click interaction to show full procedure
+                card.addEventListener('click', (e) => {
+                    // Don't trigger if clicking a button or link
+                    if (e.target.closest('.btn') || e.target.closest('a')) return;
+                    
+                    const details = card.querySelector('.feature-details');
+                    if (details) {
+                        // Toggle expanded state
+                        details.classList.toggle('expanded');
+                        
+                        // Show notification
+                        if (typeof showNotification === 'function') {
+                            if (details.classList.contains('expanded')) {
+                                showNotification('Info', 'Showing detailed procedure', 'info', 3000);
+                            }
+                        }
+                    }
+                });
+            });
+            
+            // Add additional style for interactive elements
+            document.head.insertAdjacentHTML('beforeend', `
+                <style>
+                    .feature-details {
+                        position: relative;
+                        transition: all 0.3s ease;
+                        padding: 10px;
+                        border-radius: 8px;
+                    }
+                    
+                    .feature-details.highlight {
+                        background: rgba(255, 215, 0, 0.05);
+                        box-shadow: 0 0 10px rgba(255, 215, 0, 0.1);
+                    }
+                    
+                    .feature-details.expanded {
+                        background: rgba(255, 215, 0, 0.1);
+                        box-shadow: 0 0 15px rgba(255, 215, 0, 0.15);
+                        transform: scale(1.05);
+                    }
+                    
+                    /* Add a subtle indicator to show it's interactive */
+                    .feature-details:after {
+                        content: "Click for details";
+                        position: absolute;
+                        bottom: -5px;
+                        right: 10px;
+                        font-size: 10px;
+                        color: rgba(255, 215, 0, 0.6);
+                        opacity: 0;
+                        transition: opacity 0.3s ease;
+                    }
+                    
+                    .feature-details:hover:after {
+                        opacity: 1;
+                    }
+                    
+                    /* Ensure consistent layout for all features */
+                    .feature-row-item {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        justify-content: space-between;
+                    }
+                    
+                    .feature-image {
+                        order: 1; /* Always first (left side) */
+                    }
+                    
+                    .feature-content {
+                        order: 2; /* Always second (right side) */
+                    }
+                </style>
+            `);
+            
+            // Trigger animation for the first card automatically after a delay
+            setTimeout(() => {
+                animateCard('stories-card');
+                
+                // Then the second card after a longer delay
+                setTimeout(() => {
+                    animateCard('image-card');
+                    
+                    // Then the third card
+                    setTimeout(() => {
+                        animateCard('animation-card');
+                    }, 2000);
+                }, 2000);
+            }, 500);
+        });
+    </script>
+    
+    <script>
+        // Simpler approach - directly manipulate the elements with JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Starting fresh animations");
+            
+            // First, override any previous animation styles
+            document.head.insertAdjacentHTML('beforeend', `
+                <style>
+                    /* Reset any conflicting styles */
+                    .feature-row-item, .feature-image, .feature-content {
+                        opacity: 1 !important;
+                        transform: none !important;
+                        transition: none !important;
+                    }
+                    
+                    /* Special styling for portrait images */
+                    #stories-card .feature-image img {
+                        object-position: center;
+                        max-height: 480px;
+                    }
+                </style>
+            `);
+            
+            // Wait a bit to ensure all previous animations are cleared
+            setTimeout(function() {
+                // Function to animate elements
+                function animateElements() {
+                    console.log("Running animations");
+                    
+                    // Stories card (first)—image from left, content from right
+                    const storiesImage = document.querySelector('#stories-card .feature-image');
+                    const storiesContent = document.querySelector('#stories-card .feature-content');
+                    
+                    // Image card (second) - image from left, content from right
+                    const imageImage = document.querySelector('#image-card .feature-image');
+                    const imageContent = document.querySelector('#image-card .feature-content');
+                    
+                    // Animation card (third) - image from left, content from right
+                    const animImage = document.querySelector('#animation-card .feature-image');
+                    const animContent = document.querySelector('#animation-card .feature-content');
+                    
+                    // Hide all elements first
+                    [storiesImage, storiesContent, imageImage, imageContent, animImage, animContent].forEach(el => {
+                        if (el) {
+                            el.style.opacity = '0';
+                            el.style.transition = 'none';
+                        }
+                    });
+                    
+                    // Force browser reflow to ensure opacity 0 is applied
+                    void document.documentElement.offsetHeight;
+                    
+                    // Position elements
+                    if (storiesImage) {
+                        storiesImage.style.transform = 'translateX(-100px)';
+                    }
+                    if (storiesContent) {
+                        storiesContent.style.transform = 'translateX(100px)';
+                    }
+                    if (imageImage) {
+                        imageImage.style.transform = 'translateX(-100px)';
+                    }
+                    if (imageContent) {
+                        imageContent.style.transform = 'translateX(100px)';
+                    }
+                    if (animImage) {
+                        animImage.style.transform = 'translateX(-100px)';
+                    }
+                    if (animContent) {
+                        animContent.style.transform = 'translateX(100px)';
+                    }
+                    
+                    // Add animation with staggered timing
+                    setTimeout(() => {
+                        if (storiesImage) {
+                            storiesImage.style.transition = 'all 0.8s ease';
+                            storiesImage.style.transform = 'translateX(0)';
+                            storiesImage.style.opacity = '1';
+                        }
+                    }, 100);
+                    
+                    setTimeout(() => {
+                        if (storiesContent) {
+                            storiesContent.style.transition = 'all 0.8s ease';
+                            storiesContent.style.transform = 'translateX(0)';
+                            storiesContent.style.opacity = '1';
+                        }
+                    }, 400);
+                    
+                    setTimeout(() => {
+                        if (imageImage) {
+                            imageImage.style.transition = 'all 0.8s ease';
+                            imageImage.style.transform = 'translateX(0)';
+                            imageImage.style.opacity = '1';
+                        }
+                    }, 700);
+                    
+                    setTimeout(() => {
+                        if (imageContent) {
+                            imageContent.style.transition = 'all 0.8s ease';
+                            imageContent.style.transform = 'translateX(0)';
+                            imageContent.style.opacity = '1';
+                        }
+                    }, 1000);
+                    
+                    setTimeout(() => {
+                        if (animImage) {
+                            animImage.style.transition = 'all 0.8s ease';
+                            animImage.style.transform = 'translateX(0)';
+                            animImage.style.opacity = '1';
+                        }
+                    }, 1300);
+                    
+                    setTimeout(() => {
+                        if (animContent) {
+                            animContent.style.transition = 'all 0.8s ease';
+                            animContent.style.transform = 'translateX(0)';
+                            animContent.style.opacity = '1';
+                        }
+                    }, 1600);
+                }
+                
+                // Run the animations
+                animateElements();
+                
+                // Add scroll-triggered functionality
+                let animationTriggered = false;
+                window.addEventListener('scroll', () => {
+                    if (!animationTriggered && window.scrollY > 300) {
+                        animationTriggered = true;
+                        animateElements();
+                    }
+                });
+            }, 100);
+        });
+    </script>
+    
+    <script>
+        // Enhanced Feature Card Interactions
+        function addFeatureCardInteractions() {
+            const featureCards = document.querySelectorAll('.feature-card');
+            
+            featureCards.forEach(card => {
+                // Add hover effect
+                card.addEventListener('mouseover', () => {
+                    card.classList.add('hovered');
+                });
+                
+                card.addEventListener('mouseout', () => {
+                    card.classList.remove('hovered');
+                });
+                
+                // Add click effect
+                card.addEventListener('click', () => {
+                    card.classList.add('clicked');
+                    
+                    // Remove after a delay
+                    setTimeout(() => {
+                        card.classList.remove('clicked');
+                    }, 300);
+                });
+            });
+        }
+        
+        // Add progress indicators
+        function addProgressIndicators() {
+            const progressIndicators = document.querySelectorAll('.progress-indicator');
+            
+            progressIndicators.forEach(indicator => {
+                // Animate progress
+                indicator.addEventListener('mouseover', () => {
+                    indicator.classList.add('animate');
+                });
+                
+                indicator.addEventListener('mouseout', () => {
+                    indicator.classList.remove('animate');
+                });
+            });
+        }
+        
+        // Add loading effects
+        function addLoadingEffects() {
+            const loadingElements = document.querySelectorAll('.loading');
+            
+            loadingElements.forEach(element => {
+                // Add loading animation
+                element.addEventListener('mouseover', () => {
+                    element.classList.add('loading-animation');
+                });
+                
+                element.addEventListener('mouseout', () => {
+                    element.classList.remove('loading-animation');
+                });
+            });
+        }
+    </script>
+    
+    <style>
+        /* Enhanced Feature Card Interactions */
+        .feature-row-item {
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1.275), 
+                        box-shadow 0.4s ease;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        
+        .feature-row-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Image hover effect */
+        .feature-image {
+            overflow: hidden;
+            border-radius: 12px;
+        }
+        
+        .feature-image img {
+            transition: transform 0.5s ease;
+        }
+        
+        .feature-image:hover img {
+            transform: scale(1.08);
+        }
+        
+        /* Interactive buttons */
+        .feature-action .btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-action .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .feature-action .btn:active {
+            transform: translateY(-1px);
+        }
+        
+        /* Highlight title on hover */
+        .feature-title {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .feature-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, gold, transparent);
+            transition: width 0.3s ease;
+        }
+        
+        .feature-content:hover .feature-title::after {
+            width: 100%;
+        }
+    </style>
+
+    <style>
+        /* Alternating scroll animations for features */
+        .features-row {
+            overflow: hidden;
+        }
+        
+        .feature-row-item {
+            opacity: 0;
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        /* First card - image from left, content from right */
+        #stories-card .feature-image {
+            transform: translateX(-100px);
+            opacity: 0;
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition-delay: 0.1s;
+        }
+        
+        #stories-card .feature-content {
+            transform: translateX(100px);
+            opacity: 0;
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition-delay: 0.3s;
+        }
+        
+        /* Second card - image from left, content from right */
+        #image-card .feature-image {
+            transform: translateX(-100px);
+            opacity: 0;
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition-delay: 0.1s;
+        }
+        
+        #image-card .feature-content {
+            transform: translateX(100px);
+            opacity: 0;
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition-delay: 0.3s;
+        }
+        
+        /* Third card - image from left, content from right */
+        #animation-card .feature-image {
+            transform: translateX(-100px);
+            opacity: 0;
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition-delay: 0.1s;
+        }
+        
+        #animation-card .feature-content {
+            transform: translateX(100px);
+            opacity: 0;
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition-delay: 0.3s;
+        }
+        
+        /* Animated state for all elements */
+        .feature-row-item.animated,
+        .feature-row-item.animated .feature-image,
+        .feature-row-item.animated .feature-content {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        /* Portrait image adjustments */
+        #stories-card .feature-image img {
+            object-position: center;
+            max-height: 500px;
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 90%);
+        }
+    </style>
+
+    <script>
+        // Intersection Observer for scroll animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.2
+            };
+            
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animated');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe all feature cards
+            document.querySelectorAll('.feature-row-item').forEach(card => {
+                observer.observe(card);
+            });
+            
+            // For immediate demo or if JavaScript is disabled
+            setTimeout(() => {
+                document.querySelectorAll('.feature-row-item').forEach(card => {
+                    if (!card.classList.contains('animated')) {
+                        card.classList.add('animated');
+                    }
+                });
+            }, 1000);
+        });
+    </script>
+
+    <script>
+        // Simpler approach—directly manipulate the elements with JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Starting fresh animations");
+            
+            // First, override any previous animation styles
+            document.head.insertAdjacentHTML('beforeend', `
+                <style>
+                    /* Reset any conflicting styles */
+                    .feature-row-item, .feature-image, .feature-content {
+                        opacity: 1 !important;
+                        transform: none !important;
+                        transition: none !important;
+                    }
+                    
+                    /* Special styling for portrait images */
+                    #stories-card .feature-image img {
+                        object-position: center;
+                        max-height: 480px;
+                    }
+                </style>
+            `);
+            
+            // Wait a bit to ensure all previous animations are cleared
+            setTimeout(function() {
+                // Function to animate elements
+                function animateElements() {
+                    console.log("Running animations");
+                    
+                    // Stories card (first)—image from left, content from right
+                    const storiesImage = document.querySelector('#stories-card .feature-image');
+                    const storiesContent = document.querySelector('#stories-card .feature-content');
+                    
+                    // Image card (second) - image from left, content from right
+                    const imageImage = document.querySelector('#image-card .feature-image');
+                    const imageContent = document.querySelector('#image-card .feature-content');
+                    
+                    // Animation card (third) - image from left, content from right
+                    const animImage = document.querySelector('#animation-card .feature-image');
+                    const animContent = document.querySelector('#animation-card .feature-content');
+                    
+                    // Hide all elements first
+                    [storiesImage, storiesContent, imageImage, imageContent, animImage, animContent].forEach(el => {
+                        if (el) {
+                            el.style.opacity = '0';
+                            el.style.transition = 'none';
+                        }
+                    });
+                    
+                    // Force browser reflow to ensure opacity 0 is applied
+                    void document.documentElement.offsetHeight;
+                    
+                    // Position elements
+                    if (storiesImage) {
+                        storiesImage.style.transform = 'translateX(-100px)';
+                    }
+                    if (storiesContent) {
+                        storiesContent.style.transform = 'translateX(100px)';
+                    }
+                    if (imageImage) {
+                        imageImage.style.transform = 'translateX(-100px)';
+                    }
+                    if (imageContent) {
+                        imageContent.style.transform = 'translateX(100px)';
+                    }
+                    if (animImage) {
+                        animImage.style.transform = 'translateX(-100px)';
+                    }
+                    if (animContent) {
+                        animContent.style.transform = 'translateX(100px)';
+                    }
+                    
+                    // Add animation with staggered timing
+                    setTimeout(() => {
+                        if (storiesImage) {
+                            storiesImage.style.transition = 'all 0.8s ease';
+                            storiesImage.style.transform = 'translateX(0)';
+                            storiesImage.style.opacity = '1';
+                        }
+                    }, 100);
+                    
+                    setTimeout(() => {
+                        if (storiesContent) {
+                            storiesContent.style.transition = 'all 0.8s ease';
+                            storiesContent.style.transform = 'translateX(0)';
+                            storiesContent.style.opacity = '1';
+                        }
+                    }, 400);
+                    
+                    setTimeout(() => {
+                        if (imageImage) {
+                            imageImage.style.transition = 'all 0.8s ease';
+                            imageImage.style.transform = 'translateX(0)';
+                            imageImage.style.opacity = '1';
+                        }
+                    }, 700);
+                    
+                    setTimeout(() => {
+                        if (imageContent) {
+                            imageContent.style.transition = 'all 0.8s ease';
+                            imageContent.style.transform = 'translateX(0)';
+                            imageContent.style.opacity = '1';
+                        }
+                    }, 1000);
+                    
+                    setTimeout(() => {
+                        if (animImage) {
+                            animImage.style.transition = 'all 0.8s ease';
+                            animImage.style.transform = 'translateX(0)';
+                            animImage.style.opacity = '1';
+                        }
+                    }, 1300);
+                    
+                    setTimeout(() => {
+                        if (animContent) {
+                            animContent.style.transition = 'all 0.8s ease';
+                            animContent.style.transform = 'translateX(0)';
+                            animContent.style.opacity = '1';
+                        }
+                    }, 1600);
+                }
+                
+                // Run the animations
+                animateElements();
+                
+                // Add scroll-triggered functionality
+                let animationTriggered = false;
+                window.addEventListener('scroll', () => {
+                    if (!animationTriggered && window.scrollY > 300) {
+                        animationTriggered = true;
+                        animateElements();
+                    }
+                });
+            }, 100);
+        });
+    </script>
+    
+    <script>
+        // Add essential interactive elements for image hover effects, 3D tilt, and interactive steps
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add interactive image effects
+            document.querySelectorAll('.feature-image').forEach(image => {
+                image.addEventListener('mouseover', () => {
+                    image.classList.add('hovered');
+                });
+                
+                image.addEventListener('mouseout', () => {
+                    image.classList.remove('hovered');
+                });
+            });
+            
+            // Add 3D tilt effect to cards
+            document.querySelectorAll('.feature-row-item').forEach(card => {
+                card.addEventListener('mousemove', handleCardTilt);
+                card.addEventListener('mouseleave', resetCardTilt);
+            });
+            
+            // Add interactive steps
+            document.querySelectorAll('.feature-details').forEach(details => {
+                const steps = details.querySelectorAll('ul li, ol li');
+                if (steps.length > 0) {
+                    const stepContainer = document.createElement('div');
+                    stepContainer.className = 'steps-container';
+                    
+                    steps.forEach((step, index) => {
+                        const stepItem = document.createElement('div');
+                        stepItem.className = 'step-item';
+                        stepItem.innerHTML = `<strong>Step ${index + 1}:</strong> ${step.innerHTML}`;
+                        
+                        // Add interaction
+                        stepItem.addEventListener('click', function() {
+                            // Toggle highlight
+                            document.querySelectorAll('.step-item.active').forEach(s => {
+                                if (s !== stepItem) s.classList.remove('active');
+                            });
+                            this.classList.toggle('active');
+                            
+                            // Show notification
+                            showNotification(`Step ${index + 1}`, step.textContent, 'info', 2000);
+                        });
+                        
+                        stepContainer.appendChild(stepItem);
+                    });
+                    
+                    // Replace the original list with our interactive steps
+                    const parentElement = steps[0].parentElement;
+                    parentElement.replaceWith(stepContainer);
+                }
+            });
+        });
+        
+        // Handle 3D card tilt effect
+        function handleCardTilt(e) {
+            const card = this;
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const cardCenterX = rect.width / 2;
+            const cardCenterY = rect.height / 2;
+            
+            const rotateY = ((x - cardCenterX) / cardCenterX) * 5;
+            const rotateX = ((cardCenterY - y) / cardCenterY) * 5;
+            
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05) translateY(-8px)`;
+        }
+        
+        // Reset card tilt
+        function resetCardTilt() {
+            this.style.transform = '';
+        }
+    </script>
+    
+    <script>
+        // Add interactive effects to the feature cards
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Adding interactive effects to feature cards");
+            
+            // Add 3D tilt effect to feature cards
+            const cards = document.querySelectorAll('.feature-row-item');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', function(e) {
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const rotateY = (x - centerX) / 20;
+                    const rotateX = (centerY - y) / 20;
+                    
+                    this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = '';
+                });
+                
+                // Add interactive tags that appear on hover
+                cards.forEach(card => {
+                    const tagText = card.id === 'stories-card' ? 'AI Stories' :
+                                 card.id === 'image-card' ? 'AI Image Generation' :
+                                 'AI Animation';
+                    
+                    const tag = document.createElement('div');
+                    tag.className = 'feature-hover-tag';
+                    tag.textContent = tagText;
+                    tag.style.cssText = `
+                        position: absolute;
+                        top: 15px;
+                        right: 15px;
+                        background: rgba(0,0,0,0.7);
+                        color: gold;
+                        padding: 5px 10px;
+                        border-radius: 15px;
+                        font-size: 12px;
+                        font-weight: bold;
+                        opacity: 0;
+                        transform: translateY(-10px);
+                        transition: all 0.3s ease;
+                        z-index: 10;
+                    `;
+                    
+                    card.appendChild(tag);
+                    card.style.position = 'relative';
+                    
+                    card.addEventListener('mouseenter', function() {
+                        tag.style.opacity = '1';
+                        tag.style.transform = 'translateY(0)';
+                    });
+                    
+                    card.addEventListener('mouseleave', function() {
+                        tag.style.opacity = '0';
+                        tag.style.transform = 'translateY(-10px)';
+                    });
+                });
+                
+                // Add drag interaction to feature cards
+                cards.forEach(card => {
+                    let isDragging = false;
+                    let startX = 0;
+                    let startY = 0;
+                    let originalTransform = '';
+                    
+                    card.addEventListener('mousedown', function(e) {
+                        // Don't initiate drag if clicking on buttons or links
+                        if (e.target.closest('.btn') || e.target.closest('a')) return;
+                        
+                        isDragging = true;
+                        startX = e.clientX;
+                        startY = e.clientY;
+                        originalTransform = window.getComputedStyle(this).transform;
+                        if (originalTransform === 'none') originalTransform = '';
+                        
+                        document.addEventListener('mousemove', onMouseMove);
+                        document.addEventListener('mouseup', onMouseUp);
+                        
+                        // Visual feedback for dragging
+                        this.style.cursor = 'grabbing';
+                    });
+                    
+                    function onMouseMove(e) {
+                        if (!isDragging) return;
+                        
+                        const dx = e.clientX - startX;
+                        const dy = e.clientY - startY;
+                        
+                        // Only allow horizontal movement for better UX
+                        card.style.transform = `${originalTransform} translateX(${dx}px)`;
+                    }
+                    
+                    function onMouseUp() {
+                        if (!isDragging) return;
+                        isDragging = false;
+                        
+                        // Animate back to original position
+                        card.style.transition = 'transform 0.5s cubic-bezier(0.19, 1, 0.22, 1)';
+                        card.style.transform = originalTransform;
+                        card.style.cursor = '';
+                        
+                        setTimeout(() => {
+                            card.style.transition = '';
+                        }, 500);
+                        
+                        document.removeEventListener('mousemove', onMouseMove);
+                        document.removeEventListener('mouseup', onMouseUp);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

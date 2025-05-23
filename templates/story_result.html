@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your AI Story | The Photogenic</title>
+    <!-- Preload critical assets -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Critical CSS inlined for faster render */
+        :root {
+            --primary: #876b52;
+            --primary-light: #a18967;
+            --primary-dark: #6e5741;
+            --secondary: #d4b586;
+            --text-dark: #6a5a47;
+            --bg-light: #f8f5f0;
+            --bg-medium: #eee6dc;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        /* Preloader */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.2s;
+        }
+        
+        .preloader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .preloader__spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Header & Navigation */
+        .header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 0;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .header__content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav__link {
+            color: white;
+            text-decoration: none;
+            font-size: 0.95rem;
+            position: relative;
+        }
+        
+        .nav__link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: white;
+            transition: width 0.3s;
+        }
+        
+        .nav__link:hover::after {
+            width: 100%;
+        }
+
+        .nav__link--active::after {
+            width: 100%;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 60px 0;
+        }
+        
+        .story-result-page {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        @media (max-width: 992px) {
+            .story-result-page {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .story-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .story-header {
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            color: white;
+            padding: 20px;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .story-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .story-body {
+            padding: 30px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .story-content {
+            white-space: pre-line;
+            line-height: 1.8;
+            margin: 20px 0;
+            flex-grow: 1;
+        }
+        
+        .story-content p {
+            margin-bottom: 15px;
+        }
+        
+        .story-image-wrapper {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            max-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .story-image-wrapper img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+        
+        .generated-image-wrapper {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .generated-image-wrapper img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .image-label {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .story-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            justify-content: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--bg-medium);
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(45deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(135, 107, 82, 0.2);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(135, 107, 82, 0.3);
+            background: linear-gradient(45deg, var(--primary-dark), var(--primary));
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-share {
+            background: linear-gradient(45deg, #3b5998, #6d84b4);
+        }
+        
+        .btn-share:hover {
+            background: linear-gradient(45deg, #344e86, #5e75a3);
+        }
+        
+        .btn-download {
+            background: linear-gradient(45deg, #28a745, #5cb85c);
+        }
+        
+        .btn-download:hover {
+            background: linear-gradient(45deg, #218838, #4da04d);
+        }
+        
+        .btn-regenerate {
+            background: linear-gradient(45deg, #17a2b8, #5bc0de);
+        }
+        
+        .btn-regenerate:hover {
+            background: linear-gradient(45deg, #138496, #4bacc6);
+        }
+        
+        .btn-new {
+            background: linear-gradient(45deg, #6c757d, #868e96);
+        }
+        
+        .btn-new:hover {
+            background: linear-gradient(45deg, #5a6268, #78838e);
+        }
+        
+        /* Image panels */
+        .image-section {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .input-image-panel, .ai-image-panel {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-header {
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            color: white;
+            padding: 15px 20px;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .panel-body {
+            padding: 20px;
+            flex-grow: 1;
+        }
+        
+        /* Mobile styles */
+        @media (max-width: 768px) {
+            .story-result-page {
+                grid-template-columns: 1fr;
+            }
+            
+            .story-header h2 {
+                font-size: 1.5rem;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.85rem;
+            }
+            
+            .story-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader__content">
+            <div class="preloader__spinner"></div>
+        </div>
+    </div>
+    
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <a href="{{ url_for('index') }}" class="logo">The Photogenic</a>
+                <nav class="nav" id="mainNav">
+                    <a href="{{ url_for('index') }}" class="nav__link">Home</a>
+                    <a href="{{ url_for('interactive') }}" class="nav__link">Accommodations</a>
+                    <a href="{{ url_for('ai_story') }}" class="nav__link nav__link--active">AI Stories</a>
+                    <a href="#" class="nav__link">About</a>
+                    <a href="#" class="nav__link">Contact</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="story-result-page">
+                <!-- Story Section -->
+                <div class="story-card">
+                    <div class="story-header">
+                        <h2>Your AI-Generated Story</h2>
+                        <p>Based on {% if story_prompt %}the prompt: "{{ story_prompt }}"{% else %}your input{% endif %}</p>
+                    </div>
+                    <div class="story-body">
+                        {% if story %}
+                        <div class="story-content" id="story-content">
+                            {{ story }}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="story-actions">
+                            <form action="{{ url_for('regenerate_story') }}" method="POST">
+                                <button type="submit" class="btn btn-regenerate"><i class="fas fa-sync-alt"></i> Regenerate Story</button>
+                            </form>
+                            <button class="btn btn-download" onclick="downloadStory()"><i class="fas fa-download"></i> Download Story</button>
+                            <button class="btn btn-share" onclick="shareStory()"><i class="fas fa-share-alt"></i> Share Story</button>
+                            <a href="{{ url_for('ai_story') }}" class="btn btn-new"><i class="fas fa-plus"></i> Create New Story</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Image Section -->
+                <div class="image-section">
+                    {% if image_url %}
+                    <div class="input-image-panel">
+                        <div class="panel-header">
+                            <h3>Your Input Image</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="story-image-wrapper">
+                                <img src="{{ image_url }}" alt="Input Image" class="story-image">
+                                <div class="image-label">Original</div>
+                            </div>
+                            {% if description %}
+                            <p><strong>Description:</strong> {{ description }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if generated_image_url %}
+                    <div class="ai-image-panel">
+                        <div class="panel-header">
+                            <h3>AI-Generated Illustration</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="generated-image-wrapper">
+                                <img src="{{ generated_image_url }}" alt="AI-Generated Illustration" class="generated-image">
+                                <div class="image-label">AI-Generated</div>
+                            </div>
+                            <p>This illustration was created by AI based on your story.</p>
+                            <button class="btn" onclick="downloadImage()"><i class="fas fa-download"></i> Download Image</button>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+    // Preloader and page loading
+    document.addEventListener('DOMContentLoaded', function() {
+        const preloader = document.getElementById('preloader');
+        
+        // Hide preloader
+        setTimeout(function() {
+            preloader.classList.add('fade-out');
+            setTimeout(function() {
+                preloader.style.display = 'none';
+            }, 200);
+        }, 300);
+    });
+    
+    // Download story functionality
+    function downloadStory() {
+        const text = document.getElementById('story-content').innerText;
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'ai_story.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+    
+    // Download image functionality
+    function downloadImage() {
+        const imageUrl = document.querySelector('.generated-image').src;
+        const a = document.createElement('a');
+        a.href = imageUrl;
+        a.download = 'ai_illustration.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+    
+    // Share story functionality
+    function shareStory() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'My AI-Generated Story',
+                text: document.getElementById('story-content').innerText,
+                url: window.location.href,
+            })
+            .catch((error) => console.log('Error sharing:', error));
+        } else {
+            // Fallback for browsers that don't support the Web Share API
+            alert('Use this link to share your story: ' + window.location.href);
+        }
+    }
+    </script>
+</body>
+</html>

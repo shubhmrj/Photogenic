@@ -1,0 +1,2191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Generation - PhotoGenic</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* Modern Pro AI Image Generator UI */
+        :root {
+            --primary: #0073e6;
+            --primary-light: #e6f4ff;
+            --primary-dark: #0050a0;
+            --secondary: #34a853;
+            --accent: #fbbc05;
+            --danger: #ea4335;
+            --dark: #202124;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--gray-100);
+            color: var(--gray-800);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* === Header Styling === */
+        .header {
+            background-color: white;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            transition: var(--transition);
+        }
+
+        .header.scrolled {
+            padding: 0.5rem 1.5rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--dark);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            color: var(--primary);
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 1.6rem;
+        }
+
+        /* === Content Area === */
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* === Button Styling === */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--radius);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            text-decoration: none;
+        }
+
+        .btn i {
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 115, 230, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            box-shadow: 0 4px 8px rgba(0, 115, 230, 0.3);
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: var(--dark);
+            box-shadow: 0 2px 4px rgba(251, 188, 5, 0.3);
+            border: none;
+        }
+
+        .btn-accent:hover {
+            background-color: #e6a800;
+            box-shadow: 0 4px 8px rgba(251, 188, 5, 0.4);
+        }
+
+        .btn-light {
+            background-color: white;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+
+        .btn-light:hover {
+            background-color: var(--gray-100);
+            color: var(--gray-900);
+        }
+
+        /* Image Generation UI */
+        .gen-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .gen-title {
+            font-size: 2.5rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .gen-subtitle {
+            font-size: 1.2rem;
+            color: var(--gray-600);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .gen-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .gen-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .gen-form {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--gray-800);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 115, 230, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .style-selector {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .style-option {
+            width: 180px;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border: 3px solid transparent;
+        }
+        
+        .style-option.active {
+            border-color: var(--secondary);
+            transform: translateY(-5px);
+            box-shadow: 0 7px 15px rgba(255, 64, 129, 0.25);
+        }
+        
+        .style-preview {
+            height: 120px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .style-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .style-option:hover .style-preview img {
+            transform: scale(1.1);
+        }
+        
+        .style-info {
+            padding: 10px;
+            background-color: white;
+            text-align: center;
+        }
+        
+        .style-info h4 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .style-info p {
+            margin: 5px 0 0;
+            font-size: 0.8rem;
+            color: #777;
+        }
+        
+        .style-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0,0,0,0.6);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        
+        .style-option.active .style-badge {
+            background-color: var(--secondary);
+        }
+
+        .gen-result {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .result-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .result-preview {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background-color: var(--gray-200);
+            min-height: 300px;
+        }
+
+        .preview-placeholder {
+            text-align: center;
+            color: var(--gray-600);
+        }
+
+        .preview-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--gray-400);
+        }
+
+        .result-image {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: none;
+        }
+
+        .result-image.show {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .result-actions {
+            padding: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .form-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        /* Loading indicator */
+        .loading-container {
+            position: relative;
+            width: 100%;
+            height: 8px;
+            background-color: var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .loading-bar {
+            position: absolute;
+            height: 100%;
+            width: 30%;
+            background-color: var(--primary);
+            border-radius: 4px;
+            animation: loading 1.5s infinite ease-in-out;
+        }
+
+        @keyframes loading {
+            0% { left: -30%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Toast Notification */
+        #toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 9999;
+        }
+
+        .toast {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 1rem 1.5rem;
+            margin-top: 1rem;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: toastIn 0.3s ease-out;
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+        }
+
+        .toast-success .toast-icon {
+            color: var(--secondary);
+        }
+
+        .toast-error .toast-icon {
+            color: var(--danger);
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .toast-message {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+
+        .toast-close {
+            color: var(--gray-500);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .toast-close:hover {
+            color: var(--gray-700);
+        }
+
+        /* Input Toggle Styling */
+        .input-toggle-container {
+            margin-bottom: 1.5rem;
+        }
+        
+        .toggle-buttons {
+            display: flex;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--gray-300);
+        }
+        
+        .toggle-btn {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: none;
+            background-color: white;
+            color: var(--gray-600);
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .toggle-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* Upload Area Styling */
+        .upload-area {
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+            transition: var(--transition);
+            background-color: var(--gray-100);
+            cursor: pointer;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+        
+        .upload-area.dragging {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+            transform: scale(1.02);
+        }
+        
+        .upload-prompt {
+            width: 100%;
+        }
+        
+        .upload-prompt i {
+            font-size: 3rem;
+            color: var(--gray-500);
+            margin-bottom: 1rem;
+        }
+        
+        .upload-prompt p {
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+        }
+        
+        .upload-btn {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            background-color: var(--primary);
+            color: white;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .upload-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .preview-container {
+            position: relative;
+            width: 100%;
+        }
+        
+        .preview-container img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        
+        .remove-image-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .remove-image-btn:hover {
+            background-color: #d32f2f;
+            transform: scale(1.1);
+        }
+
+        /* Pixabay Search Styling */
+        .pixabay-search {
+            margin-bottom: 1rem;
+        }
+        
+        .search-container {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .search-btn {
+            padding: 0.8rem 1rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .search-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .popular-tags {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+        
+        .popular-tags a {
+            color: var(--primary);
+            text-decoration: none;
+            margin: 0 0.3rem;
+            transition: var(--transition);
+        }
+        
+        .popular-tags a:hover {
+            text-decoration: underline;
+            color: var(--primary-dark);
+        }
+        
+        .pixabay-results {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.8rem;
+            margin-top: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+        
+        .pixabay-item {
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            border-radius: var(--radius);
+            cursor: pointer;
+            position: relative;
+            border: 3px solid transparent;
+            transition: var(--transition);
+        }
+        
+        .pixabay-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        
+        .pixabay-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        
+        .pixabay-item.selected {
+            border-color: var(--primary);
+            transform: scale(1.05);
+            box-shadow: var(--shadow);
+        }
+        
+        .pixabay-item.selected::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: var(--primary);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .pixabay-placeholder {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray-500);
+        }
+        
+        .pixabay-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--gray-300);
+        }
+        
+        .pixabay-loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 2rem;
+            color: var(--primary);
+        }
+        
+        .pixabay-error {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 2rem;
+            color: var(--danger);
+        }
+
+        /* Image credit badge */
+        .image-credit {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .image-credit i {
+            font-size: 0.7rem;
+        }
+        
+        .model-info {
+            font-size: 0.85rem;
+            color: var(--gray-400);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+        
+        .loading-message {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .loading-message h3 {
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        
+        /* Global Styles */
+        :root {
+            --primary: #3f51b5;
+            --secondary: #ff4081;
+            --dark: #333;
+            --light: #f5f5f5;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Additional styles for enhanced loading interface */
+        .loading-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            color: white;
+            text-align: center;
+        }
+        
+        .loading-content {
+            max-width: 500px;
+            padding: 2rem;
+            border-radius: 10px;
+            background-color: rgba(30, 30, 40, 0.9);
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+        
+        .loading-spinner:before,
+        .loading-spinner:after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+        }
+        
+        .loading-spinner:before {
+            width: 100%;
+            height: 100%;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .loading-spinner:after {
+            width: 100%;
+            height: 100%;
+            border: 5px solid transparent;
+            border-top-color: var(--secondary);
+            animation: spin 1.5s linear infinite;
+        }
+        
+        .pulse-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 64, 129, 0.2);
+            border-radius: 50%;
+            animation: pulse 2s ease-out infinite;
+        }
+        
+        .generation-progress {
+            margin: 1.5rem auto;
+            width: 100%;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+            transition: width 0.5s ease;
+            animation: progressAnimation 30s linear forwards;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 1rem 0 2rem;
+        }
+        
+        .step {
+            flex: 1;
+            text-align: center;
+            font-size: 0.75rem;
+            position: relative;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .step.active {
+            color: white;
+            font-weight: bold;
+        }
+        
+        .step:before {
+            content: '';
+            display: block;
+            width: 15px;
+            height: 15px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            margin: 0 auto 0.5rem;
+            transition: background-color 0.3s;
+        }
+        
+        .step.active:before {
+            background-color: var(--secondary);
+        }
+        
+        .step:not(:last-child):after {
+            content: '';
+            position: absolute;
+            top: 7px;
+            right: -50%;
+            width: 100%;
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.2);
+            z-index: -1;
+        }
+        
+        .loading-message {
+            margin-top: 1rem;
+        }
+        
+        .loading-message h3 {
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+        
+        .loading-message p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0.5rem;
+        }
+        
+        .loading-message .model-info {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .generation-tip {
+            margin-top: 1.5rem;
+            font-style: italic;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 0.5rem;
+            border-left: 2px solid var(--secondary);
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.2; }
+            100% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.5; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes progressAnimation {
+            0% { width: 0%; }
+            10% { width: 15%; }
+            20% { width: 25%; }
+            50% { width: 50%; }
+            70% { width: 65%; }
+            90% { width: 85%; }
+            100% { width: 95%; }
+        }
+        
+        /* Enhanced buttons for better interactivity */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .action-button {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            font-weight: 500;
+            min-width: 100px;
+        }
+        
+        .action-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .action-button i {
+            margin-right: 8px;
+            font-size: 1.1em;
+        }
+        
+        /* Button hover effects */
+        .action-button:not(:disabled):hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .action-button:not(:disabled):active {
+            transform: translateY(0);
+        }
+        
+        /* Button ripple effect */
+        .action-button .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+        
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        /* Button types */
+        .btn-download {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+        }
+        
+        .btn-save {
+            background: linear-gradient(135deg, #FF4081, #C2185B);
+            color: white;
+        }
+        
+        .btn-share {
+            background: linear-gradient(135deg, #2196F3, #0D47A1);
+            color: white;
+        }
+        
+        .btn-reset {
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        /* Button state animations */
+        .action-button.success {
+            background: #4CAF50;
+            animation: success-pulse 1s;
+        }
+        
+        @keyframes success-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+        }
+        
+        /* Button tooltips */
+        .action-button-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-5px);
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .action-button:hover .action-button-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-10px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Pro Header with Modern UI -->
+    <header class="header">
+        <a href="/" class="logo">
+            <i class="fas fa-camera"></i>
+            <span>PhotoGenic</span>
+        </a>
+        <div class="action-bar">
+            <a href="/collections" class="btn btn-light">
+                <i class="fas fa-photo-video"></i> Collections
+            </a>
+            <a href="/ai-features" class="btn btn-accent">
+                <i class="fas fa-robot"></i> AI Features
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content">
+        <div class="gen-header">
+            <h1 class="gen-title">AI Image Generation</h1>
+            <p class="gen-subtitle">Create stunning AI-generated images from text prompts. Choose a style and watch the magic happen.</p>
+        </div>
+
+        <div class="gen-container">
+            <div class="gen-form">
+                <form id="generation-form">
+                    <div class="form-group">
+                        <div class="input-toggle-container">
+                            <label class="form-label">Input Type</label>
+                            <div class="toggle-buttons">
+                                <button type="button" id="toggle-text" class="toggle-btn active" onclick="toggleInputMode('text')">
+                                    <i class="fas fa-font"></i> Text
+                                </button>
+                                <button type="button" id="toggle-image" class="toggle-btn" onclick="toggleInputMode('image')">
+                                    <i class="fas fa-image"></i> Image
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="text-input-container" class="form-group">
+                        <label for="prompt-input" class="form-label">Text Prompt</label>
+                        <textarea id="prompt-input" class="form-input form-textarea" placeholder="Describe the image you want to create..." required></textarea>
+                    </div>
+
+                    <div id="image-upload-container" class="form-group" style="display: none;">
+                        <label class="form-label">Upload Image or Search Pixabay</label>
+                        <div class="input-toggle-container">
+                            <div class="toggle-buttons">
+                                <button type="button" id="toggle-upload" class="toggle-btn active" onclick="toggleImageSource('upload')">
+                                    <i class="fas fa-upload"></i> Upload
+                                </button>
+                                <button type="button" id="toggle-pixabay" class="toggle-btn" onclick="toggleImageSource('pixabay')">
+                                    <i class="fas fa-search"></i> Pixabay Search
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="upload-section">
+                            <div class="upload-area" id="upload-area">
+                                <div class="upload-prompt" id="upload-prompt">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Drag & drop your image here or</p>
+                                    <label for="file-input" class="upload-btn">Browse Files</label>
+                                    <input type="file" id="file-input" accept="image/*" style="display: none;">
+                                </div>
+                                <div id="preview-container" class="preview-container" style="display: none;">
+                                    <img id="image-preview" src="" alt="Preview">
+                                    <button type="button" class="remove-image-btn" id="remove-image-btn">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="pixabay-section" style="display: none;">
+                            <div class="pixabay-search">
+                                <div class="search-container">
+                                    <input type="text" class="form-input" id="pixabay-search" placeholder="Search for images...">
+                                    <button type="button" class="search-btn" id="pixabay-search-btn">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                                <div class="popular-tags">
+                                    <span>Popular: </span>
+                                    <a href="#" onclick="searchPixabay('nature')">nature</a>
+                                    <a href="#" onclick="searchPixabay('abstract')">abstract</a>
+                                    <a href="#" onclick="searchPixabay('city')">city</a>
+                                    <a href="#" onclick="searchPixabay('technology')">technology</a>
+                                    <a href="#" onclick="searchPixabay('fantasy')">fantasy</a>
+                                </div>
+                            </div>
+                            <div class="pixabay-results" id="pixabay-results">
+                                <div class="pixabay-placeholder">
+                                    <i class="fas fa-images"></i>
+                                    <p>Search Pixabay for images</p>
+                                </div>
+                            </div>
+                            <input type="hidden" id="pixabay-selected-url">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Style</label>
+                        <div class="style-selector">
+                            <div class="style-option active" data-style="realistic">
+                                <div class="style-preview">
+                                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Realistic Style">
+                                    <div class="style-badge">Realistic</div>
+                                </div>
+                                <div class="style-info">
+                                    <h4>Realistic</h4>
+                                    <p>Photorealistic images with high detail</p>
+                                </div>
+                            </div>
+                            
+                            <div class="style-option" data-style="artistic">
+                                <div class="style-preview">
+                                    <img src="https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Artistic Style">
+                                    <div class="style-badge">Artistic</div>
+                                </div>
+                                <div class="style-info">
+                                    <h4>Artistic</h4>
+                                    <p>Creative and stylized artwork</p>
+                                </div>
+                            </div>
+                            
+                            <div class="style-option" data-style="cartoon">
+                                <div class="style-preview">
+                                    <img src="https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Cartoon Style">
+                                    <div class="style-badge">Cartoon</div>
+                                </div>
+                                <div class="style-info">
+                                    <h4>Cartoon</h4>
+                                    <p>Vibrant and stylized illustrations</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="size" class="form-label">Image Size</label>
+                        <select id="size" class="form-input">
+                            <option value="512x512">512 x 512</option>
+                            <option value="768x768" selected>768 x 768</option>
+                            <option value="1024x1024">1024 x 1024</option>
+                        </select>
+                    </div>
+
+                    <div class="loading-container" id="loading-container">
+                        <div class="loading-bar"></div>
+                    </div>
+
+                    <div class="form-footer">
+                        <button type="button" class="btn btn-light" onclick="resetForm()">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="generate-btn">
+                            <i class="fas fa-wand-magic-sparkles"></i> Generate Image
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="gen-result">
+                <div class="result-header">
+                    <h2><i class="fas fa-wand-magic-sparkles"></i> Generated Image</h2>
+                </div>
+                
+                <div id="result-preview" class="result-preview">
+                    <div class="empty-placeholder">Generated image will appear here</div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="download-btn" class="action-button btn-download" disabled>
+                        <i class="fas fa-download"></i> Download
+                        <span class="action-button-tooltip">Download to your device</span>
+                    </button>
+                    <button id="save-btn" class="action-button btn-save" disabled>
+                        <i class="fas fa-heart"></i> Save
+                        <span class="action-button-tooltip">Add to your collection</span>
+                    </button>
+                    <button id="share-btn" class="action-button btn-share" disabled>
+                        <i class="fas fa-share-alt"></i> Share
+                        <span class="action-button-tooltip">Share with others</span>
+                    </button>
+                    <button id="reset-btn" class="action-button btn-reset">
+                        <i class="fas fa-redo"></i> Reset
+                        <span class="action-button-tooltip">Clear and start over</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <script>
+        // Global variables
+        let selectedStyle = null;
+        let uploadedImage = null;
+        let currentInputMode = 'text'; // 'text' or 'image'
+        let currentImageSource = 'upload'; // 'upload' or 'pixabay'
+        let pixabaySelectedImage = null;
+
+        // Style selection
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize elements
+            initializeStyleSelectors();
+            initializeSizeSelectors();
+            setupGenerateButton();
+            setupFileUpload();
+            setupResetButton();
+        });
+        
+        function initializeStyleSelectors() {
+            const styleOptions = document.querySelectorAll('.style-option');
+            styleOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove active class from all options
+                    styleOptions.forEach(opt => opt.classList.remove('active'));
+                    // Add active class to clicked option
+                    this.classList.add('active');
+                    // Update selected style
+                    selectedStyle = this.getAttribute('data-style');
+                    
+                    // Add a subtle animation to show change
+                    this.style.animation = 'pulse 0.5s';
+                    setTimeout(() => {
+                        this.style.animation = '';
+                    }, 500);
+                });
+            });
+        }
+        
+        function initializeSizeSelectors() {
+            const sizeOptions = document.querySelectorAll('.size-option');
+            sizeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    sizeOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedSize = this.getAttribute('data-size');
+                });
+            });
+        }
+        
+        function setupGenerateButton() {
+            const generateBtn = document.getElementById('generate-btn');
+            const promptInput = document.getElementById('prompt-input');
+            
+            generateBtn.addEventListener('click', function() {
+                const prompt = promptInput.value.trim();
+                if (prompt === '') {
+                    showToast('Error', 'Please enter a prompt before generating an image.', 'error');
+                    return;
+                }
+                
+                generateImage(prompt, selectedStyle, selectedSize);
+            });
+        }
+        
+        function setupFileUpload() {
+            const fileInput = document.getElementById('file-input');
+            const uploadPreview = document.getElementById('upload-preview');
+            
+            fileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            uploadedImage = e.target.result;
+                            uploadPreview.innerHTML = `<img src="${uploadedImage}" alt="Uploaded Image">`;
+                            uploadPreview.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        showToast('Error', 'Please upload an image file.', 'error');
+                    }
+                }
+            });
+        }
+        
+        function setupResetButton() {
+            const resetBtn = document.getElementById('reset-btn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', function() {
+                    resetInterface();
+                });
+            }
+        }
+
+        // Toggle between text and image input modes
+        function toggleInputMode(mode) {
+            const textToggle = document.getElementById('toggle-text');
+            const imageToggle = document.getElementById('toggle-image');
+            const textInputContainer = document.getElementById('text-input-container');
+            const imageUploadContainer = document.getElementById('image-upload-container');
+
+            if (mode === 'text') {
+                textToggle.classList.add('active');
+                imageToggle.classList.remove('active');
+                textInputContainer.style.display = 'block';
+                imageUploadContainer.style.display = 'none';
+                currentInputMode = 'text';
+            } else {
+                imageToggle.classList.add('active');
+                textToggle.classList.remove('active');
+                textInputContainer.style.display = 'none';
+                imageUploadContainer.style.display = 'block';
+                currentInputMode = 'image';
+            }
+        }
+
+        // Toggle between upload and pixabay sections
+        function toggleImageSource(source) {
+            const uploadToggle = document.getElementById('toggle-upload');
+            const pixabayToggle = document.getElementById('toggle-pixabay');
+            const uploadSection = document.getElementById('upload-section');
+            const pixabaySection = document.getElementById('pixabay-section');
+
+            if (source === 'upload') {
+                uploadToggle.classList.add('active');
+                pixabayToggle.classList.remove('active');
+                uploadSection.style.display = 'block';
+                pixabaySection.style.display = 'none';
+                currentImageSource = 'upload';
+            } else {
+                pixabayToggle.classList.add('active');
+                uploadToggle.classList.remove('active');
+                uploadSection.style.display = 'none';
+                pixabaySection.style.display = 'block';
+                currentImageSource = 'pixabay';
+            }
+        }
+
+        // Pixabay search functionality
+        function setupPixabaySearch() {
+            const searchInput = document.getElementById('pixabay-search');
+            const searchBtn = document.getElementById('pixabay-search-btn');
+            const resultsContainer = document.getElementById('pixabay-results');
+
+            // Search button click event
+            searchBtn.addEventListener('click', function() {
+                const query = searchInput.value.trim();
+                if (query) {
+                    searchPixabay(query);
+                }
+            });
+
+            // Enter key press event
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const query = this.value.trim();
+                    if (query) {
+                        searchPixabay(query);
+                    }
+                }
+            });
+        }
+
+        // Perform Pixabay search
+        function searchPixabay(query) {
+            // If query is passed directly from a link, update the input field
+            const searchInput = document.getElementById('pixabay-search');
+            if (searchInput.value !== query) {
+                searchInput.value = query;
+            }
+
+            const resultsContainer = document.getElementById('pixabay-results');
+            
+            // Show loading indicator
+            resultsContainer.innerHTML = `
+                <div class="pixabay-loading">
+                    <i class="fas fa-spinner fa-spin fa-3x"></i>
+                    <p>Searching Pixabay...</p>
+                </div>
+            `;
+            
+            // Call the backend endpoint
+            fetch(`/search-pixabay?query=${encodeURIComponent(query)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Search request failed');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.hits && data.hits.length > 0) {
+                        displayPixabayResults(data.hits);
+                    } else {
+                        resultsContainer.innerHTML = `
+                            <div class="pixabay-placeholder">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <p>No images found. Try a different search term.</p>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error searching Pixabay:', error);
+                    resultsContainer.innerHTML = `
+                        <div class="pixabay-error">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>There was an error searching Pixabay. Please try again.</p>
+                        </div>
+                    `;
+                });
+        }
+
+        // Display Pixabay search results
+        function displayPixabayResults(images) {
+            const resultsContainer = document.getElementById('pixabay-results');
+            resultsContainer.innerHTML = '';
+            
+            images.forEach(image => {
+                const item = document.createElement('div');
+                item.className = 'pixabay-item';
+                item.dataset.url = image.webformatURL;
+                item.dataset.largeUrl = image.largeImageURL;
+                item.dataset.user = image.user;
+                
+                item.innerHTML = `
+                    <img src="${image.previewURL}" alt="${image.tags}">
+                `;
+                
+                item.addEventListener('click', function() {
+                    // Clear previous selections
+                    document.querySelectorAll('.pixabay-item').forEach(el => {
+                        el.classList.remove('selected');
+                    });
+                    
+                    // Select this item
+                    this.classList.add('selected');
+                    
+                    // Store selected image data
+                    pixabaySelectedImage = {
+                        url: this.dataset.url,
+                        largeUrl: this.dataset.largeUrl,
+                        user: this.dataset.user,
+                        tags: image.tags
+                    };
+                    
+                    document.getElementById('pixabay-selected-url').value = this.dataset.url;
+                    
+                    showToast('Image Selected', 'Pixabay image selected for generation', 'success');
+                });
+                
+                resultsContainer.appendChild(item);
+            });
+        }
+
+        // Image upload handling
+        function setupImageUpload() {
+            const uploadArea = document.getElementById('upload-area');
+            const fileInput = document.getElementById('file-input');
+            const previewContainer = document.getElementById('preview-container');
+            const imagePreview = document.getElementById('image-preview');
+            const uploadPrompt = document.getElementById('upload-prompt');
+            const removeImageBtn = document.getElementById('remove-image-btn');
+
+            // Click on upload area
+            uploadArea.addEventListener('click', function(e) {
+                if (e.target !== removeImageBtn && !removeImageBtn.contains(e.target)) {
+                    fileInput.click();
+                }
+            });
+
+            // Handle file selection
+            fileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            uploadedImage = e.target.result;
+                            imagePreview.src = uploadedImage;
+                            previewContainer.style.display = 'block';
+                            uploadPrompt.style.display = 'none';
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        showToast('Error', 'Please upload an image file.', 'error');
+                    }
+                }
+            });
+        }
+
+        // Form handling
+        const generationForm = document.getElementById('generation-form');
+        const generateBtn = document.getElementById('generate-btn');
+        const loadingContainer = document.getElementById('loading-container');
+        const resultImage = document.getElementById('result-image');
+        const previewPlaceholder = document.getElementById('preview-placeholder');
+        const downloadBtn = document.getElementById('download-btn');
+        const saveBtn = document.getElementById('save-btn');
+        const shareBtn = document.getElementById('share-btn');
+
+        generationForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const size = document.getElementById('size').value;
+
+            // Validate form based on current input mode and source
+            if (currentInputMode === 'text') {
+                const prompt = document.getElementById('prompt-input').value;
+                if (!prompt) {
+                    showToast('Error', 'Please enter a text prompt', 'error');
+                    return;
+                }
+            } else { // image mode
+                if (currentImageSource === 'upload') {
+                    if (!uploadedImage) {
+                        showToast('Error', 'Please upload an image', 'error');
+                        return;
+                    }
+                } else { // pixabay source
+                    if (!pixabaySelectedImage) {
+                        showToast('Error', 'Please select a Pixabay image', 'error');
+                        return;
+                    }
+                }
+            }
+
+            if (!selectedStyle) {
+                showToast('Error', 'Please select a style', 'error');
+                return;
+            }
+
+            // Show loading
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            loadingContainer.style.display = 'flex';
+
+            // Simulate API call with timeout
+            setTimeout(() => {
+                if (currentInputMode === 'text') {
+                    const prompt = document.getElementById('prompt-input').value;
+                    generateImage(prompt, selectedStyle, size);
+                } else if (currentImageSource === 'upload') {
+                    generateImageFromUpload(uploadedImage, selectedStyle, size);
+                } else {
+                    generateImageFromPixabay(pixabaySelectedImage, selectedStyle, size);
+                }
+                
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Generate Image';
+                loadingContainer.style.display = 'none';
+            }, 2000);
+        });
+
+        function generateImage(prompt, style, size) {
+            // Use Hugging Face Inference API for text-to-image generation
+            const huggingFaceModels = {
+                'realistic': 'stabilityai/stable-diffusion-xl-base-1.0',
+                'artistic': 'runwayml/stable-diffusion-v1-5',
+                'cartoon': 'prompthero/openjourney'
+            };
+
+            const model = huggingFaceModels[style] || huggingFaceModels['realistic'];
+            
+            // Disable button and show generating state
+            const generateBtn = document.getElementById('generate-btn');
+            const loadingContainer = document.getElementById('loading-container');
+            
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            loadingContainer.style.display = 'flex';
+            
+            // Random tips to show during generation
+            const generationTips = [
+                "The more descriptive your prompt, the better the results.",
+                "Try including artistic styles like 'watercolor' or 'oil painting' in your prompt.",
+                "Adding words like 'high quality' and 'detailed' can improve results.",
+                "Specific lighting conditions like 'golden hour' or 'studio lighting' can make images more dramatic.",
+                "For better compositions, try describing the camera angle or distance (close-up, wide shot).",
+                "Color schemes can be specified with terms like 'vibrant', 'monochrome', or specific color names."
+            ];
+            
+            // Get a random tip
+            const randomTip = generationTips[Math.floor(Math.random() * generationTips.length)];
+            
+            // Enhanced loading message with steps and progress bar
+            loadingContainer.innerHTML = `
+                <div class="loading-content">
+                    <div class="loading-spinner">
+                        <div class="pulse-circle"></div>
+                    </div>
+                    <div class="loading-message">
+                        <h3>Creating Your Vision</h3>
+                        <p>Generating a ${style} image using advanced AI</p>
+                    </div>
+                    
+                    <div class="step-indicator">
+                        <div class="step active" id="step-1">
+                            Initializing
+                        </div>
+                        <div class="step" id="step-2">
+                            Processing
+                        </div>
+                        <div class="step" id="step-3">
+                            Refining
+                        </div>
+                        <div class="step" id="step-4">
+                            Finalizing
+                        </div>
+                    </div>
+                    
+                    <div class="generation-progress">
+                        <div class="progress-bar" id="generation-progress-bar"></div>
+                    </div>
+                    
+                    <div class="model-info">
+                        <p>Using model: ${model}</p>
+                        <p>This may take up to 30-60 seconds...</p>
+                    </div>
+                    
+                    <div class="generation-tip">
+                        <i class="fas fa-lightbulb"></i> Tip: ${randomTip}
+                    </div>
+                </div>
+            `;
+            
+            // Simulate the generation steps
+            setTimeout(() => {
+                document.getElementById('step-1').classList.remove('active');
+                document.getElementById('step-2').classList.add('active');
+            }, 3000);
+            
+            setTimeout(() => {
+                document.getElementById('step-2').classList.remove('active');
+                document.getElementById('step-3').classList.add('active');
+            }, 10000);
+            
+            setTimeout(() => {
+                document.getElementById('step-3').classList.remove('active');
+                document.getElementById('step-4').classList.add('active');
+            }, 20000);
+            
+            // Call the backend API
+            fetch('/generate-ai-image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    model: model,
+                    prompt: prompt,
+                    size: size,
+                    style: style
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Image generation failed: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Reset progress animation when we get the response
+                const progressBar = document.getElementById('generation-progress-bar');
+                if (progressBar) {
+                    progressBar.style.width = '100%';
+                    progressBar.style.transition = 'width 0.5s ease';
+                }
+                
+                // Handle error responses
+                if (data.error) {
+                    if (data.retry) {
+                        // Model is still loading, retry after delay
+                        showToast('Model Loading', data.error + '. Retrying in 10 seconds...', 'info');
+                        setTimeout(() => {
+                            generateImage(prompt, style, size);
+                        }, 10000);
+                        return;
+                    }
+                    throw new Error(data.error);
+                }
+                
+                // Check if we have a note (usually for placeholder images)
+                if (data.note) {
+                    showToast('Note', data.note, 'info');
+                }
+                
+                // Display the generated image
+                displayGeneratedImage(data.image_url);
+                
+                // No longer adding model information to the result
+                // We're removing the model attribution as requested
+                
+                // Show success message only if not a placeholder
+                if (!data.is_placeholder) {
+                    showToast('Success', 'Your image has been generated!', 'success');
+                }
+                
+                // Re-enable the generate button
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Generate Image';
+                loadingContainer.style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error generating image:', error);
+                showToast('Error', 'Failed to generate image: ' + error.message, 'error');
+                
+                // Show a helpful message if API key might be missing
+                if (error.message.includes("API key") || error.message.includes("unauthorized")) {
+                    showToast('Configuration Needed', 'This feature requires a Hugging Face API key. Please add your HUGGINGFACE_API_KEY to the environment variables.', 'info');
+                }
+                
+                // Re-enable the generate button
+                loadingContainer.style.display = 'none';
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Generate Image';
+            });
+        }
+
+        function generateImageFromUpload(uploadedImage, style, size) {
+            // For demo purposes, we're applying a CSS filter based on style
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                
+                // Apply different effects based on style
+                ctx.filter = getStyleFilter(style);
+                ctx.drawImage(img, 0, 0);
+                
+                const processedImageUrl = canvas.toDataURL('image/jpeg');
+                displayGeneratedImage(processedImageUrl);
+            };
+            
+            img.src = uploadedImage;
+            showToast('Success', 'Your image has been transformed!', 'success');
+        }
+
+        function generateImageFromPixabay(pixabayImage, style, size) {
+            // For demo purposes, we're applying a CSS filter based on style
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                
+                // Apply different effects based on style
+                ctx.filter = getStyleFilter(style);
+                ctx.drawImage(img, 0, 0);
+                
+                const processedImageUrl = canvas.toDataURL('image/jpeg');
+                
+                // Add Pixabay credit to the result
+                const resultPreview = document.getElementById('result-preview');
+                
+                // Remove any existing credit
+                const existingCredit = resultPreview.querySelector('.image-credit');
+                if (existingCredit) {
+                    existingCredit.remove();
+                }
+                
+                // Add the new credit
+                const creditBadge = document.createElement('div');
+                creditBadge.className = 'image-credit';
+                
+                if (data.is_placeholder) {
+                    creditBadge.innerHTML = `
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        Placeholder image (API Key needed)
+                    `;
+                    creditBadge.style.color = '#e67e22';
+                } else {
+                    creditBadge.innerHTML = `
+                        <i class="fas fa-camera"></i> 
+                        Image by ${pixabayImage.user} on Pixabay
+                    `;
+                }
+                
+                resultPreview.appendChild(creditBadge);
+                
+                displayGeneratedImage(processedImageUrl);
+            };
+            
+            img.src = pixabayImage.url;
+            showToast('Success', 'Pixabay image has been transformed!', 'success');
+        }
+
+        function getStyleFilter(style) {
+            // Return different CSS filters based on the selected style
+            switch(style) {
+                case 'realistic':
+                    return 'contrast(110%) saturate(110%)';
+                case 'artistic':
+                    return 'saturate(180%) contrast(120%) brightness(110%) hue-rotate(10deg)';
+                case 'cartoon':
+                    return 'saturate(200%) contrast(150%) brightness(120%)';
+                default:
+                    return 'none';
+            }
+        }
+
+        function displayGeneratedImage(imageSrc) {
+            // Display the result image
+            const resultPreview = document.getElementById('result-preview');
+            resultPreview.innerHTML = `<img src="${imageSrc}" alt="Generated Image" id="generated-image">`;
+            
+            // Enable action buttons once image is generated
+            document.getElementById('download-btn').disabled = false;
+            document.getElementById('save-btn').disabled = false;
+            document.getElementById('share-btn').disabled = false;
+            
+            // Setup action buttons functionality
+            setupActionButtons(imageSrc);
+        }
+        
+        // Set up action buttons for the generated image
+        function setupActionButtons(imageUrl) {
+            // Add ripple effect to all action buttons
+            document.querySelectorAll('.action-button').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    // Create ripple element
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple');
+                    
+                    // Calculate ripple size and position
+                    const buttonRect = this.getBoundingClientRect();
+                    const size = Math.max(buttonRect.width, buttonRect.height);
+                    const x = e.clientX - buttonRect.left - size / 2;
+                    const y = e.clientY - buttonRect.top - size / 2;
+                    
+                    // Position the ripple
+                    ripple.style.width = ripple.style.height = `${size}px`;
+                    ripple.style.left = `${x}px`;
+                    ripple.style.top = `${y}px`;
+                    
+                    // Add ripple to button
+                    this.appendChild(ripple);
+                    
+                    // Remove ripple after animation completes
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+            
+            // Download button
+            const downloadBtn = document.getElementById('download-btn');
+            downloadBtn.addEventListener('click', function() {
+                // Show button animation
+                this.classList.add('processing');
+                
+                // Download the image
+                downloadImage(imageUrl);
+                
+                // Show success animation
+                setTimeout(() => {
+                    this.classList.remove('processing');
+                    this.classList.add('success');
+                    setTimeout(() => {
+                        this.classList.remove('success');
+                    }, 1000);
+                }, 500);
+            });
+            
+            // Save to collection button
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.addEventListener('click', function() {
+                // Show button animation
+                this.classList.add('processing');
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                
+                // Save to collection
+                saveToCollection(imageUrl).then(success => {
+                    if (success) {
+                        // Show success animation
+                        this.classList.remove('processing');
+                        this.innerHTML = '<i class="fas fa-check"></i> Saved!';
+                        this.classList.add('success');
+                        
+                        // Reset button after delay
+                        setTimeout(() => {
+                            this.classList.remove('success');
+                            this.innerHTML = '<i class="fas fa-heart"></i> Save';
+                        }, 2000);
+                    } else {
+                        // Show error state
+                        this.classList.remove('processing');
+                        this.innerHTML = '<i class="fas fa-exclamation-circle"></i> Failed';
+                        
+                        // Reset button after delay
+                        setTimeout(() => {
+                            this.innerHTML = '<i class="fas fa-heart"></i> Save';
+                        }, 2000);
+                    }
+                });
+            });
+            
+            // Share button
+            const shareBtn = document.getElementById('share-btn');
+            shareBtn.addEventListener('click', function() {
+                // Show button animation
+                this.classList.add('processing');
+                
+                // Open share modal
+                shareImage(imageUrl);
+                
+                // Reset button state
+                setTimeout(() => {
+                    this.classList.remove('processing');
+                }, 500);
+            });
+        }
+        
+        // Save the generated image to user's collection
+        function saveToCollection(imageUrl) {
+            // Show a loading toast
+            showToast('Saving', 'Adding image to your collection...', 'info');
+            
+            // Create a FormData object to send the image data
+            const formData = new FormData();
+            formData.append('image_url', imageUrl);
+            formData.append('source', 'ai_generated');
+            formData.append('name', 'AI Generated Image ' + new Date().toLocaleString());
+            
+            // Get the prompt text if available
+            const promptInput = document.getElementById('prompt-input');
+            if (promptInput && promptInput.value) {
+                formData.append('description', promptInput.value);
+            }
+            
+            // Send request to the server to save the image
+            return fetch('/save-to-collection', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to save image');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showToast('Success', 'Image saved to your collection!', 'success');
+                    return true;
+                } else {
+                    throw new Error(data.message || 'Failed to save image');
+                }
+            })
+            .catch(error => {
+                console.error('Error saving image:', error);
+                showToast('Error', error.message, 'error');
+                return false;
+            });
+        }
+        
+        // Download the generated image
+        function downloadImage(imageUrl) {
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = 'generated-image-' + new Date().getTime() + '.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('Success', 'Image downloaded successfully!', 'success');
+        }
+        
+        // Share the generated image
+        function shareImage(imageUrl) {
+            // Create modal for sharing options
+            const modal = document.createElement('div');
+            modal.className = 'modal fade';
+            modal.id = 'shareModal';
+            modal.setAttribute('tabindex', '-1');
+            modal.setAttribute('aria-labelledby', 'shareModalLabel');
+            modal.setAttribute('aria-hidden', 'true');
+            
+            modal.innerHTML = `
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="shareModalLabel">Share Your Image</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="share-preview">
+                                <img src="${imageUrl}" alt="Share Image" style="max-width: 100%; height: auto; border-radius: 8px;">
+                            </div>
+                            <div class="share-options mt-3">
+                                <h6>Share via:</h6>
+                                <div class="d-flex gap-2 mt-2">
+                                    <button class="btn btn-primary" onclick="shareVia('facebook', '${imageUrl}')">
+                                        <i class="fab fa-facebook-f"></i> Facebook
+                                    </button>
+                                    <button class="btn btn-info" onclick="shareVia('twitter', '${imageUrl}')">
+                                        <i class="fab fa-twitter"></i> Twitter
+                                    </button>
+                                    <button class="btn btn-success" onclick="shareVia('whatsapp', '${imageUrl}')">
+                                        <i class="fab fa-whatsapp"></i> WhatsApp
+                                    </button>
+                                </div>
+                                <div class="mt-3">
+                                    <h6>Or copy link:</h6>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" value="${imageUrl}" id="share-link" readonly>
+                                        <button class="btn btn-outline-secondary" type="button" onclick="copyShareLink()">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add the modal to the body
+            document.body.appendChild(modal);
+            
+            // Initialize and show the modal
+            const shareModal = new bootstrap.Modal(document.getElementById('shareModal'));
+            shareModal.show();
+            
+            // Remove the modal from the DOM when it's hidden
+            const modalElement = document.getElementById('shareModal');
+            modalElement.addEventListener('hidden.bs.modal', function () {
+                document.body.removeChild(modalElement);
+            });
+        }
+        
+        // Share via different platforms
+        function shareVia(platform, imageUrl) {
+            let shareUrl = '';
+            const text = 'Check out this image I created with PhotoGeni!';
+            
+            switch (platform) {
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(imageUrl)}&quote=${encodeURIComponent(text)}`;
+                    break;
+                case 'twitter':
+                    shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(imageUrl)}&text=${encodeURIComponent(text)}`;
+                    break;
+                case 'whatsapp':
+                    shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + ' ' + imageUrl)}`;
+                    break;
+                default:
+                    return;
+            }
+            
+            window.open(shareUrl, '_blank');
+        }
+        
+        // Copy the share link to clipboard
+        function copyShareLink() {
+            const shareLink = document.getElementById('share-link');
+            shareLink.select();
+            document.execCommand('copy');
+            showToast('Copied', 'Link copied to clipboard!', 'success');
+        }
+        
+        // Reset interface
+        function resetInterface() {
+            // Reset prompt input
+            document.getElementById('prompt-input').value = '';
+            
+            // Reset style selection
+            document.querySelectorAll('.style-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            document.querySelector('.style-option[data-style="realistic"]').classList.add('active');
+            selectedStyle = 'realistic';
+            
+            // Reset size selection
+            document.querySelectorAll('.size-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            document.querySelector('.size-option[data-size="small"]').classList.add('active');
+            selectedSize = 'small';
+            
+            // Reset image upload
+            uploadedImage = null;
+            document.getElementById('upload-preview').innerHTML = '';
+            document.getElementById('upload-preview').style.display = 'none';
+            document.getElementById('file-input').value = '';
+            
+            // Reset Pixabay image selection
+            pixabaySelectedImage = null;
+            
+            // Reset result preview
+            document.getElementById('result-preview').innerHTML = '<div class="empty-placeholder">Generated image will appear here</div>';
+            
+            // Reset to text input mode
+            toggleInputMode('text');
+            
+            showToast('Reset', 'Interface has been reset.', 'info');
+        }
+
+        // Toast notifications
+        function showToast(title, message, type = 'info') {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <div class="toast-close" onclick="this.parentElement.remove();">
+                    <i class="fas fa-times"></i>
+                </div>
+            `;
+
+            toastContainer.appendChild(toast);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                toast.remove();
+            }, 5000);
+        }
+
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 10) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html>

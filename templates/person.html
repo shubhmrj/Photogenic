@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Person - PhotoGeni</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #5b21b6;
+            --primary-light: #7c3aed;
+            --secondary: #ef4444;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #e5e7eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        body {
+            background-color: #f8fafc;
+            color: var(--dark);
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+            z-index: 10;
+        }
+        
+        .logo {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid var(--gray);
+        }
+        
+        .logo img {
+            height: 40px;
+        }
+        
+        .nav-links {
+            padding: 20px 0;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--dark);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background-color: #f1f5f9;
+        }
+        
+        .nav-link.active {
+            background-color: #ede9fe;
+            color: var(--primary);
+            border-right: 3px solid var(--primary);
+        }
+        
+        .nav-link i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .content-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .toast {
+            background-color: white;
+            color: var(--dark);
+            padding: 15px 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            min-width: 300px;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+        
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+        
+        .toast.warning {
+            border-left: 4px solid var(--warning);
+        }
+        
+        .toast i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .toast.success i {
+            color: var(--success);
+        }
+        
+        .toast.error i {
+            color: var(--danger);
+        }
+        
+        .toast.warning i {
+            color: var(--warning);
+        }
+        
+        /* Person Features */
+        .person-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .section-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--gray);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border-radius: 4px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+        }
+        
+        .btn-secondary {
+            background-color: var(--gray);
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+        }
+        
+        .person-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .person-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .person-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .person-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        
+        .person-info {
+            padding: 10px;
+        }
+        
+        .person-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .person-count {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #6b7280;
+        }
+        
+        .empty-state i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        /* Dropzone */
+        .dropzone {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        .dropzone:hover {
+            border-color: var(--primary);
+        }
+        
+        .dropzone i {
+            font-size: 40px;
+            color: #d1d5db;
+            margin-bottom: 10px;
+        }
+        
+        .dropzone p {
+            margin: 5px 0;
+        }
+        
+        .dropzone .upload-text {
+            font-weight: 500;
+        }
+        
+        .dropzone .upload-hint {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        /* Process section */
+        .process-container {
+            margin-top: 20px;
+        }
+        
+        .process-status {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .process-status.success {
+            background-color: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+            display: block;
+        }
+        
+        .process-status.error {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            display: block;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(123, 58, 237, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Modal */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        
+        .modal-backdrop.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+        
+        .modal-backdrop.show .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--gray);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #6b7280;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--gray);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        /* Form elements */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+        
+        /* Gallery modal */
+        .gallery-modal .modal-content {
+            max-width: 90%;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .gallery-modal .modal-body {
+            flex: 1;
+            padding: 0;
+            display: flex;
+        }
+        
+        .gallery-sidebar {
+            width: 250px;
+            border-right: 1px solid var(--gray);
+            overflow-y: auto;
+            padding: 15px;
+        }
+        
+        .gallery-main {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        
+        .person-photos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        
+        .person-photo {
+            position: relative;
+            height: 150px;
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .person-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        
+        .person-photo:hover img {
+            transform: scale(1.05);
+        }
+        
+        .person-list-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+        
+        .person-list-item:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .person-list-item.active {
+            background-color: #ede9fe;
+            color: var(--primary);
+        }
+        
+        .person-list-thumbnail {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+        
+        .person-list-info {
+            flex: 1;
+        }
+        
+        .person-list-name {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .person-list-count {
+            font-size: 12px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <h2>PhotoGeni</h2>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="nav-link">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="/collections" class="nav-link">
+                    <i class="fas fa-images"></i> Collections
+                </a>
+                <a href="/person" class="nav-link active">
+                    <i class="fas fa-user-friends"></i> Person
+                </a>
+                <a href="/settings" class="nav-link">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-header">
+                <h1>Person</h1>
+            </div>
+            
+            <div class="person-container">
+                <!-- Upload Section -->
+                <div class="section-card" id="upload-section">
+                    <div class="section-header">
+                        <div class="section-title">Upload Photos for Face Recognition</div>
+                    </div>
+                    <div class="dropzone" id="photo-upload-dropzone">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p class="upload-text">Drag & drop photos here or click to browse</p>
+                        <p class="upload-hint">Supported formats: JPG, PNG, JPEG</p>
+                        <input type="file" id="photo-upload-input" style="display: none;" multiple accept="image/*">
+                    </div>
+                </div>
+                
+                <!-- Process Section -->
+                <div class="section-card" id="process-section">
+                    <div class="section-header">
+                        <div class="section-title">Organize Photos by Face</div>
+                        <button class="btn btn-primary" id="process-photos-btn">
+                            <i class="fas fa-user-tag"></i> Process Photos
+                        </button>
+                    </div>
+                    <p>Automatically detect and organize photos by recognizing faces.</p>
+                    <div id="process-status" class="process-status"></div>
+                </div>
+                
+                <!-- People Section -->
+                <div class="section-card" id="people-section">
+                    <div class="section-header">
+                        <div class="section-title">People</div>
+                        <button class="btn btn-secondary" id="refresh-people-btn">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div id="people-grid" class="person-grid">
+                        <!-- Will be populated with JavaScript -->
+                    </div>
+                    <div id="empty-people-state" class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <p>No people found</p>
+                        <p>Upload photos and process them to see people here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Person Gallery Modal -->
+    <div class="modal-backdrop gallery-modal" id="gallery-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="gallery-modal-title">Person Name</h3>
+                <button class="modal-close" onclick="closeModal('gallery-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="gallery-sidebar">
+                    <h4>People</h4>
+                    <div id="gallery-person-list">
+                        <!-- Will be populated with JavaScript -->
+                    </div>
+                </div>
+                <div class="gallery-main">
+                    <div id="person-photos" class="person-photos">
+                        <!-- Will be populated with JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Global Variables
+        let currentCollectionPath = '';
+        let people = [];
+        let uploadedFiles = [];
+        
+        // Document Ready
+        $(document).ready(function() {
+            initializeDropzone();
+            setupEventListeners();
+            loadPeople();
+        });
+        
+        // Initialize Dropzone
+        function initializeDropzone() {
+            const dropzone = document.getElementById('photo-upload-dropzone');
+            const fileInput = document.getElementById('photo-upload-input');
+            
+            dropzone.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropzone.style.borderColor = '#7c3aed';
+            });
+            
+            dropzone.addEventListener('dragleave', () => {
+                dropzone.style.borderColor = '#d1d5db';
+            });
+            
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.style.borderColor = '#d1d5db';
+                
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileUpload(fileInput.files);
+                }
+            });
+            
+            fileInput.addEventListener('change', () => {
+                handleFileUpload(fileInput.files);
+            });
+        }
+        
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Process Photos Button
+            $('#process-photos-btn').click(function() {
+                processPhotos();
+            });
+            
+            // Refresh People Button
+            $('#refresh-people-btn').click(function() {
+                loadPeople();
+            });
+        }
+        
+        // Handle File Upload
+        function handleFileUpload(files) {
+            if (!files.length) return;
+            
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append('files', files[i]);
+            }
+            
+            // Show loading
+            showToast('Uploading photos...', 'info');
+            
+            // Upload files
+            $.ajax({
+                url: '/api/upload',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        showToast(`Uploaded ${response.uploaded_files.length} photos successfully`, 'success');
+                        uploadedFiles = response.uploaded_files;
+                        currentCollectionPath = response.collection_path;
+                    } else {
+                        showToast('Upload failed: ' + response.error, 'error');
+                    }
+                },
+                error: function() {
+                    showToast('Upload failed', 'error');
+                }
+            });
+        }
+        
+        // Process Photos for Face Recognition
+        function processPhotos() {
+            if (!currentCollectionPath) {
+                showToast('Please upload photos first', 'warning');
+                return;
+            }
+            
+            // Show loading
+            $('#process-photos-btn').html('<span class="loading-spinner"></span> Processing...');
+            $('#process-photos-btn').prop('disabled', true);
+            $('#process-status').removeClass('success error').hide();
+            
+            // Call API to process photos
+            $.ajax({
+                url: '/api/organize-by-faces',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ collection_path: currentCollectionPath }),
+                success: function(response) {
+                    // Reset button
+                    $('#process-photos-btn').html('<i class="fas fa-user-tag"></i> Process Photos');
+                    $('#process-photos-btn').prop('disabled', false);
+                    
+                    if (response.success) {
+                        // Show success message
+                        $('#process-status').text(`Successfully organized ${response.image_count} photos into ${response.people_count} person folders`).addClass('success').show();
+                        
+                        // Refresh people list
+                        loadPeople();
+                    } else {
+                        // Show error
+                        $('#process-status').text('Error: ' + (response.error || 'Failed to process photos')).addClass('error').show();
+                    }
+                },
+                error: function() {
+                    // Reset button
+                    $('#process-photos-btn').html('<i class="fas fa-user-tag"></i> Process Photos');
+                    $('#process-photos-btn').prop('disabled', false);
+                    
+                    // Show error
+                    $('#process-status').text('Error: Failed to process photos').addClass('error').show();
+                }
+            });
+        }
+        
+        // Load People
+        function loadPeople() {
+            console.log("Loading people...");
+            
+            // Show loading
+            $('#people-grid').empty();
+            $('#empty-people-state').show();
+            
+            // Call API to get all people
+            $.ajax({
+                url: '/api/get-all-people',
+                type: 'GET',
+                success: function(response) {
+                    console.log("API response:", response);
+                    if (response.success && response.people.length > 0) {
+                        people = response.people;
+                        
+                        // Hide empty state
+                        $('#empty-people-state').hide();
+                        
+                        console.log("Found " + people.length + " people");
+                        
+                        // Render people
+                        people.forEach(person => {
+                            console.log("Rendering person:", person);
+                            const personCard = `
+                                <div class="person-card" onclick="openPersonGallery('${person.id}')">
+                                    <img src="${person.thumbnail}" class="person-image" alt="${person.name}" onerror="this.src='/static/img/default_profile.jpg'">
+                                    <div class="person-info">
+                                        <div class="person-name">${person.name}</div>
+                                        <div class="person-count">${person.count} photos</div>
+                                    </div>
+                                </div>
+                            `;
+                            $('#people-grid').append(personCard);
+                        });
+                    } else {
+                        // Show empty state
+                        $('#empty-people-state').show();
+                        console.log("No people found or API returned error", response);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Show empty state
+                    $('#empty-people-state').show();
+                    console.error("API error:", xhr.responseText, status, error);
+                    showToast('Failed to load people', 'error');
+                }
+            });
+        }
+        
+        // Open Person Gallery
+        function openPersonGallery(personId) {
+            const person = people.find(p => p.id === personId);
+            if (!person) return;
+            
+            // Set modal title
+            $('#gallery-modal-title').text(person.name);
+            
+            // Clear previous content
+            $('#gallery-person-list').empty();
+            $('#person-photos').empty();
+            
+            // Add person to sidebar
+            people.forEach(p => {
+                const isActive = p.id === personId;
+                const personItem = `
+                    <div class="person-list-item ${isActive ? 'active' : ''}" onclick="switchPerson('${p.id}')">
+                        <img src="${p.thumbnail}" class="person-list-thumbnail" alt="${p.name}">
+                        <div class="person-list-info">
+                            <div class="person-list-name">${p.name}</div>
+                            <div class="person-list-count">${p.count} photos</div>
+                        </div>
+                    </div>
+                `;
+                $('#gallery-person-list').append(personItem);
+            });
+            
+            // Load photos for selected person
+            loadPersonPhotos(personId);
+            
+            // Show modal
+            openModal('gallery-modal');
+        }
+        
+        // Load Person Photos
+        function loadPersonPhotos(personId) {
+            // Clear previous photos
+            $('#person-photos').empty();
+            
+            // Call API to get person photos
+            $.ajax({
+                url: '/api/get-person-photos',
+                type: 'GET',
+                data: { person_id: personId },
+                success: function(response) {
+                    if (response.success && response.photos.length > 0) {
+                        // Render photos
+                        response.photos.forEach(photo => {
+                            const photoItem = `
+                                <div class="person-photo" onclick="viewPhoto('${photo.path}')">
+                                    <img src="${photo.path}" alt="Photo">
+                                </div>
+                            `;
+                            $('#person-photos').append(photoItem);
+                        });
+                    } else {
+                        $('#person-photos').html('<div class="empty-state"><p>No photos found</p></div>');
+                    }
+                },
+                error: function() {
+                    $('#person-photos').html('<div class="empty-state"><p>Failed to load photos</p></div>');
+                }
+            });
+        }
+        
+        // Switch Person in Gallery
+        function switchPerson(personId) {
+            // Update active state in sidebar
+            $('.person-list-item').removeClass('active');
+            $(`.person-list-item[onclick="switchPerson('${personId}')"]`).addClass('active');
+            
+            // Update modal title
+            const person = people.find(p => p.id === personId);
+            if (person) {
+                $('#gallery-modal-title').text(person.name);
+            }
+            
+            // Load photos for selected person
+            loadPersonPhotos(personId);
+        }
+        
+        // View Photo
+        function viewPhoto(photoPath) {
+            // Implementation would depend on your preferred photo viewer
+            console.log('View photo:', photoPath);
+            // You could open a full-screen modal with the photo
+        }
+        
+        // Open Modal
+        function openModal(modalId) {
+            $(`#${modalId}`).addClass('show');
+            $('body').css('overflow', 'hidden');
+        }
+        
+        // Close Modal
+        function closeModal(modalId) {
+            $(`#${modalId}`).removeClass('show');
+            $('body').css('overflow', 'auto');
+        }
+        
+        // Show Toast
+        function showToast(message, type = 'info') {
+            const icons = {
+                success: 'fas fa-check-circle',
+                error: 'fas fa-exclamation-circle',
+                warning: 'fas fa-exclamation-triangle',
+                info: 'fas fa-info-circle'
+            };
+            
+            const toast = `
+                <div class="toast ${type}">
+                    <i class="${icons[type] || icons.info}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            const $toast = $(toast);
+            $('#toastContainer').append($toast);
+            
+            // Show the toast
+            setTimeout(() => {
+                $toast.addClass('show');
+            }, 10);
+            
+            // Hide and remove after 3 seconds
+            setTimeout(() => {
+                $toast.removeClass('show');
+                setTimeout(() => {
+                    $toast.remove();
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,2250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The Photogenic - Transform your photos into beautiful AI-powered stories and narratives. Store and celebrate your memories.">
+    <meta name="keywords" content="AI stories, photo stories, image generation, memories, photo storage">
+    <meta name="author" content="The Photogenic">
+    <meta property="og:title" content="The Photogenic | Celebrate & Store Image">
+    <meta property="og:description" content="Transform your photos into beautiful AI-powered stories and narratives. Store and celebrate your memories.">
+    <meta property="og:image" content="/static/hero-bg.jpg">
+    <meta property="og:url" content="https://thephotogenic.com">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <title>The Photogenic | Celebrate & Store Image</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #876b52;
+            --primary-light: #a18967;
+            --primary-dark: #6a5439;
+            --primary-dark-rgb: 106, 84, 57;
+            --secondary: #d4b586;
+            --text-dark: #6a5a47;
+            --text-light: #f9f6f0;
+            --bg-light: #f9f6f0;
+            --bg-medium: #f3efe9;
+            --cursor-size: 20px;
+        }
+        
+        [data-theme="dark"] {
+            --primary: #a18967;
+            --primary-light: #c8b494;
+            --primary-dark: #6a5439;
+            --primary-dark-rgb: 106, 84, 57;
+            --secondary: #d4b586;
+            --text-dark: #f0e6d9;
+            --text-light: #f9f6f0;
+            --bg-light: #2a2520;
+            --bg-medium: #352e29;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            background-color: var(--bg-light);
+            overflow-x: hidden;
+        }
+        
+        /* Custom Cursor */
+        .cursor-dot,
+        .cursor-outline {
+            pointer-events: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary);
+            transform: translate(-50%, -50%);
+        }
+        
+        .cursor-outline {
+            width: var(--cursor-size);
+            height: var(--cursor-size);
+            border: 2px solid var(--primary);
+            transform: translate(-50%, -50%);
+            transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease;
+        }
+        
+        .link-grow {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(var(--primary-dark-rgb), 0.1);
+            border-color: transparent;
+        }
+        
+        /* Interactive Image Gallery */
+        .interactive-gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 40px;
+        }
+        
+        .interactive-gallery__item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 300px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s ease;
+            cursor: pointer;
+        }
+        
+        .interactive-gallery__item:hover {
+            transform: scale(1.03) translateY(-10px);
+            z-index: 1;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .interactive-gallery__img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s ease;
+        }
+        
+        .interactive-gallery__item:hover .interactive-gallery__img {
+            transform: scale(1.1);
+        }
+        
+        .interactive-gallery__content {
+            position: absolute;
+            inset: 0;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 20%, transparent 80%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        
+        .interactive-gallery__item:hover .interactive-gallery__content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .interactive-gallery__title {
+            color: white;
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 10px;
+            font-size: 1.4rem;
+        }
+        
+        .interactive-gallery__description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .interactive-gallery__btn {
+            background-color: var(--primary);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            align-self: flex-start;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            transition-delay: 0.1s;
+        }
+        
+        .interactive-gallery__item:hover .interactive-gallery__btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .interactive-gallery__btn:hover {
+            background-color: white;
+            color: var(--primary);
+        }
+        
+        /* Parallax Section */
+        .parallax-section {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .parallax-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            background: url('/static/parallax-bg.jpg') center/cover no-repeat;
+            z-index: 1;
+            transform: translateZ(-1px) scale(2);
+        }
+        
+        .parallax-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(var(--primary-dark-rgb), 0.7);
+            z-index: 2;
+        }
+        
+        .parallax-content {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            color: white;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+        
+        .parallax-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .parallax-text {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        /* Animated Counter Section */
+        .counter-section {
+            padding: 100px 0;
+            background-color: white;
+        }
+        
+        .counter-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .counter-item {
+            text-align: center;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .counter-item:hover {
+            transform: translateY(-10px);
+        }
+        
+        .counter-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .counter-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .counter-label {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: background-color 0.3s, padding 0.3s;
+            padding: 20px 0;
+        }
+        
+        .header--scrolled {
+            background-color: var(--primary);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header__content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav__link {
+            color: white;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: opacity 0.3s;
+            position: relative;
+        }
+        
+        .nav__link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: white;
+            transition: width 0.3s;
+        }
+        
+        .nav__link:hover::after {
+            width: 100%;
+        }
+        
+        .nav__link:hover {
+            opacity: 0.8;
+        }
+        
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .hero {
+            position: relative;
+            height: 100vh;
+            background: url('/static/hero-bg.jpg') center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .hero__overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7));
+            z-index: 1;
+        }
+        
+        .hero__particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 2;
+        }
+        
+        .hero__particle {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-120vh) translateX(20vw) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .hero__content {
+            position: relative;
+            z-index: 3;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+        
+        .hero__welcome {
+            font-size: 1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s forwards 0.2s;
+        }
+        
+        .hero__title {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s forwards 0.4s;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .hero__subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s forwards 0.6s;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: white;
+            color: var(--primary);
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 0;
+            font-weight: 500;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+        
+        .btn:hover {
+            color: white;
+        }
+        
+        .btn:hover::before {
+            left: 0;
+        }
+        
+        .hero__btn {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s forwards 0.8s;
+        }
+        
+        .section {
+            padding: 100px 0;
+        }
+        
+        .intro {
+            padding: 120px 0;
+            background-color: white;
+            position: relative;
+        }
+        
+        .intro::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background-color: white;
+            clip-path: polygon(0 0, 100% 100%, 100% 100%, 0% 100%);
+        }
+        
+        .intro__grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        
+        .intro__content h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 25px;
+            line-height: 1.3;
+        }
+        
+        .intro__content p {
+            margin-bottom: 30px;
+            font-size: 1.05rem;
+        }
+        
+        .intro__img {
+            position: relative;
+        }
+        
+        .intro__img img {
+            width: 100%;
+            height: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .intro__img::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            width: 100%;
+            height: 100%;
+            border: 3px solid var(--secondary);
+            z-index: -1;
+        }
+        
+        .intro__btn {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .intro__btn::before {
+            background-color: var(--primary-dark);
+        }
+        
+        .family-suite {
+            background-color: var(--bg-medium);
+            position: relative;
+        }
+        
+        .family-suite::before, .family-suite::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background-color: var(--bg-medium);
+        }
+        
+        .family-suite::before {
+            top: -80px;
+            clip-path: polygon(0 0, 100% 100%, 100% 100%, 0% 100%);
+        }
+        
+        .family-suite::after {
+            bottom: -80px;
+            clip-path: polygon(0 0, 100% 0, 100% 0, 0 100%);
+        }
+        
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 60px;
+            font-size: 1.1rem;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+        
+        .gallery__item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+        }
+        
+        .gallery__item:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .gallery__img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .gallery__item:hover .gallery__img {
+            transform: scale(1.1);
+        }
+        
+        .gallery__overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 30px 20px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .gallery__item:hover .gallery__overlay {
+            background: linear-gradient(to top, rgba(var(--primary-dark-rgb), 0.9), transparent);
+            padding-bottom: 40px;
+        }
+        
+        .gallery__title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            transform: translateY(10px);
+            opacity: 0.9;
+            transition: all 0.3s ease;
+        }
+        
+        .gallery__item:hover .gallery__title {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .gallery__overlay p {
+            transform: translateY(20px);
+            opacity: 0.7;
+            transition: all 0.3s ease 0.1s;
+        }
+        
+        .gallery__item:hover .gallery__overlay p {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .features {
+            background-color: white;
+            padding: 120px 0;
+            position: relative;
+        }
+        
+        .features__grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 60px;
+        }
+        
+        .feature-card {
+            background: var(--bg-light);
+            border-radius: 10px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            z-index: -1;
+            transition: height 0.5s ease;
+            opacity: 0.9;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+        
+        .feature-card:hover::before {
+            height: 100%;
+        }
+        
+        .feature-card:hover .feature-card__icon {
+            background-color: white;
+            color: var(--primary);
+        }
+        
+        .feature-card__icon {
+            width: 70px;
+            height: 70px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            margin: 0 auto 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card__title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover .feature-card__title {
+            color: white;
+        }
+        
+        .feature-card__text {
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card__btn {
+            display: inline-block;
+            background: none;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover .feature-card__btn {
+            background: white;
+            border-color: white;
+            color: var(--primary);
+        }
+        
+        .cta-section {
+            text-align: center;
+            margin-top: 60px;
+        }
+        
+        .footer {
+            background-color: var(--primary);
+            color: white;
+            padding: 80px 0 40px;
+            position: relative;
+        }
+        
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background-color: var(--primary);
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+        
+        .footer__grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+        }
+        
+        .footer__title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .footer__text {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .footer__heading {
+            font-weight: 500;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        
+        .footer__link {
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        
+        .footer__link:hover {
+            color: white;
+        }
+        
+        .footer__social {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .footer__social-link {
+            color: white;
+            text-decoration: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: background-color 0.3s;
+        }
+        
+        .footer__social-link:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .footer__form {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .footer__input {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            outline: none;
+        }
+        
+        .footer__input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .footer__submit {
+            background-color: var(--secondary);
+            color: var(--primary-dark);
+            border: none;
+            padding: 0 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .footer__submit:hover {
+            background-color: white;
+        }
+        
+        .footer__bottom {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .scroll-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 999;
+        }
+        
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .scroll-top:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        /* Testimonials Section */
+        .testimonials {
+            background-color: var(--bg-medium);
+            padding: 100px 0;
+            position: relative;
+        }
+        
+        .testimonials::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background-color: var(--bg-medium);
+            clip-path: polygon(0 0, 100% 100%, 100% 100%, 0% 100%);
+        }
+        
+        .testimonial-slider {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            padding: 30px 0;
+        }
+        
+        .testimonial-item {
+            background-color: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            margin: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .testimonial-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .testimonial-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 20px;
+            border: 3px solid var(--primary-light);
+        }
+        
+        .testimonial-quote {
+            font-style: italic;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .testimonial-quote::before {
+            content: '"';
+            font-family: 'Playfair Display', serif;
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 120px;
+            color: rgba(var(--primary-dark-rgb), 0.1);
+            z-index: -1;
+        }
+        
+        .testimonial-author {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .testimonial-role {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        /* CTA Section */
+        .cta {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            padding: 100px 0;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta__content {
+            position: relative;
+            z-index: 2;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .cta__title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .cta__text {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .cta__btn {
+            background-color: white;
+            color: var(--primary);
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+        
+        .cta__btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .hero__title {
+                font-size: 3.5rem;
+            }
+            
+            .intro__grid, 
+            .features__grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            
+            .gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .section {
+                padding: 80px 0;
+            }
+            
+            .section-title {
+                font-size: 2.2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero__title {
+                font-size: 2.8rem;
+            }
+            
+            .hero__subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .nav {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 250px;
+                height: 100vh;
+                background-color: var(--primary-dark);
+                flex-direction: column;
+                padding: 80px 20px 30px;
+                transition: right 0.3s ease;
+                z-index: 999;
+            }
+            
+            .nav.show {
+                right: 0;
+            }
+            
+            .nav__link {
+                padding: 15px 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                width: 100%;
+                display: block;
+            }
+            
+            .hamburger {
+                display: block;
+                z-index: 1000;
+            }
+            
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .footer__grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer__form {
+                flex-direction: column;
+            }
+            
+            .footer__input {
+                margin-bottom: 10px;
+            }
+        }
+        
+        /* Theme Toggle */
+        .theme-toggle {
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Accessibility - Skip to content */
+        .skip-to-content {
+            position: absolute;
+            top: -50px;
+            left: 0;
+            background: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            z-index: 10000;
+            transition: top 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .skip-to-content:focus {
+            top: 0;
+        }
+        
+        /* Pricing Section */
+        .pricing {
+            padding: 100px 0;
+            background-color: var(--bg-light);
+        }
+        
+        .pricing-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 30px 0 50px;
+        }
+        
+        .pricing-toggle span {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        
+        .save-badge {
+            background-color: var(--secondary);
+            color: var(--primary-dark);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+            margin: 0 15px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-medium);
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .pricing-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .pricing-card.popular:before {
+            content: 'Most Popular';
+            position: absolute;
+            top: 15px;
+            right: -35px;
+            background-color: var(--primary);
+            color: white;
+            padding: 5px 40px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transform: rotate(45deg);
+            z-index: 1;
+        }
+        
+        .pricing-card-header {
+            background: linear-gradient(45deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .pricing-card.popular .pricing-card-header {
+            background: linear-gradient(45deg, var(--primary-dark) 0%, var(--primary) 100%);
+        }
+        
+        .pricing-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        
+        .pricing-price {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .currency {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-right: 5px;
+            align-self: flex-start;
+            margin-top: 5px;
+        }
+        
+        .amount {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        
+        .period {
+            font-size: 1rem;
+            margin-left: 5px;
+            align-self: flex-end;
+            opacity: 0.8;
+        }
+        
+        .pricing-features {
+            padding: 30px;
+        }
+        
+        .pricing-features ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .pricing-features li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .pricing-features i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .pricing-features .fa-check {
+            color: #28a745;
+        }
+        
+        .pricing-features .fa-times {
+            color: #dc3545;
+        }
+        
+        .pricing-features .disabled {
+            opacity: 0.6;
+        }
+        
+        .pricing-cta {
+            padding: 0 30px 30px;
+            text-align: center;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* Feedback Widget */
+        .feedback-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .feedback-toggle {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .feedback-toggle:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .feedback-form {
+            position: absolute;
+            bottom: 60px;
+            right: 0;
+            width: 300px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: none;
+            transition: all 0.3s ease;
+            transform-origin: bottom right;
+        }
+        
+        .feedback-form.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .feedback-form h3 {
+            margin-top: 0;
+            color: var(--primary);
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .feedback-form p {
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+        
+        .form-group select,
+        .form-group textarea,
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+    
+    <!-- Custom Cursor Elements -->
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+    
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loader">
+            <div class="loader-circle"></div>
+            <div class="loader-text">Loading</div>
+        </div>
+    </div>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="flash-message flash-{{ category }}">
+            <div class="flash-content">
+                <div class="flash-icon">
+                    {% if category == 'success' %}
+                    <i class="fas fa-check-circle"></i>
+                    {% elif category == 'error' %}
+                    <i class="fas fa-exclamation-circle"></i>
+                    {% elif category == 'warning' %}
+                    <i class="fas fa-exclamation-triangle"></i>
+                    {% else %}
+                    <i class="fas fa-info-circle"></i>
+                    {% endif %}
+                </div>
+                <div class="flash-text">{{ message }}</div>
+                <button class="flash-close">&times;</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    
+    <!-- Include Header -->
+    {% include 'header.html' %}
+    
+    <main id="main-content">
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <div class="hero__overlay"></div>
+            <div class="hero__particles">
+                <div class="hero__particle" style="top: 20%; left: 30%; width: 20px; height: 20px; animation-delay: 0s;"></div>
+                <div class="hero__particle" style="top: 50%; left: 70%; width: 15px; height: 15px; animation-delay: 1s;"></div>
+                <div class="hero__particle" style="top: 80%; left: 40%; width: 25px; height: 25px; animation-delay: 2s;"></div>
+                <div class="hero__particle" style="top: 30%; left: 60%; width: 18px; height: 18px; animation-delay: 3s;"></div>
+                <div class="hero__particle" style="top: 60%; left: 20%; width: 22px; height: 22px; animation-delay: 4s;"></div>
+                <div class="hero__particle" style="top: 40%; left: 50%; width: 12px; height: 12px; animation-delay: 5s;"></div>
+                <div class="hero__particle" style="top: 70%; left: 10%; width: 28px; height: 28px; animation-delay: 6s;"></div>
+                <div class="hero__particle" style="top: 10%; left: 80%; width: 8px; height: 8px; animation-delay: 7s;"></div>
+                <div class="hero__particle" style="top: 90%; left: 60%; width: 35px; height: 35px; animation-delay: 8s;"></div>
+            </div>
+            <div class="hero__content">
+                <div class="hero__welcome">WELCOME TO</div>
+                <h1 class="hero__title">The Photogenic</h1>
+                <div class="hero__subtitle" id="typing-text">Celebrate & Store Image</div>
+                <a href="{{ url_for('interactive') }}" class="btn hero__btn">EXPLORE OUR ACCOMMODATIONS</a>
+            </div>
+        </section>
+        
+        <!-- Intro Section -->
+        <section class="intro section" id="about">
+            <div class="container">
+                <div class="intro__grid">
+                    <div class="intro__content" data-aos="fade-right" data-aos-duration="1000">
+                        <h2>Enter the photogenic palace of your memory</h2>
+                        <p>Welcome to a unique space where your photos transform into narratives. Our AI-driven platform takes your visual memories and crafts them into beautiful stories that capture the essence of your moments.</p>
+                        <p>Experience the magic of seeing your images come alive through the power of artificial intelligence and creative storytelling.</p>
+                        <a href="{{ url_for('ai_story') }}" class="btn intro__btn">TRY AI STORIES</a>
+                    </div>
+                    <div class="intro__img" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+                        <img src="/static/welcome.jpg" alt="Welcome" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Family Suite Section -->
+        <section class="family-suite section" id="family-suite">
+            <div class="container">
+                <h2 class="section-title" data-aos="fade-up">The Generative Ideas</h2>
+                <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Share your story collections with family and friends. Create collaborative albums where everyone can contribute their photos and stories.</p>
+                
+                <div class="gallery">
+                    <div class="gallery__item" data-aos="zoom-in" data-aos-duration="800">
+                        <img src="/static/family1.jpg" alt="Family Suite" class="gallery__img" loading="lazy">
+                        <div class="gallery__overlay">
+                            <h3 class="gallery__title">Suite Photos</h3>
+                            <p>A spacious area for connection and memories</p>
+                        </div>
+                    </div>
+                    
+                    <div class="gallery__item" data-aos="zoom-in" data-aos-duration="800" data-aos-delay="100">
+                        <img src="/static/family2.jpg" alt="Family Suite" class="gallery__img" loading="lazy">
+                        <div class="gallery__overlay">
+                            <h3 class="gallery__title">Suite Stories</h3>
+                            <p>Relax after your storytelling adventures</p>
+                        </div>
+                    </div>
+                    
+                    <div class="gallery__item" data-aos="zoom-in" data-aos-duration="800" data-aos-delay="200">
+                        <img src="/static/family3.jpg" alt="Family Suite" class="gallery__img" loading="lazy">
+                        <div class="gallery__overlay">
+                            <h3 class="gallery__title">Suite Animation</h3>
+                            <p>Dream big in our comfortable futures</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cta-section" data-aos="fade-up" data-aos-delay="300">
+                    <a href="{{ url_for('interactive') }}" class="btn intro__btn">VIEW ALL ACCOMMODATIONS</a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Testimonials Section -->
+        <section class="testimonials section" id="testimonials">
+            <div class="container">
+                <h2 class="section-title" data-aos="fade-up">What Our Users Say</h2>
+                <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Read what our users have to say about their experience with The Photogenic.</p>
+                
+                <div class="testimonial-slider" data-aos="fade-up" data-aos-delay="200">
+                    <div class="testimonial-item">
+                        <img src="/static/avatar1.jpg" alt="Avatar" class="testimonial-avatar">
+                        <p class="testimonial-quote">"The Photogenic transformed my vacation photos into a beautiful storybook that perfectly captured our adventure. The AI-generated stories were creative and meaningful."</p>
+                        <h4 class="testimonial-author">Sarah Johnson</h4>
+                        <p class="testimonial-role">Travel Photographer</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Features Section -->
+        <section class="features section" id="features">
+            <div class="container">
+                <h2 class="section-title" data-aos="fade-up">AI Features</h2>
+                <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Discover the power of AI in transforming your photos into beautiful stories.</p>
+                
+                <div class="features__grid">
+                    <div class="feature-card" data-aos="fade-up" data-aos-duration="800">
+                        <div class="feature-card__icon">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <h3 class="feature-card__title">Photo Enhancement</h3>
+                        <p class="feature-card__text">Enhance your photos with our AI-powered tools to make them look stunning.</p>
+                        <a href="#" class="feature-card__btn">Learn More</a>
+                    </div>
+                    
+                    <div class="feature-card" data-aos="fade-up" data-aos-duration="800" data-aos-delay="100">
+                        <div class="feature-card__icon">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <h3 class="feature-card__title">Color Correction</h3>
+                        <p class="feature-card__text">Correct the colors of your photos to make them look natural and vibrant.</p>
+                        <a href="#" class="feature-card__btn">Learn More</a>
+                    </div>
+                    
+                    <div class="feature-card" data-aos="fade-up" data-aos-duration="800" data-aos-delay="200">
+                        <div class="feature-card__icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h3 class="feature-card__title">Story Generation</h3>
+                        <p class="feature-card__text">Generate beautiful stories from your photos with our AI-powered storytelling tools.</p>
+                        <a href="{{ url_for('ai_story') }}" class="feature-card__btn">Try Now</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Pricing Section -->
+        <section class="pricing section" id="pricing">
+            <div class="container">
+                <h2 class="section-title" data-aos="fade-up">Choose Your Plan</h2>
+                <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Select the perfect package for your needs</p>
+                
+                <div class="pricing-toggle" data-aos="fade-up" data-aos-delay="200">
+                    <span>Monthly</span>
+                    <label class="switch">
+                        <input type="checkbox" id="pricing-toggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span>Yearly <span class="save-badge">Save 20%</span></span>
+                </div>
+                
+                <div class="pricing-grid" data-aos="fade-up" data-aos-delay="300">
+                    <div class="pricing-card">
+                        <div class="pricing-card-header">
+                            <h3>Free</h3>
+                            <div class="pricing-price">
+                                <span class="currency">$</span>
+                                <span class="amount">0</span>
+                                <span class="period">/month</span>
+                            </div>
+                        </div>
+                        <div class="pricing-features">
+                            <ul>
+                                <li><i class="fas fa-check"></i> 5 AI stories per month</li>
+                                <li><i class="fas fa-check"></i> Basic photo enhancement</li>
+                                <li><i class="fas fa-check"></i> Standard story templates</li>
+                                <li class="disabled"><i class="fas fa-times"></i> Advanced AI filters</li>
+                                <li class="disabled"><i class="fas fa-times"></i> Priority support</li>
+                            </ul>
+                        </div>
+                        <div class="pricing-cta">
+                            <a href="#" class="btn btn-outline">Get Started</a>
+                        </div>
+                    </div>
+                    
+                    <div class="pricing-card popular">
+                        <div class="pricing-card-header">
+                            <h3>Premium</h3>
+                            <div class="pricing-price monthly">
+                                <span class="currency">$</span>
+                                <span class="amount">9</span>
+                                <span class="period">/month</span>
+                            </div>
+                            <div class="pricing-price yearly" style="display: none;">
+                                <span class="currency">$</span>
+                                <span class="amount">87</span>
+                                <span class="period">/year</span>
+                            </div>
+                        </div>
+                        <div class="pricing-features">
+                            <ul>
+                                <li><i class="fas fa-check"></i> 50 AI stories per month</li>
+                                <li><i class="fas fa-check"></i> Advanced photo enhancement</li>
+                                <li><i class="fas fa-check"></i> Premium story templates</li>
+                                <li><i class="fas fa-check"></i> Advanced AI filters</li>
+                                <li class="disabled"><i class="fas fa-times"></i> Priority support</li>
+                            </ul>
+                        </div>
+                        <div class="pricing-cta">
+                            <a href="#" class="btn">Get Started</a>
+                        </div>
+                    </div>
+                    
+                    <div class="pricing-card">
+                        <div class="pricing-card-header">
+                            <h3>Pro</h3>
+                            <div class="pricing-price monthly">
+                                <span class="currency">$</span>
+                                <span class="amount">19</span>
+                                <span class="period">/month</span>
+                            </div>
+                            <div class="pricing-price yearly" style="display: none;">
+                                <span class="currency">$</span>
+                                <span class="amount">183</span>
+                                <span class="period">/year</span>
+                            </div>
+                        </div>
+                        <div class="pricing-features">
+                            <ul>
+                                <li><i class="fas fa-check"></i> Unlimited AI stories</li>
+                                <li><i class="fas fa-check"></i> Professional photo enhancement</li>
+                                <li><i class="fas fa-check"></i> All story templates</li>
+                                <li><i class="fas fa-check"></i> Advanced AI filters</li>
+                                <li><i class="fas fa-check"></i> Priority support</li>
+                            </ul>
+                        </div>
+                        <div class="pricing-cta">
+                            <a href="#" class="btn btn-outline">Get Started</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- CTA Section -->
+        <section class="cta" id="cta">
+            <div class="container">
+                <div class="cta__content" data-aos="zoom-in">
+                    <h2 class="cta__title">Ready to Transform Your Photos?</h2>
+                    <p class="cta__text">Start creating beautiful AI-powered stories from your photos today.</p>
+                    <a href="{{ url_for('ai_story') }}" class="cta__btn">Get Started Now</a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Parallax Section -->
+        <section class="parallax-section" id="parallax">
+            <div class="parallax-bg"></div>
+            <div class="parallax-overlay"></div>
+            <div class="parallax-content">
+                <h2 class="parallax-title">Transform Your Memories</h2>
+                <p class="parallax-text">Our AI-powered platform turns your photos into captivating stories that you'll cherish forever.</p>
+                <a href="{{ url_for('ai_story') }}" class="btn">Start Creating Now</a>
+            </div>
+        </section>
+        
+        <!-- Interactive Gallery Section -->
+        <section class="section" id="gallery">
+            <div class="container">
+                <h2 class="section-title" data-aos="fade-up">Explore Our Features</h2>
+                <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Discover the powerful tools we offer to transform your photos into something extraordinary.</p>
+                
+                <div class="interactive-gallery">
+                    <div class="interactive-gallery__item" data-aos="fade-up" data-aos-duration="800">
+                        <img src="/static/gallery1.jpg" alt="Feature 1" class="interactive-gallery__img" loading="lazy">
+                        <div class="interactive-gallery__content">
+                            <h3 class="interactive-gallery__title">AI Story Generation</h3>
+                            <p class="interactive-gallery__description">Transform your photos into captivating narratives with our advanced AI technology.</p>
+                            <a href="{{ url_for('ai_story') }}" class="interactive-gallery__btn">Try Now</a>
+                        </div>
+                    </div>
+                    
+                    <div class="interactive-gallery__item" data-aos="fade-up" data-aos-duration="800" data-aos-delay="100">
+                        <img src="/static/gallery2.jpg" alt="Feature 2" class="interactive-gallery__img" loading="lazy">
+                        <div class="interactive-gallery__content">
+                            <h3 class="interactive-gallery__title">Photo Enhancement</h3>
+                            <p class="interactive-gallery__description">Enhance your photos with intelligent algorithms that bring out the best in every image.</p>
+                            <a href="#" class="interactive-gallery__btn">Explore</a>
+                        </div>
+                    </div>
+                    
+                    <div class="interactive-gallery__item" data-aos="fade-up" data-aos-duration="800" data-aos-delay="200">
+                        <img src="/static/gallery3.jpg" alt="Feature 3" class="interactive-gallery__img" loading="lazy">
+                        <div class="interactive-gallery__content">
+                            <h3 class="interactive-gallery__title">Visual Collections</h3>
+                            <p class="interactive-gallery__description">Organize and showcase your photos in beautiful, interactive albums.</p>
+                            <a href="#" class="interactive-gallery__btn">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Counter Section -->
+        <section class="counter-section" id="counter">
+            <div class="container">
+                <h2 class="section-title" data-aos="fade-up">Our Impact</h2>
+                <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">See the difference we've made for our users around the world.</p>
+                
+                <div class="counter-grid">
+                    <div class="counter-item" data-aos="fade-up" data-aos-duration="800">
+                        <div class="counter-icon">
+                            <i class="fas fa-images"></i>
+                        </div>
+                        <div class="counter-number" data-target="15000">0</div>
+                        <div class="counter-label">Photos Processed</div>
+                    </div>
+                    
+                    <div class="counter-item" data-aos="fade-up" data-aos-duration="800" data-aos-delay="100">
+                        <div class="counter-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="counter-number" data-target="7500">0</div>
+                        <div class="counter-label">Stories Created</div>
+                    </div>
+                    
+                    <div class="counter-item" data-aos="fade-up" data-aos-duration="800" data-aos-delay="200">
+                        <div class="counter-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="counter-number" data-target="3200">0</div>
+                        <div class="counter-label">Happy Users</div>
+                    </div>
+                    
+                    <div class="counter-item" data-aos="fade-up" data-aos-duration="800" data-aos-delay="300">
+                        <div class="counter-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="counter-number" data-target="42">0</div>
+                        <div class="counter-label">Countries Reached</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer__grid">
+                    <div class="footer__col">
+                        <h3 class="footer__title">The Photogenic</h3>
+                        <p class="footer__text">Where your memories transform into beautiful narratives through the power of artificial intelligence.</p>
+                    </div>
+                    
+                    <div class="footer__col">
+                        <h4 class="footer__heading">Navigation</h4>
+                        <a href="{{ url_for('index') }}" class="footer__link">Home</a>
+                        <a href="{{ url_for('interactive') }}" class="footer__link">Accommodations</a>
+                        <a href="{{ url_for('ai_story') }}" class="footer__link">AI Stories</a>
+                        <a href="#" class="footer__link">Gallery</a>
+                    </div>
+                    
+                    <div class="footer__col">
+                        <h4 class="footer__heading">Contact</h4>
+                        <a href="#" class="footer__link">shubmrj@gmail.com</a>
+                        <a href="#" class="footer__link">+1 (555) 123-4567</a>
+                        <a href="#" class="footer__link">Madhya Pradesh, India</a>
+                        <a href="#" class="footer__link">Support</a>
+                    </div>
+                    
+                    <div class="footer__col">
+                        <h4 class="footer__heading">Subscribe</h4>
+                        <p class="footer__text">Stay updated with our latest features and special offers.</p>
+                        <form class="footer__form">
+                            <input type="email" placeholder="Your email address" class="footer__input">
+                            <button type="submit" class="footer__submit">Send</button>
+                        </form>
+                        <div class="footer__social">
+                            <a href="#" class="footer__social-link"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="footer__social-link"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="footer__social-link"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="footer__social-link"><i class="fab fa-pinterest-p"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer__bottom">
+                    <p>&copy; 2025 The Photogenic. All rights reserved. | Designed with <i class="fas fa-heart"></i> by Photogenic Design</p>
+                </div>
+            </div>
+        </footer>
+        
+        <!-- Scroll to Top -->
+        <a href="#home" class="scroll-top" id="scrollTop">
+            <i class="fas fa-chevron-up"></i>
+        </a>
+        
+        <!-- Feedback Widget -->
+        <div class="feedback-widget" id="feedback-widget">
+            <button class="feedback-toggle" id="feedback-toggle">
+                <i class="fas fa-comment-alt"></i>
+                <span>Feedback</span>
+            </button>
+            
+            <div class="feedback-form" id="feedback-form">
+                <h3>Share Your Feedback</h3>
+                <p>Help us improve your experience!</p>
+                
+                <form id="user-feedback-form">
+                    <div class="form-group">
+                        <label for="feedback-type">Feedback type</label>
+                        <select id="feedback-type" required>
+                            <option value="">Select an option</option>
+                            <option value="bug">Report a bug</option>
+                            <option value="feature">Feature request</option>
+                            <option value="improvement">Improvement suggestion</option>
+                            <option value="praise">Praise</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feedback-message">Message</label>
+                        <textarea id="feedback-message" rows="4" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feedback-email">Email (optional)</label>
+                        <input type="email" id="feedback-email" placeholder="For us to follow up if needed">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Send Feedback</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        // Initialize animations and UI components when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize AOS
+            AOS.init({
+                duration: 800,
+                offset: 100,
+                once: true
+            });
+            
+            // Variables
+            const header = document.getElementById('header');
+            const hamburger = document.getElementById('hamburger');
+            const nav = document.getElementById('nav');
+            const scrollTop = document.getElementById('scrollTop');
+            const preloader = document.getElementById('preloader');
+            const cursorDot = document.getElementById('cursor-dot');
+            const cursorOutline = document.getElementById('cursor-outline');
+            
+            // Custom cursor
+            document.addEventListener('mousemove', function(e) {
+                if (cursorDot && cursorOutline) {
+                    cursorDot.style.left = e.clientX + 'px';
+                    cursorDot.style.top = e.clientY + 'px';
+                    
+                    // Delayed follow for the outline
+                    setTimeout(() => {
+                        cursorOutline.style.left = e.clientX + 'px';
+                        cursorOutline.style.top = e.clientY + 'px';
+                    }, 50);
+                }
+            });
+            
+            // Hover effect for links
+            const links = document.querySelectorAll('a, button, .interactive-gallery__item');
+            links.forEach(link => {
+                link.addEventListener('mouseenter', () => {
+                    if (cursorOutline) cursorOutline.classList.add('link-grow');
+                });
+                
+                link.addEventListener('mouseleave', () => {
+                    if (cursorOutline) cursorOutline.classList.remove('link-grow');
+                });
+            });
+            
+            // Typing effect
+            const typingText = document.getElementById('typing-text');
+            if (typingText) {
+                const text = typingText.innerText;
+                typingText.innerText = '';
+                
+                let charIndex = 0;
+                function typeWriter() {
+                    if (charIndex < text.length) {
+                        typingText.innerText += text.charAt(charIndex);
+                        charIndex++;
+                        setTimeout(typeWriter, 100);
+                    }
+                }
+                
+                // Start typing after a short delay
+                setTimeout(typeWriter, 1500);
+            }
+            
+            // Animated counters
+            const counterNumbers = document.querySelectorAll('.counter-number');
+            let counted = false;
+            
+            function startCounting() {
+                if (!counted && isInViewport(document.getElementById('counter'))) {
+                    counted = true;
+                    
+                    counterNumbers.forEach(counter => {
+                        const target = +counter.getAttribute('data-target');
+                        let count = 0;
+                        const duration = 2000; // 2 seconds
+                        const increment = target / (duration / 30); // Update every 30ms
+                        
+                        const timer = setInterval(() => {
+                            count += increment;
+                            counter.innerText = Math.ceil(count);
+                            if (count >= target) {
+                                counter.innerText = target;
+                                clearInterval(timer);
+                            }
+                        }, 30);
+                    });
+                }
+            }
+            
+            // Check if element is in viewport
+            function isInViewport(element) {
+                if (!element) return false;
+                const rect = element.getBoundingClientRect();
+                return (
+                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
+                    rect.bottom >= 0
+                );
+            }
+            
+            // Handle parallax effect
+            const parallaxBg = document.querySelector('.parallax-bg');
+            if (parallaxBg) {
+                window.addEventListener('scroll', () => {
+                    const scrollPosition = window.pageYOffset;
+                    const parallaxSection = document.getElementById('parallax');
+                    if (parallaxSection) {
+                        const sectionTop = parallaxSection.offsetTop;
+                        const sectionHeight = parallaxSection.offsetHeight;
+                        const inView = scrollPosition > sectionTop - window.innerHeight && 
+                                       scrollPosition < sectionTop + sectionHeight;
+                        
+                        if (inView) {
+                            const yPos = (scrollPosition - sectionTop) * 0.5;
+                            parallaxBg.style.transform = `translate3d(0, ${yPos}px, 0)`;
+                        }
+                    }
+                });
+            }
+            
+            // Handle preloader
+            window.addEventListener('load', function() {
+                if (preloader) {
+                    preloader.style.opacity = '0';
+                    setTimeout(function() {
+                        preloader.style.display = 'none';
+                    }, 500);
+                }
+            });
+            
+            // Sticky header on scroll
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    header.classList.add('header--scrolled');
+                } else {
+                    header.classList.remove('header--scrolled');
+                }
+                
+                // Show/hide scroll-to-top button
+                if (window.scrollY > 300) {
+                    scrollTop.classList.add('visible');
+                } else {
+                    scrollTop.classList.remove('visible');
+                }
+                
+                // Start counters when in viewport
+                startCounting();
+            });
+            
+            // Mobile navigation toggle
+            if (hamburger) {
+                hamburger.addEventListener('click', function() {
+                    nav.classList.toggle('show');
+                    hamburger.innerHTML = nav.classList.contains('show') 
+                        ? '<i class="fas fa-times"></i>' 
+                        : '<i class="fas fa-bars"></i>';
+                });
+            }
+            
+            // Close mobile navigation when clicking outside
+            document.addEventListener('click', function(event) {
+                if (nav.classList.contains('show') && 
+                    !nav.contains(event.target) && 
+                    event.target !== hamburger) {
+                    nav.classList.remove('show');
+                    hamburger.innerHTML = '<i class="fas fa-bars"></i>';
+                }
+            });
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Close mobile menu if open
+                    if (nav.classList.contains('show')) {
+                        nav.classList.remove('show');
+                        hamburger.innerHTML = '<i class="fas fa-bars"></i>';
+                    }
+                    
+                    const targetId = this.getAttribute('href').substring(1);
+                    if (targetId) {
+                        const targetElement = document.getElementById(targetId);
+                        if (targetElement) {
+                            window.scrollTo({
+                                top: targetElement.offsetTop - 80,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                });
+            });
+            
+            // Invoke counter check on page load
+            startCounting();
+            
+            // Dark mode toggle
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => {
+                    // Toggle dark mode class on document
+                    document.documentElement.setAttribute(
+                        'data-theme',
+                        document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'
+                    );
+                    
+                    // Update icon
+                    const icon = themeToggle.querySelector('i');
+                    if (document.documentElement.getAttribute('data-theme') === 'dark') {
+                        icon.classList.replace('fa-moon', 'fa-sun');
+                    } else {
+                        icon.classList.replace('fa-sun', 'fa-moon');
+                    }
+                    
+                    // Save preference
+                    localStorage.setItem('theme', document.documentElement.getAttribute('data-theme'));
+                });
+                
+                // Check for saved theme preference
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme) {
+                    document.documentElement.setAttribute('data-theme', savedTheme);
+                    if (savedTheme === 'dark') {
+                        themeToggle.querySelector('i').classList.replace('fa-moon', 'fa-sun');
+                    }
+                }
+                // Check for user OS preference if no saved preference
+                else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    themeToggle.querySelector('i').classList.replace('fa-moon', 'fa-sun');
+                }
+            }
+            
+            // Toggle pricing between monthly and yearly
+            const pricingToggle = document.getElementById('pricing-toggle');
+            if (pricingToggle) {
+                pricingToggle.addEventListener('change', () => {
+                    const monthlyPrices = document.querySelectorAll('.pricing-price.monthly');
+                    const yearlyPrices = document.querySelectorAll('.pricing-price.yearly');
+                    
+                    if (pricingToggle.checked) {
+                        // Show yearly prices
+                        monthlyPrices.forEach(price => price.style.display = 'none');
+                        yearlyPrices.forEach(price => price.style.display = 'flex');
+                    } else {
+                        // Show monthly prices
+                        monthlyPrices.forEach(price => price.style.display = 'flex');
+                        yearlyPrices.forEach(price => price.style.display = 'none');
+                    }
+                });
+            }
+            
+            // Feedback widget toggle
+            const feedbackToggle = document.getElementById('feedback-toggle');
+            const feedbackForm = document.getElementById('feedback-form');
+            if (feedbackToggle && feedbackForm) {
+                feedbackToggle.addEventListener('click', () => {
+                    feedbackForm.classList.toggle('active');
+                });
+                
+                // Close feedback form when clicking outside
+                document.addEventListener('click', (event) => {
+                    if (!feedbackForm.contains(event.target) && event.target !== feedbackToggle) {
+                        feedbackForm.classList.remove('active');
+                    }
+                });
+                
+                // Handle feedback form submission
+                const feedbackFormElement = document.getElementById('user-feedback-form');
+                if (feedbackFormElement) {
+                    feedbackFormElement.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        
+                        // In a real implementation, you would send this data to your server
+                        const feedbackType = document.getElementById('feedback-type').value;
+                        const feedbackMessage = document.getElementById('feedback-message').value;
+                        const feedbackEmail = document.getElementById('feedback-email').value;
+                        
+                        // Show success message
+                        feedbackFormElement.innerHTML = `
+                            <div style="text-align: center;">
+                                <i class="fas fa-check-circle" style="color: #28a745; font-size: 3rem; margin-bottom: 15px;"></i>
+                                <h3>Thank You!</h3>
+                                <p>Your feedback has been submitted successfully.</p>
+                            </div>
+                        `;
+                        
+                        // Close the form after a delay
+                        setTimeout(() => {
+                            feedbackForm.classList.remove('active');
+                            // Reset the form (in a real implementation)
+                            setTimeout(() => {
+                                feedbackFormElement.reset();
+                            }, 300);
+                        }, 3000);
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
