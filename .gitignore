@@ -1,24 +1,63 @@
-# Environment configuration
+# Environment variables
 .env
 *.env
 .env.local
 .env.development
 .env.production
 
-# API keys and secrets
-*.pem
-*.key
-
-# Other sensitive files you might have
-credentials.json
-
 # Database files
 *.db
 *.sqlite
 *.sqlite3
+*.sql
+database.json
+db.json
 
-# OS generated files
-.DS_Store
+# Image files
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.ico
+*.webp
 
-.jpg
-.png
+# If you need to include specific images (e.g., for documentation), you can add exceptions
+# !docs/images/*.png
+# !assets/logo.png
+
+# Other common files to ignore
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+   # Ignore all contents of these directories
+   assets/large-images/
+   uploads/user-images/
+   
+   # Alternative: ignore only images in specific directories
+   project-data/*.jpg
+   project-data/*.png
