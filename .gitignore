@@ -11,3 +11,14 @@
 
 # Other sensitive files you might have
 credentials.json
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# OS generated files
+.DS_Store
+
+.jpg
+.png
