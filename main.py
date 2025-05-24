@@ -33,6 +33,7 @@ from threading import Thread
 from openai import OpenAI
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import replicate
+import hashlib
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-key-for-sessions')
@@ -1630,6 +1631,384 @@ def api_search_users():
         'success': True,
         'users': users_list
     })
+
+@app.route('/api/collections', methods=['GET'])
+def get_collections():
+    try:
+        path = request.args.get('path', '')
+        # Validate and sanitize path to prevent directory traversal
+        if not is_safe_path(path):
+            return jsonify({'error': 'Invalid path'}), 400
+            
+        # Create absolute path
+        abs_path = os.path.join(COLLECTIONS_ROOT, path)
+        
+        # Check if path exists
+        if not os.path.exists(abs_path):
+            return jsonify({'error': 'Path does not exist'}), 404
+        
+        # Get items in directory
+        items = []
+        try:
+            for item_name in os.listdir(abs_path):
+                item_path = os.path.join(abs_path, item_name)
+                rel_path = os.path.join(path, item_name) if path else item_name
+                
+                # Create item object
+                item = {
+                    'name': item_name,
+                    'path': rel_path,
+                    'type': 'folder' if os.path.isdir(item_path) else 'file',
+                    'modified': datetime.fromtimestamp(os.path.getmtime(item_path)).isoformat()
+                }
+                
+                # Add size for files
+                if os.path.isfile(item_path):
+                    item['size'] = os.path.getsize(item_path)
+                    
+                    # Add URL for files
+                    item['url'] = url_for('get_collection_file', path=rel_path)
+                    
+                    # Add preview URL for images
+                    if is_image_file(item_name):
+                        item['preview'] = url_for('get_collection_thumbnail', path=rel_path)
+                
+                items.append(item)
+                
+            # Sort items (folders first, then alphabetically)
+            items.sort(key=lambda x: (0 if x['type'] == 'folder' else 1, x['name'].lower()))
+            
+            return jsonify({
+                'items': items,
+                'path': path,
+                'parent': os.path.dirname(path) if path else None
+            })
+        except PermissionError:
+            return jsonify({'error': 'Permission denied'}), 403
+        except Exception as e:
+            app.logger.error(f"Error listing collections: {str(e)}")
+            return jsonify({'error': 'Failed to list items'}), 500
+    except Exception as e:
+        app.logger.error(f"Unexpected error in get_collections: {str(e)}")
+        return jsonify({'error': 'An unexpected error occurred'}), 500
+
+@app.route('/api/collections/folder', methods=['POST'])
+def create_folder():
+    try:
+        # Validate request data
+        if not request.is_json:
+            return jsonify({'error': 'Invalid request format, JSON required'}), 400
+            
+        data = request.json
+        path = data.get('path', '')
+        name = data.get('name', '')
+        
+        # Validate inputs
+        if not name:
+            return jsonify({'error': 'Folder name is required'}), 400
+            
+        if not is_valid_filename(name):
+            return jsonify({'error': 'Invalid folder name'}), 400
+            
+        if not is_safe_path(path):
+            return jsonify({'error': 'Invalid path'}), 400
+        
+        # Create absolute path
+        parent_path = os.path.join(COLLECTIONS_ROOT, path)
+        new_folder_path = os.path.join(parent_path, name)
+        
+        # Check if parent directory exists
+        if not os.path.exists(parent_path):
+            return jsonify({'error': 'Parent directory does not exist'}), 404
+            
+        # Check if folder already exists
+        if os.path.exists(new_folder_path):
+            return jsonify({'error': 'Folder already exists'}), 409
+        
+        # Create folder
+        try:
+            os.makedirs(new_folder_path, exist_ok=True)
+            return jsonify({
+                'success': True,
+                'path': os.path.join(path, name) if path else name
+            })
+        except PermissionError:
+            return jsonify({'error': 'Permission denied'}), 403
+        except Exception as e:
+            app.logger.error(f"Error creating folder: {str(e)}")
+            return jsonify({'error': 'Failed to create folder'}), 500
+    except Exception as e:
+        app.logger.error(f"Unexpected error in create_folder: {str(e)}")
+        return jsonify({'error': 'An unexpected error occurred'}), 500
+
+@app.route('/api/collections/upload', methods=['POST'])
+def upload_to_collection():
+    try:
+        path = request.form.get('path', '')
+        
+        # Validate path
+        if not is_safe_path(path):
+            return jsonify({'error': 'Invalid path'}), 400
+        
+        # Check if files are provided
+        if 'files[]' not in request.files and 'files' not in request.files:
+            return jsonify({'error': 'No files provided'}), 400
+        
+        # Get files
+        files = request.files.getlist('files[]') if 'files[]' in request.files else request.files.getlist('files')
+        
+        if len(files) == 0:
+            return jsonify({'error': 'No files provided'}), 400
+        
+        # Create absolute path
+        upload_path = os.path.join(COLLECTIONS_ROOT, path)
+        
+        # Check if directory exists
+        if not os.path.exists(upload_path):
+            return jsonify({'error': 'Directory does not exist'}), 404
+        
+        # Upload files
+        uploaded_files = []
+        failed_files = []
+        
+        for file in files:
+            if file and file.filename:
+                filename = secure_filename(file.filename)
+                
+                # Check if filename is valid
+                if not filename or not is_valid_filename(filename):
+                    failed_files.append({
+                        'name': file.filename,
+                        'error': 'Invalid filename'
+                    })
+                    continue
+                
+                try:
+                    # Save file
+                    file_path = os.path.join(upload_path, filename)
+                    file.save(file_path)
+                    
+                    # Process image if it's an image file
+                    if is_image_file(filename):
+                        create_thumbnail(file_path)
+                    
+                    # Add to uploaded files
+                    uploaded_files.append({
+                        'name': filename,
+                        'path': os.path.join(path, filename) if path else filename,
+                        'size': os.path.getsize(file_path),
+                        'url': url_for('get_collection_file', path=os.path.join(path, filename) if path else filename)
+                    })
+                except Exception as e:
+                    app.logger.error(f"Error uploading file {filename}: {str(e)}")
+                    failed_files.append({
+                        'name': file.filename,
+                        'error': str(e)
+                    })
+        
+        result = {
+            'success': len(uploaded_files) > 0,
+            'uploaded': uploaded_files,
+            'failed': failed_files
+        }
+        
+        if len(failed_files) > 0 and len(uploaded_files) == 0:
+            return jsonify(result), 500
+        
+        return jsonify(result)
+    except Exception as e:
+        app.logger.error(f"Unexpected error in upload_to_collection: {str(e)}")
+        return jsonify({'error': 'An unexpected error occurred'}), 500
+
+@app.route('/api/collections/file/<path:path>', methods=['GET'])
+def get_collection_file(path):
+    try:
+        # Validate path
+        if not is_safe_path(path):
+            return jsonify({'error': 'Invalid path'}), 400
+        
+        # Create absolute path
+        file_path = os.path.join(COLLECTIONS_ROOT, path)
+        
+        # Check if file exists
+        if not os.path.exists(file_path) or not os.path.isfile(file_path):
+            return jsonify({'error': 'File not found'}), 404
+        
+        # Return file
+        return send_file(file_path)
+    except Exception as e:
+        app.logger.error(f"Error serving file {path}: {str(e)}")
+        return jsonify({'error': 'Failed to serve file'}), 500
+
+@app.route('/api/collections/thumbnail/<path:path>', methods=['GET'])
+def get_collection_thumbnail(path):
+    try:
+        # Validate path
+        if not is_safe_path(path):
+            return jsonify({'error': 'Invalid path'}), 400
+        
+        # Create absolute path to original file
+        file_path = os.path.join(COLLECTIONS_ROOT, path)
+        
+        # Check if file exists
+        if not os.path.exists(file_path) or not os.path.isfile(file_path):
+            return jsonify({'error': 'File not found'}), 404
+        
+        # Check if file is an image
+        if not is_image_file(file_path):
+            return jsonify({'error': 'Not an image file'}), 400
+        
+        # Get thumbnail path
+        thumbnail_path = get_thumbnail_path(file_path)
+        
+        # Create thumbnail if it doesn't exist
+        if not os.path.exists(thumbnail_path):
+            create_thumbnail(file_path)
+        
+        # Return thumbnail
+        return send_file(thumbnail_path)
+    except Exception as e:
+        app.logger.error(f"Error serving thumbnail for {path}: {str(e)}")
+        return jsonify({'error': 'Failed to serve thumbnail'}), 500
+
+# Utility functions for collections
+def is_safe_path(path):
+    """Check if a path is safe (no directory traversal)"""
+    if not path:
+        return True
+        
+    # Normalize path
+    norm_path = os.path.normpath(path)
+    
+    # Check for directory traversal attempts
+    if norm_path.startswith('..') or '/../' in norm_path or '/..' in norm_path:
+        return False
+    
+    return True
+
+def is_valid_filename(filename):
+    """Check if a filename is valid"""
+    # Check for empty filename
+    if not filename or filename.strip() == '':
+        return False
+    
+    # Check for invalid characters
+    invalid_chars = ['/', '\\', ':', '*', '?', '"', '<', '>', '|']
+    if any(char in filename for char in invalid_chars):
+        return False
+    
+    # Check if filename is too long
+    if len(filename) > 255:
+        return False
+    
+    return True
+
+def is_image_file(filename):
+    """Check if a file is an image based on extension"""
+    image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp']
+    _, ext = os.path.splitext(filename)
+    return ext.lower() in image_extensions
+
+def get_thumbnail_path(file_path):
+    """Get the path to the thumbnail for a file"""
+    # Create thumbnails directory if it doesn't exist
+    thumbnails_dir = os.path.join(os.path.dirname(COLLECTIONS_ROOT), 'thumbnails')
+    os.makedirs(thumbnails_dir, exist_ok=True)
+    
+    # Generate a unique hash for the file path
+    file_hash = hashlib.md5(file_path.encode()).hexdigest()
+    
+    # Get file extension
+    _, ext = os.path.splitext(file_path)
+    
+    # Return thumbnail path
+    return os.path.join(thumbnails_dir, f"{file_hash}{ext}")
+
+def create_thumbnail(file_path, size=(240, 180)):
+    """Create a thumbnail for an image file"""
+    # Get thumbnail path
+    thumbnail_path = get_thumbnail_path(file_path)
+    
+    try:
+        # Open image
+        img = Image.open(file_path)
+        
+        # Preserve aspect ratio
+        img.thumbnail(size, Image.LANCZOS)
+        
+        # Save thumbnail
+        img.save(thumbnail_path, optimize=True, quality=85)
+        
+        return thumbnail_path
+    except Exception as e:
+        app.logger.error(f"Error creating thumbnail for {file_path}: {str(e)}")
+        # Return original file path if thumbnail creation fails
+        return file_path
+
+# AI integration with collections
+@app.route('/api/collections/analyze', methods=['POST'])
+def analyze_collection_image():
+    try:
+        # Validate request data
+        if not request.is_json:
+            return jsonify({'error': 'Invalid request format, JSON required'}), 400
+            
+        data = request.json
+        path = data.get('path', '')
+        
+        # Validate path
+        if not path or not is_safe_path(path):
+            return jsonify({'error': 'Invalid path'}), 400
+        
+        # Create absolute path
+        file_path = os.path.join(COLLECTIONS_ROOT, path)
+        
+        # Check if file exists
+        if not os.path.exists(file_path) or not os.path.isfile(file_path):
+            return jsonify({'error': 'File not found'}), 404
+        
+        # Check if file is an image
+        if not is_image_file(file_path):
+            return jsonify({'error': 'Not an image file'}), 400
+        
+        # Analyze image using existing AI functionality
+        analysis_results = analyze_image(file_path)
+        
+        return jsonify({
+            'success': True,
+            'path': path,
+            'results': analysis_results
+        })
+    except Exception as e:
+        app.logger.error(f"Error analyzing image {path if 'path' in locals() else 'unknown'}: {str(e)}")
+        return jsonify({'error': 'Failed to analyze image'}), 500
+
+def analyze_image(file_path):
+    """Analyze an image using AI features"""
+    try:
+        # Placeholder for actual AI analysis
+        # This would call existing AI functionality in your app
+        results = {
+            'description': 'An image analysis would appear here',
+            'tags': ['tag1', 'tag2', 'tag3'],
+            'colors': ['#FF5733', '#33FF57', '#3357FF'],
+            'objects': ['object1', 'object2'],
+            'ai_generated': False
+        }
+        
+        # In a real implementation, you would:
+        # 1. Load the image
+        # 2. Use existing AI models to analyze it
+        # 3. Return structured results
+        
+        return results
+    except Exception as e:
+        app.logger.error(f"Error in AI analysis for {file_path}: {str(e)}")
+        return {
+            'error': str(e),
+            'description': 'Analysis failed',
+            'tags': []
+        }
 
 if __name__ == '__main__':
     app.run(debug=True)

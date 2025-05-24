@@ -810,12 +810,12 @@
     <div class="preloader">
         <div class="preloader__content">
             <div class="preloader__spinner"></div>
-            <div class="preloader__text">Loading Collections...</div>
+            <div class="preloader__text">Loading collections...</div>
         </div>
     </div>
 
     <header class="header">
-        <a href="/" class="logo">
+        <a href="#" class="logo">
             <i class="fas fa-camera-retro"></i>
             <span>PhotoGeni</span>
         </a>
@@ -826,135 +826,229 @@
             </div>
         </div>
         <div class="header-actions">
-            <button class="btn upload-btn">
+            <input type="file" id="file-input" multiple style="display: none;">
+            <button class="btn" id="upload-btn">
                 <i class="fas fa-upload"></i>
                 <span>Upload</span>
             </button>
-            <button class="btn create-folder-btn">
+            <button class="btn" id="new-folder-btn">
                 <i class="fas fa-folder-plus"></i>
                 <span>New Folder</span>
             </button>
         </div>
     </header>
 
-    <div class="collections-page google-style">
+    <div class="google-style">
         <div class="sidebar">
             <div class="sidebar-section">
                 <a href="#" class="sidebar-item active">
-                    <i class="fas fa-images"></i>
-                    <span>Collections</span>
+                    <i class="fas fa-folder"></i>
+                    My Collections
                 </a>
                 <a href="#" class="sidebar-item">
-                    <i class="fas fa-share-alt"></i>
-                    <span>Shared</span>
+                    <i class="fas fa-clock"></i>
+                    Recent
                 </a>
                 <a href="#" class="sidebar-item">
                     <i class="fas fa-star"></i>
-                    <span>Starred</span>
+                    Favorites
+                </a>
+                <a href="#" class="sidebar-item">
+                    <i class="fas fa-trash"></i>
+                    Trash
                 </a>
             </div>
+            
             <div class="sidebar-divider"></div>
+            
             <div class="sidebar-section">
                 <div class="sidebar-title">AI Features</div>
-                <a href="/aitools" class="sidebar-item">
+                <a href="#" class="sidebar-item">
                     <i class="fas fa-magic"></i>
-                    <span>AI Enhancement</span>
+                    AI Generation
                 </a>
-                <a href="/generate" class="sidebar-item">
-                    <i class="fas fa-paint-brush"></i>
-                    <span>AI Generate</span>
+                <a href="#" class="sidebar-item">
+                    <i class="fas fa-wand-magic-sparkles"></i>
+                    Enhancement
+                </a>
+                <a href="#" class="sidebar-item">
+                    <i class="fas fa-tags"></i>
+                    Smart Tags
                 </a>
             </div>
+            
             <div class="sidebar-divider"></div>
+            
             <div class="storage-info">
                 <div class="storage-bar">
-                    <div class="storage-used" style="width: 25%;"></div>
+                    <div class="storage-used" style="width: 35%;"></div>
                 </div>
-                <div class="storage-text">2.5 GB of 10 GB used</div>
+                <div class="storage-text">3.5 GB of 10 GB used</div>
             </div>
         </div>
 
         <div class="main-container">
-            <!-- Breadcrumb navigation -->
             <div class="breadcrumb-container">
                 <div class="breadcrumb">
-                    <a href="#" class="breadcrumb-item" data-path="">
-                        <i class="fas fa-home"></i>
-                    </a>
-                    <span class="breadcrumb-separator">/</span>
+                    <!-- Will be populated by JS -->
                 </div>
             </div>
 
-            <!-- Actions toolbar -->
             <div class="collections-header">
                 <div class="header-container">
-                    <h1 id="current-directory">My Collections</h1>
-                    <div class="header-actions">
+                    <h1>My Collections</h1>
+                    <div class="header-tools">
                         <div class="view-options">
-                            <button class="action-btn grid-view-btn active" title="Grid View">
+                            <button class="action-btn active" id="grid-view-btn" title="Grid view">
                                 <i class="fas fa-th"></i>
                             </button>
-                            <button class="action-btn list-view-btn" title="List View">
+                            <button class="action-btn" id="list-view-btn" title="List view">
                                 <i class="fas fa-list"></i>
                             </button>
                         </div>
-                        <select class="sort-select">
-                            <option value="name">Name</option>
-                            <option value="date" selected>Date</option>
-                            <option value="size">Size</option>
+                        <select class="sort-select" id="sort-select">
+                            <option value="name">Sort by name</option>
+                            <option value="date">Sort by date</option>
+                            <option value="size">Sort by size</option>
                         </select>
                     </div>
                 </div>
             </div>
 
-            <!-- Collections grid -->
-            <div class="collections-grid" id="collections-grid">
-                <!-- Content will be loaded dynamically -->
+            <div class="collections-grid" id="dropzone-container">
+                <!-- Will be populated by JS -->
             </div>
 
-            <!-- Empty state -->
-            <div class="empty-folder-state" id="empty-folder-state" style="display: none;">
-                <img src="/static/images/empty-folder.svg" alt="Empty folder">
-                <h3>This folder is empty</h3>
-                <p>Upload files or create a new folder to get started</p>
-                <div class="empty-actions">
-                    <button class="btn upload-btn">
-                        <i class="fas fa-upload"></i>
-                        <span>Upload Files</span>
+            <div class="selection-panel" id="selection-panel">
+                <div class="selection-count">0 items selected</div>
+                <div class="selection-actions">
+                    <button class="btn selection-btn" id="download-selected-btn">
+                        <i class="fas fa-download"></i> Download
                     </button>
-                    <button class="btn create-folder-btn">
-                        <i class="fas fa-folder-plus"></i>
-                        <span>New Folder</span>
+                    <button class="btn selection-btn" id="analyze-selected-btn">
+                        <i class="fas fa-magic"></i> Analyze
+                    </button>
+                    <button class="btn selection-btn" id="delete-selected-btn">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                    <button class="btn selection-btn" id="clear-selection-btn">
+                        <i class="fas fa-times"></i> Clear selection
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- File upload hidden input -->
-    <input type="file" id="file-upload-input" multiple style="display: none;">
-
-    <!-- Create folder modal -->
-    <div class="modal" id="create-folder-modal">
+    <div class="modal" id="folder-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Create New Folder</h3>
-                <button class="modal-close">&times;</button>
+                <button class="modal-close">×</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="folder-name">Folder Name</label>
-                    <input type="text" id="folder-name" placeholder="Enter folder name">
+                    <label for="folder-name-input">Folder Name</label>
+                    <input type="text" id="folder-name-input" placeholder="Enter folder name">
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn cancel-btn">Cancel</button>
-                <button class="btn create-btn">Create</button>
+                <button class="btn" id="cancel-folder-btn">Cancel</button>
+                <button class="btn active" id="create-folder-btn">Create</button>
             </div>
         </div>
     </div>
 
-    <!-- Toast notification container -->
+    <div class="modal" id="image-preview-modal">
+        <div class="modal-content image-preview-content">
+            <div class="modal-header">
+                <h3 id="image-preview-title">Image Preview</h3>
+                <button class="modal-close" id="close-preview-btn">×</button>
+            </div>
+            <div class="modal-body image-preview-body">
+                <img id="preview-image" src="" alt="Preview">
+                <div class="image-preview-info">
+                    <div class="info-item">
+                        <span class="info-label">Size:</span>
+                        <span id="preview-size" class="info-value">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Date:</span>
+                        <span id="preview-date" class="info-value">-</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="download-btn">
+                    <i class="fas fa-download"></i> Download
+                </button>
+                <button class="btn" id="analyze-btn">
+                    <i class="fas fa-magic"></i> Analyze with AI
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="context-menu" id="context-menu">
+        <ul class="context-menu-list">
+            <li class="context-menu-item" id="context-open">
+                <i class="fas fa-folder-open"></i> Open
+            </li>
+            <li class="context-menu-item" id="context-download">
+                <i class="fas fa-download"></i> Download
+            </li>
+            <li class="context-menu-item" id="context-analyze">
+                <i class="fas fa-magic"></i> Analyze with AI
+            </li>
+            <li class="context-menu-divider"></li>
+            <li class="context-menu-item" id="context-select">
+                <i class="fas fa-check-square"></i> Select
+            </li>
+            <li class="context-menu-item" id="context-rename">
+                <i class="fas fa-edit"></i> Rename
+            </li>
+            <li class="context-menu-item danger" id="context-delete">
+                <i class="fas fa-trash"></i> Delete
+            </li>
+        </ul>
+    </div>
+
+    <div class="modal" id="ai-analysis-modal">
+        <div class="modal-content ai-analysis-content">
+            <div class="modal-header">
+                <h3>AI Image Analysis</h3>
+                <button class="modal-close" id="close-analysis-btn">×</button>
+            </div>
+            <div class="modal-body ai-analysis-body">
+                <div class="analysis-loading" id="analysis-loading">
+                    <div class="preloader__spinner"></div>
+                    <div>Analyzing image...</div>
+                </div>
+                <div class="analysis-results" id="analysis-results">
+                    <div class="analysis-section">
+                        <h4>Description</h4>
+                        <p id="analysis-description"></p>
+                    </div>
+                    <div class="analysis-section">
+                        <h4>Tags</h4>
+                        <div id="analysis-tags" class="tags-container"></div>
+                    </div>
+                    <div class="analysis-section">
+                        <h4>Colors</h4>
+                        <div id="analysis-colors" class="colors-container"></div>
+                    </div>
+                    <div class="analysis-section">
+                        <h4>Objects Detected</h4>
+                        <ul id="analysis-objects"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="close-analysis-btn-footer">Close</button>
+                <button class="btn active" id="apply-tags-btn">Apply Tags</button>
+            </div>
+        </div>
+    </div>
+
     <div id="toast-container"></div>
 
     <script>
@@ -987,6 +1081,15 @@
             
             // Set up event listeners
             setupEventListeners();
+            
+            // Set up drag and drop
+            setupDragAndDrop();
+            
+            // Set up multi-select
+            setupMultiSelect();
+            
+            // Set up context menu
+            setupContextMenu();
         });
         
         // Hide preloader after page loads
@@ -1053,15 +1156,514 @@
                 sortCollections();
                 displayCollections();
             });
+            
+            // Selection panel buttons
+            document.getElementById('download-selected-btn').addEventListener('click', downloadSelectedItems);
+            document.getElementById('analyze-selected-btn').addEventListener('click', analyzeSelectedItems);
+            document.getElementById('delete-selected-btn').addEventListener('click', deleteSelectedItems);
+            document.getElementById('clear-selection-btn').addEventListener('click', clearSelection);
+            
+            // Image preview modal
+            document.getElementById('close-preview-btn').addEventListener('click', closeImagePreview);
+            document.getElementById('download-btn').addEventListener('click', downloadPreviewImage);
+            document.getElementById('analyze-btn').addEventListener('click', analyzePreviewImage);
+            
+            // AI Analysis modal
+            document.getElementById('close-analysis-btn').addEventListener('click', closeAnalysisModal);
+            document.getElementById('close-analysis-btn-footer').addEventListener('click', closeAnalysisModal);
+            document.getElementById('apply-tags-btn').addEventListener('click', applyAITags);
+            
+            // Key events for selection
+            document.addEventListener('keydown', handleKeyDown);
         }
         
-        // Load collections from the server
-        function loadCollections() {
-            // Show preloader
-            showPreloader();
+        // Set up drag and drop functionality
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('dropzone-container');
             
-            // Fetch collections from the server
-            fetch(`/api/collections${currentPath ? '?path=' + encodeURIComponent(currentPath) : ''}`)
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            // Highlight drop zone when item is dragged over it
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+            
+            // Handle dropped files
+            dropZone.addEventListener('drop', handleDrop, false);
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            function highlight() {
+                dropZone.classList.add('highlight');
+                showToast('info', 'Drop Files', 'Drop files here to upload');
+            }
+            
+            function unhighlight() {
+                dropZone.classList.remove('highlight');
+                // Find and remove the drop toast
+                const toasts = document.querySelectorAll('.toast-info');
+                toasts.forEach(toast => {
+                    if (toast.querySelector('.toast-message').textContent === 'Drop files here to upload') {
+                        closeToast(toast);
+                    }
+                });
+            }
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                
+                if (files.length > 0) {
+                    uploadFiles(files);
+                }
+            }
+        }
+        
+        // Set up multi-select functionality
+        let selectedItems = new Set();
+        let lastSelectedItem = null;
+        const selectionPanel = document.getElementById('selection-panel');
+        
+        function setupMultiSelect() {
+            // Add ctrl key handling to select multiple items
+            document.addEventListener('click', (e) => {
+                // If click is outside the collections grid, clear selection
+                if (!e.target.closest('.collections-grid') && !e.target.closest('.selection-panel')) {
+                    clearSelection();
+                }
+            });
+        }
+        
+        function handleItemSelection(item, e) {
+            const itemPath = item.getAttribute('data-path');
+            
+            // Handle Ctrl key (multi-select individual items)
+            if (e.ctrlKey || e.metaKey) {
+                toggleItemSelection(item, itemPath);
+            } 
+            // Handle Shift key (select range)
+            else if (e.shiftKey && lastSelectedItem) {
+                selectItemRange(item);
+            } 
+            // Normal click (select single item)
+            else {
+                clearSelection();
+                selectItem(item, itemPath);
+            }
+            
+            updateSelectionPanel();
+        }
+        
+        function selectItem(item, itemPath) {
+            item.classList.add('selected');
+            selectedItems.add(itemPath);
+            lastSelectedItem = item;
+        }
+        
+        function toggleItemSelection(item, itemPath) {
+            if (selectedItems.has(itemPath)) {
+                item.classList.remove('selected');
+                selectedItems.delete(itemPath);
+                if (lastSelectedItem === item) {
+                    lastSelectedItem = null;
+                }
+            } else {
+                item.classList.add('selected');
+                selectedItems.add(itemPath);
+                lastSelectedItem = item;
+            }
+        }
+        
+        function selectItemRange(endItem) {
+            // Get all items
+            const allItems = Array.from(document.querySelectorAll('.collection-item'));
+            
+            // Find indices of start and end items
+            const startIndex = allItems.indexOf(lastSelectedItem);
+            const endIndex = allItems.indexOf(endItem);
+            
+            if (startIndex === -1 || endIndex === -1) return;
+            
+            // Clear existing selection
+            clearSelection();
+            
+            // Select items in range
+            const start = Math.min(startIndex, endIndex);
+            const end = Math.max(startIndex, endIndex);
+            
+            for (let i = start; i <= end; i++) {
+                const item = allItems[i];
+                const itemPath = item.getAttribute('data-path');
+                selectItem(item, itemPath);
+            }
+            
+            lastSelectedItem = endItem;
+        }
+        
+        function clearSelection() {
+            document.querySelectorAll('.collection-item.selected').forEach(item => {
+                item.classList.remove('selected');
+            });
+            selectedItems.clear();
+            lastSelectedItem = null;
+            updateSelectionPanel();
+        }
+        
+        function updateSelectionPanel() {
+            const count = selectedItems.size;
+            
+            if (count > 0) {
+                document.querySelector('.selection-count').textContent = `${count} item${count > 1 ? 's' : ''} selected`;
+                selectionPanel.classList.add('active');
+                
+                // Enable/disable buttons based on selection
+                document.getElementById('analyze-selected-btn').disabled = !Array.from(selectedItems).some(path => {
+                    return isImageFile(path);
+                });
+            } else {
+                selectionPanel.classList.remove('active');
+            }
+        }
+        
+        // Handle key events for selection
+        function handleKeyDown(e) {
+            // Ctrl+A or Cmd+A to select all
+            if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+                e.preventDefault();
+                selectAllItems();
+            }
+            
+            // Delete key to delete selected items
+            if (e.key === 'Delete' && selectedItems.size > 0) {
+                e.preventDefault();
+                deleteSelectedItems();
+            }
+            
+            // Escape to clear selection
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                clearSelection();
+                
+                // Also close any open modals
+                document.querySelectorAll('.modal.active').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+            }
+        }
+        
+        function selectAllItems() {
+            document.querySelectorAll('.collection-item').forEach(item => {
+                const itemPath = item.getAttribute('data-path');
+                selectItem(item, itemPath);
+            });
+            updateSelectionPanel();
+        }
+        
+        // Setup context menu
+        const contextMenu = document.getElementById('context-menu');
+        let contextTarget = null;
+        
+        function setupContextMenu() {
+            // Show context menu on right click
+            document.addEventListener('contextmenu', (e) => {
+                const collectionItem = e.target.closest('.collection-item');
+                
+                if (collectionItem) {
+                    e.preventDefault();
+                    
+                    // Set the context target
+                    contextTarget = collectionItem;
+                    
+                    // Position the menu
+                    positionContextMenu(e.clientX, e.clientY);
+                    
+                    // Show appropriate menu items based on item type
+                    customizeContextMenu(collectionItem);
+                }
+            });
+            
+            // Hide context menu on click outside
+            document.addEventListener('click', () => {
+                contextMenu.style.display = 'none';
+            });
+            
+            // Context menu item click handlers
+            document.getElementById('context-open').addEventListener('click', handleContextOpen);
+            document.getElementById('context-download').addEventListener('click', handleContextDownload);
+            document.getElementById('context-analyze').addEventListener('click', handleContextAnalyze);
+            document.getElementById('context-select').addEventListener('click', handleContextSelect);
+            document.getElementById('context-rename').addEventListener('click', handleContextRename);
+            document.getElementById('context-delete').addEventListener('click', handleContextDelete);
+        }
+        
+        function positionContextMenu(x, y) {
+            // Position the menu at cursor position
+            contextMenu.style.left = `${x}px`;
+            contextMenu.style.top = `${y}px`;
+            
+            // Check if menu goes outside viewport
+            const menuRect = contextMenu.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Adjust horizontal position if needed
+            if (menuRect.right > viewportWidth) {
+                contextMenu.style.left = `${x - menuRect.width}px`;
+            }
+            
+            // Adjust vertical position if needed
+            if (menuRect.bottom > viewportHeight) {
+                contextMenu.style.top = `${y - menuRect.height}px`;
+            }
+            
+            // Show the menu
+            contextMenu.style.display = 'block';
+        }
+        
+        function customizeContextMenu(item) {
+            const isFolder = item.getAttribute('data-type') === 'folder';
+            const isImage = isImageFile(item.getAttribute('data-name'));
+            
+            // Show/hide menu items based on item type
+            document.getElementById('context-open').style.display = isFolder ? 'block' : 'none';
+            document.getElementById('context-download').style.display = !isFolder ? 'block' : 'none';
+            document.getElementById('context-analyze').style.display = isImage ? 'block' : 'none';
+        }
+        
+        function handleContextOpen() {
+            if (contextTarget) {
+                const path = contextTarget.getAttribute('data-path');
+                navigateToFolder(path);
+            }
+        }
+        
+        function handleContextDownload() {
+            if (contextTarget) {
+                const path = contextTarget.getAttribute('data-path');
+                window.open(getFileUrl(path), '_blank');
+            }
+        }
+        
+        function handleContextAnalyze() {
+            if (contextTarget) {
+                const path = contextTarget.getAttribute('data-path');
+                analyzeImage(path);
+            }
+        }
+        
+        function handleContextSelect() {
+            if (contextTarget) {
+                const path = contextTarget.getAttribute('data-path');
+                if (selectedItems.has(path)) {
+                    contextTarget.classList.remove('selected');
+                    selectedItems.delete(path);
+                } else {
+                    contextTarget.classList.add('selected');
+                    selectedItems.add(path);
+                    lastSelectedItem = contextTarget;
+                }
+                updateSelectionPanel();
+            }
+        }
+        
+        function handleContextRename() {
+            if (contextTarget) {
+                // TODO: Implement rename functionality
+                showToast('info', 'Coming Soon', 'Rename functionality will be available soon');
+            }
+        }
+        
+        function handleContextDelete() {
+            if (contextTarget) {
+                // TODO: Implement delete functionality
+                showToast('info', 'Coming Soon', 'Delete functionality will be available soon');
+            }
+        }
+        
+        // Functions for selection actions
+        function downloadSelectedItems() {
+            if (selectedItems.size === 0) return;
+            
+            // For a single item, just open it in a new tab
+            if (selectedItems.size === 1) {
+                const path = Array.from(selectedItems)[0];
+                window.open(getFileUrl(path), '_blank');
+                return;
+            }
+            
+            // TODO: For multiple items, implement zip download
+            showToast('info', 'Coming Soon', 'Multiple file download will be available soon');
+        }
+        
+        function analyzeSelectedItems() {
+            if (selectedItems.size === 0) return;
+            
+            // For now, just analyze the first selected image
+            const selectedImages = Array.from(selectedItems).filter(path => isImageFile(path));
+            
+            if (selectedImages.length > 0) {
+                analyzeImage(selectedImages[0]);
+            } else {
+                showToast('warning', 'No Images', 'Please select at least one image to analyze');
+            }
+        }
+        
+        function deleteSelectedItems() {
+            if (selectedItems.size === 0) return;
+            
+            // TODO: Implement delete functionality
+            showToast('info', 'Coming Soon', 'Delete functionality will be available soon');
+        }
+        
+        // Image preview functionality
+        const imagePreviewModal = document.getElementById('image-preview-modal');
+        let currentPreviewItem = null;
+        
+        function previewFile(file) {
+            if (isImageFile(file.name)) {
+                openImagePreview(file);
+            } else {
+                // Download the file
+                window.open(file.url, '_blank');
+            }
+        }
+        
+        function openImagePreview(file) {
+            currentPreviewItem = file;
+            
+            // Set preview content
+            document.getElementById('image-preview-title').textContent = file.name;
+            document.getElementById('preview-image').src = file.url;
+            document.getElementById('preview-size').textContent = formatFileSize(file.size);
+            document.getElementById('preview-date').textContent = formatDate(file.modified);
+            
+            // Show modal
+            imagePreviewModal.classList.add('active');
+        }
+        
+        function closeImagePreview() {
+            imagePreviewModal.classList.remove('active');
+            currentPreviewItem = null;
+        }
+        
+        function downloadPreviewImage() {
+            if (currentPreviewItem) {
+                window.open(currentPreviewItem.url, '_blank');
+            }
+        }
+        
+        function analyzePreviewImage() {
+            if (currentPreviewItem) {
+                analyzeImage(currentPreviewItem.path);
+            }
+        }
+        
+        // AI Analysis functionality
+        const aiAnalysisModal = document.getElementById('ai-analysis-modal');
+        const analysisLoading = document.getElementById('analysis-loading');
+        const analysisResults = document.getElementById('analysis-results');
+        
+        function analyzeImage(path) {
+            // Show the analysis modal with loading state
+            aiAnalysisModal.classList.add('active');
+            analysisLoading.style.display = 'flex';
+            analysisResults.style.display = 'none';
+            
+            // Call the API to analyze the image
+            fetch('/api/collections/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ path })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to analyze image');
+                }
+                return response.json();
+            })
+            .then(data => {
+                displayAnalysisResults(data.results);
+            })
+            .catch(error => {
+                console.error('Error analyzing image:', error);
+                showToast('error', 'Error', 'Failed to analyze image. Please try again.');
+                closeAnalysisModal();
+            });
+        }
+        
+        function displayAnalysisResults(results) {
+            // Hide loading, show results
+            analysisLoading.style.display = 'none';
+            analysisResults.style.display = 'block';
+            
+            // Update UI with results
+            document.getElementById('analysis-description').textContent = results.description;
+            
+            // Display tags
+            const tagsContainer = document.getElementById('analysis-tags');
+            tagsContainer.innerHTML = '';
+            
+            results.tags.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'tag';
+                tagElement.textContent = tag;
+                tagsContainer.appendChild(tagElement);
+            });
+            
+            // Display colors
+            const colorsContainer = document.getElementById('analysis-colors');
+            colorsContainer.innerHTML = '';
+            
+            results.colors.forEach(color => {
+                const colorElement = document.createElement('div');
+                colorElement.className = 'color-swatch';
+                colorElement.style.backgroundColor = color;
+                colorElement.title = color;
+                colorsContainer.appendChild(colorElement);
+            });
+            
+            // Display objects
+            const objectsList = document.getElementById('analysis-objects');
+            objectsList.innerHTML = '';
+            
+            results.objects.forEach(object => {
+                const objectElement = document.createElement('li');
+                objectElement.textContent = object;
+                objectsList.appendChild(objectElement);
+            });
+        }
+        
+        function closeAnalysisModal() {
+            aiAnalysisModal.classList.remove('active');
+        }
+        
+        function applyAITags() {
+            // TODO: Implement tag application
+            showToast('success', 'Tags Applied', 'AI tags have been applied to the image');
+            closeAnalysisModal();
+        }
+        
+        // Helper to get file URL
+        function getFileUrl(path) {
+            return `/api/collections/file/${path}`;
+        }
+        
+        // Load collections from the API
+        function loadCollections() {
+            fetch(`/api/collections?path=${encodeURIComponent(currentPath)}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Failed to load collections');
@@ -1070,33 +1672,31 @@
                 })
                 .then(data => {
                     collections = data.items || [];
-                    updateBreadcrumb();
                     sortCollections();
                     displayCollections();
-                    hidePreloader();
+                    updateBreadcrumb();
                 })
                 .catch(error => {
                     console.error('Error loading collections:', error);
-                    showToast('error', 'Error', 'Failed to load collections. Please try again.');
-                    hidePreloader();
+                    showToast('error', 'Error', 'Failed to load collections');
                 });
         }
-        
-        // Sort collections based on the selected sort method
+
+        // Sort collections based on current sort criteria
         function sortCollections() {
             collections.sort((a, b) => {
-                // Always put folders before files
+                // Always put folders first
                 if (a.type === 'folder' && b.type !== 'folder') return -1;
                 if (a.type !== 'folder' && b.type === 'folder') return 1;
                 
-                // Sort by the selected method
+                // Then sort by selected criteria
                 switch (sortBy) {
                     case 'name':
                         return a.name.localeCompare(b.name);
                     case 'date':
                         return new Date(b.modified) - new Date(a.modified);
                     case 'size':
-                        return (b.size || 0) - (a.size || 0);
+                        return b.size - a.size;
                     default:
                         return a.name.localeCompare(b.name);
                 }
@@ -1105,101 +1705,77 @@
         
         // Display collections in the grid
         function displayCollections() {
-            // Clear the grid
             collectionsGrid.innerHTML = '';
             
-            // Set the view mode class
-            collectionsGrid.className = 'collections-grid' + (currentViewMode === 'list' ? ' list-view' : '');
-            
-            // Check if there are any collections
             if (collections.length === 0) {
-                displayEmptyState();
+                collectionsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                        <h3>This folder is empty</h3>
+                        <p>Upload files or create a new folder to get started</p>
+                        <div class="empty-actions">
+                            <button class="btn active" onclick="fileInput.click()">
+                                <i class="fas fa-upload"></i> Upload Files
+                            </button>
+                            <button class="btn" onclick="openFolderModal()">
+                                <i class="fas fa-folder-plus"></i> New Folder
+                            </button>
+                        </div>
+                    </div>
+                `;
                 return;
             }
             
-            // Create elements for each collection
             collections.forEach(item => {
-                const collectionItem = document.createElement('div');
-                collectionItem.className = 'collection-item';
-                collectionItem.setAttribute('data-type', item.type);
-                collectionItem.setAttribute('data-name', item.name);
+                const isFolder = item.type === 'folder';
+                const itemPath = currentPath ? `${currentPath}/${item.name}` : item.name;
                 
-                if (item.type === 'folder') {
-                    // Create folder item
-                    collectionItem.innerHTML = `
-                        <div class="collection-img-container">
-                            <div class="folder-icon">
-                                <i class="fas fa-folder"></i>
-                            </div>
-                        </div>
-                        <div class="collection-info">
-                            <h3 class="collection-name">${item.name}</h3>
-                            <p class="collection-date">${formatDate(item.modified)}</p>
-                        </div>
-                    `;
-                    
-                    // Add click event for folder navigation
-                    collectionItem.addEventListener('click', () => {
-                        navigateToFolder(item.path);
-                    });
-                } else {
-                    // Create file item
-                    const isImage = isImageFile(item.name);
-                    
-                    collectionItem.innerHTML = `
-                        <div class="collection-img-container">
-                            ${isImage ? 
-                                `<img src="${item.preview || item.url}" alt="${item.name}" class="collection-img">` :
-                                `<div class="folder-icon">
-                                    <i class="fas fa-file"></i>
-                                </div>`
-                            }
-                            ${item.size ? `<div class="item-count">${formatFileSize(item.size)}</div>` : ''}
-                        </div>
-                        <div class="collection-info">
-                            <h3 class="collection-name">${item.name}</h3>
-                            <p class="collection-date">${formatDate(item.modified)}</p>
-                        </div>
-                    `;
-                    
-                    // Add click event for file preview
-                    collectionItem.addEventListener('click', () => {
-                        previewFile(item);
-                    });
-                }
+                const itemElement = document.createElement('div');
+                itemElement.className = `collection-item ${currentViewMode === 'list' ? 'list-view' : ''}`;
+                itemElement.setAttribute('data-path', itemPath);
+                itemElement.setAttribute('data-type', item.type);
                 
-                collectionsGrid.appendChild(collectionItem);
-            });
-            
-            // Add page transition effect
-            collectionsGrid.classList.add('page-transition');
-        }
-        
-        // Display empty state when no collections are available
-        function displayEmptyState() {
-            collectionsGrid.innerHTML = `
-                <div class="empty-folder-state">
-                    <img src="https://cdn-icons-png.flaticon.com/512/6598/6598519.png" alt="Empty folder">
-                    <h3>This folder is empty</h3>
-                    <p>Upload files or create a new folder to get started</p>
-                    <div class="empty-actions">
-                        <button class="btn" id="empty-upload-btn">
-                            <i class="fas fa-upload"></i> Upload files
-                        </button>
-                        <button class="btn" id="empty-folder-btn">
-                            <i class="fas fa-folder-plus"></i> New folder
-                        </button>
+                const icon = isFolder ? 'folder' : getFileIcon(item.name);
+                const size = isFolder ? `${item.items || 0} item${item.items !== 1 ? 's' : ''}` : formatSize(item.size);
+                const date = formatDate(item.modified);
+                
+                itemElement.innerHTML = `
+                    <div class="collection-icon">
+                        <i class="fas fa-${icon}"></i>
                     </div>
-                </div>
-            `;
-            
-            // Add event listeners to the empty state buttons
-            document.getElementById('empty-upload-btn').addEventListener('click', () => {
-                fileInput.click();
-            });
-            
-            document.getElementById('empty-folder-btn').addEventListener('click', () => {
-                openFolderModal();
+                    <div class="collection-details">
+                        <div class="collection-name">${item.name}</div>
+                        <div class="collection-info">
+                            <span>${date}</span>
+                            <span>${size}</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Add click event for opening folders or previewing files
+                itemElement.addEventListener('click', (e) => {
+                    // Don't trigger if Ctrl or Shift key is pressed (for multi-select)
+                    if (!e.ctrlKey && !e.shiftKey && !e.metaKey) {
+                        if (isFolder) {
+                            navigateToFolder(itemPath);
+                        } else if (isImageFile(item.name)) {
+                            previewFile(itemPath);
+                        } else {
+                            window.open(getFileUrl(itemPath), '_blank');
+                        }
+                    }
+                });
+                
+                // Add click event for selection
+                itemElement.addEventListener('mousedown', (e) => {
+                    if (e.button === 0) { // Left click only
+                        handleItemSelection(itemElement, e);
+                    }
+                });
+                
+                collectionsGrid.appendChild(itemElement);
             });
         }
         
@@ -1207,69 +1783,71 @@
         function updateBreadcrumb() {
             breadcrumbContainer.innerHTML = '';
             
-            // Add Home breadcrumb
-            const homeBreadcrumb = document.createElement('a');
-            homeBreadcrumb.className = 'breadcrumb-item';
-            homeBreadcrumb.textContent = 'My Collections';
-            homeBreadcrumb.href = '#';
-            homeBreadcrumb.addEventListener('click', (e) => {
+            // Home / root item
+            const homeItem = document.createElement('a');
+            homeItem.href = '#';
+            homeItem.className = 'breadcrumb-item';
+            homeItem.innerHTML = '<i class="fas fa-home"></i>';
+            homeItem.addEventListener('click', (e) => {
                 e.preventDefault();
                 navigateToFolder('');
             });
-            breadcrumbContainer.appendChild(homeBreadcrumb);
             
-            // If we're in a subfolder, add the path segments
+            breadcrumbContainer.appendChild(homeItem);
+            
+            // Path segments
             if (currentPath) {
-                const pathSegments = currentPath.split('/').filter(segment => segment);
-                let currentPathBuild = '';
+                const segments = currentPath.split('/');
+                let path = '';
                 
-                pathSegments.forEach((segment, index) => {
-                    // Add separator
-                    const separator = document.createElement('span');
-                    separator.className = 'breadcrumb-separator';
-                    separator.textContent = '/';
-                    breadcrumbContainer.appendChild(separator);
+                segments.forEach((segment, index) => {
+                    path += path ? `/${segment}` : segment;
                     
-                    // Add path segment
-                    currentPathBuild += (index > 0 ? '/' : '') + segment;
-                    const segmentElement = document.createElement('a');
-                    segmentElement.className = 'breadcrumb-item';
-                    segmentElement.textContent = segment;
-                    segmentElement.href = '#';
+                    const item = document.createElement('a');
+                    item.href = '#';
+                    item.className = 'breadcrumb-item';
+                    item.textContent = segment;
                     
-                    const pathToNavigate = currentPathBuild;
-                    segmentElement.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        navigateToFolder(pathToNavigate);
-                    });
+                    if (index < segments.length - 1) {
+                        item.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            navigateToFolder(path);
+                        });
+                    }
                     
-                    breadcrumbContainer.appendChild(segmentElement);
+                    breadcrumbContainer.appendChild(item);
                 });
             }
         }
         
         // Navigate to a folder
         function navigateToFolder(path) {
-            // Add page transition effect
-            collectionsGrid.classList.add('page-transition');
-            
-            // Update current path
             currentPath = path;
-            
-            // Load collections for the new path
             loadCollections();
         }
         
-        // Open folder creation modal
-        function openFolderModal() {
-            folderNameInput.value = '';
-            folderModal.classList.add('active');
-            setTimeout(() => {
-                folderNameInput.focus();
-            }, 300);
+        // Set the view mode (grid or list)
+        function setViewMode(mode) {
+            currentViewMode = mode;
+            
+            // Update active button
+            gridViewBtn.classList.toggle('active', mode === 'grid');
+            listViewBtn.classList.toggle('active', mode === 'list');
+            
+            // Update collection items
+            document.querySelectorAll('.collection-item').forEach(item => {
+                item.classList.toggle('list-view', mode === 'list');
+            });
         }
         
-        // Close folder creation modal
+        // Open folder modal
+        function openFolderModal() {
+            folderModal.classList.add('active');
+            folderNameInput.value = '';
+            folderNameInput.focus();
+        }
+        
+        // Close folder modal
         function closeFolderModal() {
             folderModal.classList.remove('active');
         }
@@ -1279,22 +1857,18 @@
             const folderName = folderNameInput.value.trim();
             
             if (!folderName) {
-                showToast('warning', 'Warning', 'Please enter a folder name.');
+                showToast('error', 'Error', 'Please enter a folder name');
                 return;
             }
             
-            // Show preloader
-            showPreloader();
-            
-            // Send request to create folder
             fetch('/api/collections/folder', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    path: currentPath,
-                    name: folderName
+                    name: folderName,
+                    path: currentPath
                 })
             })
             .then(response => {
@@ -1303,15 +1877,14 @@
                 }
                 return response.json();
             })
-            .then(data => {
-                showToast('success', 'Success', `Folder "${folderName}" created successfully.`);
+            .then(() => {
                 closeFolderModal();
-                loadCollections(); // Reload collections to show the new folder
+                loadCollections();
+                showToast('success', 'Folder Created', `Folder "${folderName}" has been created`);
             })
             .catch(error => {
                 console.error('Error creating folder:', error);
-                showToast('error', 'Error', 'Failed to create folder. Please try again.');
-                hidePreloader();
+                showToast('error', 'Error', 'Failed to create folder');
             });
         }
         
@@ -1319,18 +1892,17 @@
         function uploadFiles(files) {
             if (files.length === 0) return;
             
-            // Show preloader
-            showPreloader();
-            
             const formData = new FormData();
             formData.append('path', currentPath);
             
-            // Add files to form data
+            // Add each file to form data
             for (let i = 0; i < files.length; i++) {
                 formData.append('files', files[i]);
             }
             
-            // Send request to upload files
+            // Show toast notification for upload start
+            showToast('info', 'Uploading', `Uploading ${files.length} file${files.length > 1 ? 's' : ''}...`);
+            
             fetch('/api/collections/upload', {
                 method: 'POST',
                 body: formData
@@ -1342,74 +1914,100 @@
                 return response.json();
             })
             .then(data => {
-                showToast('success', 'Success', `${files.length} file(s) uploaded successfully.`);
-                loadCollections(); // Reload collections to show the new files
+                loadCollections();
+                showToast('success', 'Upload Complete', `Successfully uploaded ${data.uploaded || files.length} file${data.uploaded !== 1 ? 's' : ''}`);
             })
             .catch(error => {
                 console.error('Error uploading files:', error);
-                showToast('error', 'Error', 'Failed to upload files. Please try again.');
-                hidePreloader();
+                showToast('error', 'Upload Failed', 'Failed to upload files');
             });
         }
         
-        // Preview a file
-        function previewFile(file) {
-            // For images, open a lightbox or preview modal
-            // For other files, provide download option
-            if (isImageFile(file.name)) {
-                // TODO: Implement image preview/lightbox
-                window.open(file.url, '_blank');
+        // Get appropriate icon for file type
+        function getFileIcon(filename) {
+            const extension = filename.split('.').pop().toLowerCase();
+            
+            const iconMap = {
+                // Images
+                'jpg': 'image',
+                'jpeg': 'image',
+                'png': 'image',
+                'gif': 'image',
+                'bmp': 'image',
+                'svg': 'image',
+                // Documents
+                'pdf': 'file-pdf',
+                'doc': 'file-word',
+                'docx': 'file-word',
+                'xls': 'file-excel',
+                'xlsx': 'file-excel',
+                'ppt': 'file-powerpoint',
+                'pptx': 'file-powerpoint',
+                'txt': 'file-alt',
+                // Archives
+                'zip': 'file-archive',
+                'rar': 'file-archive',
+                '7z': 'file-archive',
+                // Code
+                'html': 'file-code',
+                'css': 'file-code',
+                'js': 'file-code',
+                'json': 'file-code',
+                'py': 'file-code',
+                // Other
+                'mp3': 'file-audio',
+                'wav': 'file-audio',
+                'mp4': 'file-video',
+                'avi': 'file-video',
+                'mov': 'file-video'
+            };
+            
+            return iconMap[extension] || 'file';
+        }
+        
+        // Format file size in human-readable format
+        function formatSize(bytes) {
+            if (bytes === 0) return '0 B';
+            
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // Format date in human-readable format
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) {
+                return 'Today, ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } else if (diffDays === 1) {
+                return 'Yesterday, ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } else if (diffDays < 7) {
+                const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                return days[date.getDay()];
             } else {
-                // Download the file
-                window.open(file.url, '_blank');
+                return date.toLocaleDateString();
             }
         }
         
-        // Set view mode (grid or list)
-        function setViewMode(mode) {
-            currentViewMode = mode;
-            
-            // Update active button
-            gridViewBtn.classList.toggle('active', mode === 'grid');
-            listViewBtn.classList.toggle('active', mode === 'list');
-            
-            // Update grid class
-            collectionsGrid.className = 'collections-grid' + (mode === 'list' ? ' list-view' : '');
-            
-            // Refresh the display
-            displayCollections();
-        }
-        
-        // Show preloader
-        function showPreloader() {
-            preloader.style.display = 'flex';
-            preloader.classList.remove('fade-out');
-        }
-        
-        // Hide preloader
-        function hidePreloader() {
-            preloader.classList.add('fade-out');
-            setTimeout(() => {
-                preloader.style.display = 'none';
-            }, 500);
+        // Check if a file is an image based on extension
+        function isImageFile(filename) {
+            const extension = filename.split('.').pop().toLowerCase();
+            return ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg'].includes(extension);
         }
         
         // Show toast notification
         function showToast(type, title, message) {
-            // Create toast container if it doesn't exist
-            let toastContainer = document.getElementById('toast-container');
-            if (!toastContainer) {
-                toastContainer = document.createElement('div');
-                toastContainer.id = 'toast-container';
-                document.body.appendChild(toastContainer);
-            }
-            
-            // Create toast element
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
             
-            // Set icon based on type
-            let icon = '';
+            // Customize icon based on type
+            let icon;
             switch (type) {
                 case 'success':
                     icon = 'check-circle';
@@ -1426,7 +2024,6 @@
                     break;
             }
             
-            // Set toast content
             toast.innerHTML = `
                 <div class="toast-icon">
                     <i class="fas fa-${icon}"></i>
@@ -1440,10 +2037,16 @@
                 </button>
             `;
             
-            // Add toast to container
+            // Add to toast container
+            const toastContainer = document.getElementById('toast-container');
             toastContainer.appendChild(toast);
             
-            // Add event listener to close button
+            // Animate in
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+            
+            // Close toast on click
             toast.querySelector('.toast-close').addEventListener('click', () => {
                 closeToast(toast);
             });
@@ -1456,42 +2059,10 @@
         
         // Close toast notification
         function closeToast(toast) {
-            toast.classList.add('toast-hide');
-            
-            // Remove toast after animation completes
+            toast.classList.remove('show');
             setTimeout(() => {
                 toast.remove();
             }, 300);
-        }
-        
-        // Helper function to check if a file is an image
-        function isImageFile(filename) {
-            const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
-            const ext = filename.substring(filename.lastIndexOf('.')).toLowerCase();
-            return imageExtensions.includes(ext);
-        }
-        
-        // Helper function to format date
-        function formatDate(dateString) {
-            if (!dateString) return 'Unknown date';
-            
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-        }
-        
-        // Helper function to format file size
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
     </script>
 </body>
