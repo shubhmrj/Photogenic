@@ -13,19 +13,15 @@
 database.json
 db.json
 
-# Image files
-*.jpg
-*.jpeg
-*.png
-*.gif
-*.bmp
-*.tiff
-*.ico
-*.webp
+# Specific folders to ignore completely
+collection/
+instance/
 
-# If you need to include specific images (e.g., for documentation), you can add exceptions
-# !docs/images/*.png
-# !assets/logo.png
+# Alternatively, if you want to ignore only certain file types in these folders:
+# collection/**/*.jpg
+# collection/**/*.png
+# instance/**/*.jpg
+# instance/**/*.png
 
 # Other common files to ignore
 __pycache__/
@@ -54,10 +50,3 @@ var/
 .vscode/
 *.swp
 *.swo
-   # Ignore all contents of these directories
-   assets/large-images/
-   uploads/user-images/
-   
-   # Alternative: ignore only images in specific directories
-   project-data/*.jpg
-   project-data/*.png
