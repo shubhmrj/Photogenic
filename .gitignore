@@ -1,0 +1,13 @@
+# Environment configuration
+.env
+*.env
+.env.local
+.env.development
+.env.production
+
+# API keys and secrets
+*.pem
+*.key
+
+# Other sensitive files you might have
+credentials.json
