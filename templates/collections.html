@@ -804,6 +804,84 @@
                 max-width: 200px;
             }
         }
+        
+        /* Image Preview Styles */
+        .image-preview-content {
+            max-width: 90%;
+            max-height: 90%;
+            width: auto;
+        }
+        
+        .image-preview-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            max-height: 80vh;
+            overflow: hidden;
+        }
+        
+        .image-preview-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .image-preview-wrapper {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background-color: #f0f0f0;
+        }
+        
+        #preview-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        
+        .image-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .image-control-btn {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .image-control-btn:hover {
+            background-color: #f5f5f5;
+            transform: scale(1.05);
+        }
+        
+        .image-preview-info {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
@@ -965,7 +1043,18 @@
                 <button class="modal-close" id="close-preview-btn">×</button>
             </div>
             <div class="modal-body image-preview-body">
-                <img id="preview-image" src="" alt="Preview">
+                <div class="image-preview-container">
+                    <div class="image-controls">
+                        <button id="zoom-in-btn" class="image-control-btn" title="Zoom In"><i class="fas fa-search-plus"></i></button>
+                        <button id="zoom-out-btn" class="image-control-btn" title="Zoom Out"><i class="fas fa-search-minus"></i></button>
+                        <button id="rotate-left-btn" class="image-control-btn" title="Rotate Left"><i class="fas fa-undo"></i></button>
+                        <button id="rotate-right-btn" class="image-control-btn" title="Rotate Right"><i class="fas fa-redo"></i></button>
+                        <button id="reset-image-btn" class="image-control-btn" title="Reset Image"><i class="fas fa-sync-alt"></i></button>
+                    </div>
+                    <div class="image-preview-wrapper">
+                        <img id="preview-image" src="" alt="Preview">
+                    </div>
+                </div>
                 <div class="image-preview-info">
                     <div class="info-item">
                         <span class="info-label">Size:</span>
@@ -1530,44 +1619,200 @@
         const imagePreviewModal = document.getElementById('image-preview-modal');
         let currentPreviewItem = null;
         
-        function previewFile(file) {
-            if (isImageFile(file.name)) {
-                openImagePreview(file);
-            } else {
-                // Download the file
-                window.open(file.url, '_blank');
+        // Image preview variables
+        let currentZoom = 1;
+        let currentRotation = 0;
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let translateX = 0;
+        let translateY = 0;
+        
+        // Image control functions
+        function zoomIn() {
+            if (currentZoom < 3) { // max zoom 3x
+                currentZoom += 0.2;
+                updateImageTransform();
             }
         }
         
-        function openImagePreview(file) {
-            currentPreviewItem = file;
-            
-            // Set preview content
-            document.getElementById('image-preview-title').textContent = file.name;
-            document.getElementById('preview-image').src = file.url;
-            document.getElementById('preview-size').textContent = formatFileSize(file.size);
-            document.getElementById('preview-date').textContent = formatDate(file.modified);
-            
-            // Show modal
-            imagePreviewModal.classList.add('active');
+        function zoomOut() {
+            if (currentZoom > 0.5) { // min zoom 0.5x
+                currentZoom -= 0.2;
+                updateImageTransform();
+            }
         }
         
+        function rotateLeft() {
+            currentRotation -= 90;
+            updateImageTransform();
+        }
+        
+        function rotateRight() {
+            currentRotation += 90;
+            updateImageTransform();
+        }
+        
+        function resetImageTransforms() {
+            currentZoom = 1;
+            currentRotation = 0;
+            translateX = 0;
+            translateY = 0;
+            updateImageTransform();
+        }
+        
+        function updateImageTransform() {
+            const previewImage = document.getElementById('preview-image');
+            previewImage.style.transform = `translate(${translateX}px, ${translateY}px) rotate(${currentRotation}deg) scale(${currentZoom})`;
+        }
+        
+        // Handle image drag
+        function setupImageDrag() {
+            const previewImage = document.getElementById('preview-image');
+            const imageWrapper = document.querySelector('.image-preview-wrapper');
+            
+            imageWrapper.addEventListener('mousedown', (e) => {
+                if (currentZoom > 1) {
+                    isDragging = true;
+                    dragStartX = e.clientX - translateX;
+                    dragStartY = e.clientY - translateY;
+                    imageWrapper.style.cursor = 'grabbing';
+                }
+            });
+            
+            imageWrapper.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    translateX = e.clientX - dragStartX;
+                    translateY = e.clientY - dragStartY;
+                    updateImageTransform();
+                }
+            });
+            
+            imageWrapper.addEventListener('mouseup', () => {
+                isDragging = false;
+                imageWrapper.style.cursor = 'grab';
+            });
+            
+            imageWrapper.addEventListener('mouseleave', () => {
+                isDragging = false;
+                imageWrapper.style.cursor = 'grab';
+            });
+            
+            // Handle mouse wheel zoom
+            imageWrapper.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                if (e.deltaY < 0) {
+                    zoomIn();
+                } else {
+                    zoomOut();
+                }
+            });
+        }
+        
+        function previewFile(path) {
+            const previewModal = document.getElementById('image-preview-modal');
+            const previewImage = document.getElementById('preview-image');
+            const previewTitle = document.getElementById('image-preview-title');
+            const previewSize = document.getElementById('preview-size');
+            const previewDate = document.getElementById('preview-date');
+            
+            // Reset image transformations
+            resetImageTransforms();
+            
+            // Find the file in collections
+            const fileName = path.split('/').pop();
+            const file = collections.find(item => item.name === fileName && item.type === 'file');
+            
+            if (file) {
+                previewTitle.textContent = fileName;
+                previewSize.textContent = formatSize(file.size);
+                previewDate.textContent = formatDate(file.modified);
+                
+                // Set image source
+                previewImage.src = getFileUrl(path);
+                
+                // Set current path for download/analyze buttons
+                previewImage.setAttribute('data-path', path);
+                
+                // Show the modal
+                previewModal.classList.add('active');
+                
+                // Add keyboard navigation
+                document.addEventListener('keydown', handleImageKeyboardControls);
+            }
+        }
+        
+        // Handle keyboard controls for image preview
+        function handleImageKeyboardControls(e) {
+            if (!document.getElementById('image-preview-modal').classList.contains('active')) {
+                document.removeEventListener('keydown', handleImageKeyboardControls);
+                return;
+            }
+            
+            switch (e.key) {
+                case '+':
+                case '=':
+                    e.preventDefault();
+                    zoomIn();
+                    break;
+                case '-':
+                    e.preventDefault();
+                    zoomOut();
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    rotateLeft();
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    rotateRight();
+                    break;
+                case 'r':
+                    e.preventDefault();
+                    resetImageTransforms();
+                    break;
+                case 'Escape':
+                    e.preventDefault();
+                    closeImagePreview();
+                    break;
+            }
+        }
+        
+        // Close image preview
         function closeImagePreview() {
-            imagePreviewModal.classList.remove('active');
-            currentPreviewItem = null;
+            document.getElementById('image-preview-modal').classList.remove('active');
+            document.removeEventListener('keydown', handleImageKeyboardControls);
         }
         
+        // Download preview image
         function downloadPreviewImage() {
-            if (currentPreviewItem) {
-                window.open(currentPreviewItem.url, '_blank');
+            const previewImage = document.getElementById('preview-image');
+            const path = previewImage.getAttribute('data-path');
+            
+            if (path) {
+                window.open(getFileUrl(path), '_blank');
             }
         }
         
+        // Analyze preview image
         function analyzePreviewImage() {
-            if (currentPreviewItem) {
-                analyzeImage(currentPreviewItem.path);
+            const previewImage = document.getElementById('preview-image');
+            const path = previewImage.getAttribute('data-path');
+            
+            if (path) {
+                analyzeImage(path);
             }
         }
+        
+        // Set up image controls
+        document.getElementById('zoom-in-btn').addEventListener('click', zoomIn);
+        document.getElementById('zoom-out-btn').addEventListener('click', zoomOut);
+        document.getElementById('rotate-left-btn').addEventListener('click', rotateLeft);
+        document.getElementById('rotate-right-btn').addEventListener('click', rotateRight);
+        document.getElementById('reset-image-btn').addEventListener('click', resetImageTransforms);
+        
+        // Set up image drag functionality
+        setupImageDrag();
         
         // AI Analysis functionality
         const aiAnalysisModal = document.getElementById('ai-analysis-modal');

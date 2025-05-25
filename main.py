@@ -159,9 +159,9 @@ def load_user(user_id):
 
 # Configure upload paths
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
-COLLECTION_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'collections')
+COLLECTIONS_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'collections')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(COLLECTION_ROOT, exist_ok=True)
+os.makedirs(COLLECTIONS_ROOT, exist_ok=True)
 
 # Configure generation output paths
 GENERATED_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'generated')
@@ -202,10 +202,10 @@ def send_email(subject, recipient, html_body):
     Thread(target=send_async_email, args=(app, msg)).start()
 
 def safe_path(rel_path: str) -> str:
-    """Return an absolute path inside the COLLECTION_ROOT, preventing path traversal."""
+    """Return an absolute path inside the COLLECTIONS_ROOT, preventing path traversal."""
     rel_path = rel_path.strip('/')
-    abs_path = os.path.normpath(os.path.join(COLLECTION_ROOT, rel_path))
-    if not abs_path.startswith(COLLECTION_ROOT):
+    abs_path = os.path.normpath(os.path.join(COLLECTIONS_ROOT, rel_path))
+    if not abs_path.startswith(COLLECTIONS_ROOT):
         raise ValueError("Invalid path")
     return abs_path
 
