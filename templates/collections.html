@@ -882,6 +882,101 @@
             background-color: #f9f9f9;
             border-radius: 8px;
         }
+        
+        /* Upload Progress Bar */
+        .upload-progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .upload-progress-container.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .upload-progress-box {
+            width: 400px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .upload-progress-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        
+        .upload-progress-bar {
+            height: 8px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        
+        .upload-progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.2s ease;
+        }
+        
+        .upload-progress-status {
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+        
+        /* User info styles */
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 12px;
+        }
+        
+        .user-avatar i {
+            font-size: 1.4rem;
+            color: var(--text-main);
+        }
+        
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+        
+        .user-email {
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+        }
     </style>
 </head>
 <body>
@@ -957,6 +1052,18 @@
             
             <div class="sidebar-divider"></div>
             
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-details">
+                    <div class="user-name">{{ user.username }}</div>
+                    <div class="user-email">{{ user.email }}</div>
+                </div>
+            </div>
+            
+            <div class="sidebar-divider"></div>
+            
             <div class="storage-info">
                 <div class="storage-bar">
                     <div class="storage-used" style="width: 35%;"></div>
@@ -1017,6 +1124,30 @@
         </div>
     </div>
 
+    <div class="context-menu" id="context-menu">
+        <ul class="context-menu-list">
+            <li class="context-menu-item" id="context-open">
+                <i class="fas fa-folder-open"></i> Open
+            </li>
+            <li class="context-menu-item" id="context-download">
+                <i class="fas fa-download"></i> Download
+            </li>
+            <li class="context-menu-item" id="context-analyze">
+                <i class="fas fa-magic"></i> Analyze with AI
+            </li>
+            <li class="context-menu-divider"></li>
+            <li class="context-menu-item" id="context-select">
+                <i class="fas fa-check-square"></i> Select
+            </li>
+            <li class="context-menu-item" id="context-rename">
+                <i class="fas fa-edit"></i> Rename
+            </li>
+            <li class="context-menu-item danger" id="context-delete">
+                <i class="fas fa-trash"></i> Delete
+            </li>
+        </ul>
+    </div>
+
     <div class="modal" id="folder-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1075,30 +1206,6 @@
                 </button>
             </div>
         </div>
-    </div>
-
-    <div class="context-menu" id="context-menu">
-        <ul class="context-menu-list">
-            <li class="context-menu-item" id="context-open">
-                <i class="fas fa-folder-open"></i> Open
-            </li>
-            <li class="context-menu-item" id="context-download">
-                <i class="fas fa-download"></i> Download
-            </li>
-            <li class="context-menu-item" id="context-analyze">
-                <i class="fas fa-magic"></i> Analyze with AI
-            </li>
-            <li class="context-menu-divider"></li>
-            <li class="context-menu-item" id="context-select">
-                <i class="fas fa-check-square"></i> Select
-            </li>
-            <li class="context-menu-item" id="context-rename">
-                <i class="fas fa-edit"></i> Rename
-            </li>
-            <li class="context-menu-item danger" id="context-delete">
-                <i class="fas fa-trash"></i> Delete
-            </li>
-        </ul>
     </div>
 
     <div class="modal" id="ai-analysis-modal">
@@ -1916,7 +2023,7 @@
                     return response.json();
                 })
                 .then(data => {
-                    collections = data.items || [];
+                    collections = data.collections || [];
                     sortCollections();
                     displayCollections();
                     updateBreadcrumb();
@@ -2137,35 +2244,95 @@
         function uploadFiles(files) {
             if (files.length === 0) return;
             
+            // Create and show progress bar UI
+            const progressContainer = document.createElement('div');
+            progressContainer.className = 'upload-progress-container active';
+            progressContainer.innerHTML = `
+                <div class="upload-progress-box">
+                    <div class="upload-progress-title">Uploading ${files.length} file${files.length > 1 ? 's' : ''}</div>
+                    <div class="upload-progress-bar">
+                        <div class="upload-progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="upload-progress-status">0%</div>
+                </div>
+            `;
+            document.body.appendChild(progressContainer);
+            
+            // Get progress bar elements
+            const progressBar = progressContainer.querySelector('.upload-progress-fill');
+            const progressStatus = progressContainer.querySelector('.upload-progress-status');
+            
+            // Create form data
             const formData = new FormData();
             formData.append('path', currentPath);
             
-            // Add each file to form data
-            for (let i = 0; i < files.length; i++) {
-                formData.append('files', files[i]);
+            // Add all files
+            for (const file of files) {
+                formData.append('files[]', file);
             }
             
-            // Show toast notification for upload start
-            showToast('info', 'Uploading', `Uploading ${files.length} file${files.length > 1 ? 's' : ''}...`);
+            // Create XMLHttpRequest
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/api/collections/upload');
             
-            fetch('/api/collections/upload', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to upload files');
+            // Track upload progress
+            xhr.upload.addEventListener('progress', (e) => {
+                if (e.lengthComputable) {
+                    const percentComplete = Math.round((e.loaded / e.total) * 100);
+                    progressBar.style.width = percentComplete + '%';
+                    progressStatus.textContent = `${percentComplete}% - Uploading...`;
                 }
-                return response.json();
-            })
-            .then(data => {
-                loadCollections();
-                showToast('success', 'Upload Complete', `Successfully uploaded ${data.uploaded || files.length} file${data.uploaded !== 1 ? 's' : ''}`);
-            })
-            .catch(error => {
-                console.error('Error uploading files:', error);
-                showToast('error', 'Upload Failed', 'Failed to upload files');
             });
+            
+            // Handle response
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    progressBar.style.width = '100%';
+                    progressStatus.textContent = 'Upload complete!';
+                    
+                    // Parse response
+                    const response = JSON.parse(xhr.responseText);
+                    
+                    // Refresh the current view
+                    loadItems(currentPath);
+                    
+                    // Clean up UI after a delay
+                    setTimeout(() => {
+                        progressContainer.classList.remove('active');
+                        setTimeout(() => {
+                            progressContainer.remove();
+                        }, 300);
+                    }, 1000);
+                } else {
+                    progressStatus.textContent = 'Upload failed!';
+                    console.error('Upload failed:', xhr.responseText);
+                    
+                    // Clean up UI after a delay
+                    setTimeout(() => {
+                        progressContainer.classList.remove('active');
+                        setTimeout(() => {
+                            progressContainer.remove();
+                        }, 3000);
+                    }, 3000);
+                }
+            };
+            
+            // Handle errors
+            xhr.onerror = function() {
+                progressStatus.textContent = 'Network error!';
+                console.error('Network error during upload');
+                
+                // Clean up UI after a delay
+                setTimeout(() => {
+                    progressContainer.classList.remove('active');
+                    setTimeout(() => {
+                        progressContainer.remove();
+                    }, 3000);
+                }, 3000);
+            };
+            
+            // Send the data
+            xhr.send(formData);
         }
         
         // Get appropriate icon for file type

@@ -1,0 +1,1064 @@
+{% extends "base.html" %}
+
+{% block title %}PhotoGeni | My Collections{% endblock %}
+
+{% block styles %}
+<style>
+    /* Preloader */
+    .preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--bg-main);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .preloader.fade-out {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .preloader__content {
+        text-align: center;
+        color: var(--text-main);
+    }
+
+    .preloader__spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        border-top-color: var(--text-main);
+        animation: spin 0.8s ease-in-out infinite;
+        margin: 0 auto 20px;
+    }
+
+    .preloader__text {
+        font-size: 1.1rem;
+        letter-spacing: 1px;
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+        0% { opacity: 0.5; }
+        50% { opacity: 1; }
+        100% { opacity: 0.5; }
+    }
+
+    /* Header */
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background-color: rgba(26, 26, 26, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+        box-shadow: var(--shadow-lg);
+    }
+
+    /* User Info */
+    .user-info {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+        margin-right: 20px;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 10px;
+    }
+
+    .user-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .user-name {
+        color: var(--text-main);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    /* Main Layout */
+    .dashboard {
+        display: flex;
+        padding-top: 80px;
+        min-height: 100vh;
+    }
+
+    .sidebar {
+        width: 240px;
+        background-color: var(--bg-secondary);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        height: calc(100vh - 80px);
+        position: fixed;
+        top: 80px;
+        left: 0;
+        overflow-y: auto;
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .content-area {
+        flex: 1;
+        padding: 20px 20px 20px 260px;
+        min-height: calc(100vh - 80px);
+    }
+
+    /* Page Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .page-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    .welcome-message {
+        font-size: 1rem;
+        color: var(--text-color);
+        margin-top: 5px;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-primary {
+        background-color: #4285f4;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-primary:hover {
+        background-color: #3367d6;
+    }
+
+    /* Collections Grid */
+    .collections-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .collection-item {
+        background-color: var(--bg-card);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.2s ease;
+        cursor: pointer;
+    }
+
+    .collection-item:hover {
+        transform: translateY(-5px);
+    }
+
+    .collection-thumbnail {
+        width: 100%;
+        aspect-ratio: 4/3;
+        object-fit: cover;
+    }
+
+    .collection-info {
+        padding: 12px;
+    }
+
+    .collection-name {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--text-main);
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .collection-meta {
+        font-size: 0.8rem;
+        color: var(--secondary-text);
+        margin-top: 4px;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        color: var(--secondary-text);
+        margin-bottom: 20px;
+    }
+
+    .empty-state-text {
+        font-size: 1.2rem;
+        color: var(--text-color);
+        margin-bottom: 20px;
+    }
+
+    /* Loading Indicator */
+    .loading {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        border: 3px solid rgba(255,255,255,.3);
+        border-radius: 50%;
+        border-top-color: var(--text-main);
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    /* Upload Progress Bar */
+    #upload-progress-container {
+        margin-top: 10px;
+        margin-bottom: 20px;
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    #upload-progress {
+        width: 100%;
+        height: 20px;
+        appearance: none;
+        border: none;
+    }
+
+    #upload-progress::-webkit-progress-bar {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    #upload-progress::-webkit-progress-value {
+        background-color: #4285f4;
+        transition: width 0.3s ease;
+    }
+
+    #upload-progress::-moz-progress-bar {
+        background-color: #4285f4;
+    }
+
+    /* Analysis Results */
+    #analysis-results {
+        margin-top: 15px;
+        text-align: left;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .analysis-section {
+        margin-bottom: 15px;
+        background-color: rgba(0, 0, 0, 0.05);
+        padding: 10px;
+        border-radius: 4px;
+    }
+
+    .analysis-section h5 {
+        margin-top: 0;
+        color: var(--text-main);
+        font-size: 1rem;
+    }
+
+    .tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .colors-container {
+        display: flex;
+        gap: 10px;
+        margin-top: 5px;
+    }
+
+    .color-swatch {
+        width: 30px;
+        height: 30px;
+        border-radius: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 100%;
+            height: auto;
+            position: relative;
+            top: 0;
+            padding: 10px;
+        }
+
+        .content-area {
+            padding: 20px;
+        }
+
+        .dashboard {
+            flex-direction: column;
+        }
+
+        .collections-grid {
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="preloader">
+    <div class="preloader__content">
+        <div class="preloader__spinner"></div>
+        <div class="preloader__text">Loading your collections...</div>
+    </div>
+</div>
+
+<header class="header">
+    <a href="/" class="logo">
+        <i class="fas fa-camera-retro"></i>
+        <span>PhotoGeni</span>
+    </a>
+    
+    <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="search-input" placeholder="Search your collections...">
+    </div>
+    
+    <div class="user-info">
+        <div class="user-avatar">
+            <img src="{{ url_for('static', filename='img/' + user.profile_image) }}" alt="{{ user.username }}">
+        </div>
+        <span class="user-name">{{ user.username }}</span>
+    </div>
+</header>
+
+<div class="dashboard">
+    <aside class="sidebar">
+        <div class="sidebar-section">
+            <h3>My Collections</h3>
+            <ul class="sidebar-menu">
+                <li class="sidebar-menu-item active">
+                    <a href="#" data-path="">
+                        <i class="fas fa-folder"></i>
+                        <span>All Files</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="#" data-path="recent">
+                        <i class="fas fa-clock"></i>
+                        <span>Recent</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="#" data-path="favorites">
+                        <i class="fas fa-star"></i>
+                        <span>Favorites</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="#" data-path="shared">
+                        <i class="fas fa-share-alt"></i>
+                        <span>Shared</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="sidebar-section">
+            <h3>File Types</h3>
+            <ul class="sidebar-menu">
+                <li class="sidebar-menu-item">
+                    <a href="#" data-type="image">
+                        <i class="fas fa-image"></i>
+                        <span>Images</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="#" data-type="document">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Documents</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </aside>
+    
+    <main class="content-area">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">My Collections</h1>
+                <p class="welcome-message">Welcome back, {{ user.username }}!</p>
+            </div>
+            
+            <div class="action-buttons">
+                <input type="file" id="file-upload" multiple style="display: none;">
+                <button class="btn-primary" id="upload-button">
+                    <i class="fas fa-upload"></i>
+                    <span>Upload</span>
+                </button>
+                <button class="btn-primary" id="new-folder-button">
+                    <i class="fas fa-folder-plus"></i>
+                    <span>New Folder</span>
+                </button>
+            </div>
+        </div>
+        
+        <div id="breadcrumb" class="breadcrumb">
+            <a href="#" data-path="">Home</a>
+        </div>
+        
+        <!-- Upload progress bar -->
+        <div class="progress mb-3" style="display: none;" id="upload-progress-container">
+            <progress id="upload-progress" class="progress-bar" value="0" max="100" style="width: 100%"></progress>
+        </div>
+        
+        <div id="collections-container" class="collections-grid">
+            <!-- Collections will be loaded here dynamically -->
+        </div>
+        
+        <div id="empty-state" class="empty-state" style="display: none;">
+            <div class="empty-state-icon">
+                <i class="fas fa-folder-open"></i>
+            </div>
+            <h2 class="empty-state-text">No files found</h2>
+            <button class="btn-primary" id="empty-upload-button">
+                <i class="fas fa-upload"></i>
+                <span>Upload Files</span>
+            </button>
+        </div>
+    </main>
+</div>
+
+<!-- New Folder Modal -->
+<div class="modal fade" id="new-folder-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Folder</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="folder-name">Folder Name</label>
+                    <input type="text" class="form-control" id="folder-name" placeholder="Enter folder name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="create-folder-btn">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Preview Modal -->
+<div class="modal fade" id="image-preview-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="preview-title">Image Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="preview-image" src="" alt="Preview" class="img-fluid">
+                <div id="analysis-results" class="mt-3"></div>
+            </div>
+            <div class="modal-footer">
+                <div class="image-controls">
+                    <button class="btn btn-sm btn-outline-secondary" id="zoom-in-btn">
+                        <i class="fas fa-search-plus"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" id="zoom-out-btn">
+                        <i class="fas fa-search-minus"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" id="rotate-left-btn">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" id="rotate-right-btn">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" id="reset-image-btn">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-primary" id="preview-download">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button type="button" class="btn btn-info" id="preview-analyze">
+                        <i class="fas fa-magic"></i> Analyze
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Global variables
+    let currentPath = '';
+    let currentUser = { id: {{ user.id }}, username: '{{ user.username }}' };
+    let collections = [];
+    let isLoading = false;
+
+    // DOM elements
+    const collectionsContainer = document.getElementById('collections-container');
+    const emptyState = document.getElementById('empty-state');
+    const preloader = document.querySelector('.preloader');
+    const breadcrumb = document.getElementById('breadcrumb');
+    const searchInput = document.getElementById('search-input');
+    const uploadProgressContainer = document.getElementById('upload-progress-container');
+    const uploadProgress = document.getElementById('upload-progress');
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        // Hide preloader
+        setTimeout(() => {
+            preloader.classList.add('fade-out');
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 500);
+        }, 1000);
+
+        // Load initial collections
+        loadCollections();
+
+        // Event listeners
+        document.getElementById('upload-button').addEventListener('click', function() {
+            document.getElementById('file-upload').click();
+        });
+
+        document.getElementById('empty-upload-button').addEventListener('click', function() {
+            document.getElementById('file-upload').click();
+        });
+
+        document.getElementById('file-upload').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                uploadFiles();
+            }
+        });
+
+        document.getElementById('new-folder-button').addEventListener('click', function() {
+            const modal = new bootstrap.Modal(document.getElementById('new-folder-modal'));
+            modal.show();
+        });
+
+        document.getElementById('create-folder-btn').addEventListener('click', createFolder);
+
+        // Search functionality
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            filterCollections(query);
+        });
+
+        // Setup sidebar navigation
+        const sidebarItems = document.querySelectorAll('.sidebar-menu-item a');
+        sidebarItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all items
+                sidebarItems.forEach(i => i.parentElement.classList.remove('active'));
+                
+                // Add active class to clicked item
+                this.parentElement.classList.add('active');
+                
+                // Navigate to the selected path or filter
+                if (this.dataset.path !== undefined) {
+                    navigateToPath(this.dataset.path);
+                } else if (this.dataset.type !== undefined) {
+                    filterByType(this.dataset.type);
+                }
+            });
+        });
+    });
+
+    // Load collections from the server
+    function loadCollections() {
+        isLoading = true;
+        showLoading();
+        
+        // Get collections for the current path - backend handles user authentication
+        fetch(`/api/collections?path=${encodeURIComponent(currentPath)}`)
+            .then(response => response.json())
+            .then(data => {
+                collections = data.collections;
+                updateBreadcrumb();
+                displayCollections();
+                isLoading = false;
+                hideLoading();
+            })
+            .catch(error => {
+                console.error('Error loading collections:', error);
+                isLoading = false;
+                hideLoading();
+                showError('Failed to load collections');
+            });
+    }
+
+    // Display collections in the grid
+    function displayCollections() {
+        collectionsContainer.innerHTML = '';
+        
+        if (collections.length === 0) {
+            emptyState.style.display = 'block';
+            return;
+        }
+        
+        emptyState.style.display = 'none';
+        
+        collections.forEach(item => {
+            const collectionEl = document.createElement('div');
+            collectionEl.className = 'collection-item';
+            collectionEl.dataset.path = item.path;
+            collectionEl.dataset.type = item.type === 'folder' ? 'folder' : 'file';
+            
+            let thumbnailSrc;
+            if (item.type === 'folder') {
+                thumbnailSrc = '/static/img/folder.jpg';
+            } else if (item.isImage) {
+                thumbnailSrc = item.preview || '/static/img/file.jpg';
+            } else {
+                thumbnailSrc = '/static/img/file.jpg';
+            }
+            
+            collectionEl.innerHTML = `
+                <img src="${thumbnailSrc}" alt="${item.name}" class="collection-thumbnail">
+                <div class="collection-info">
+                    <h3 class="collection-name">${item.name}</h3>
+                    <p class="collection-meta">
+                        ${item.type === 'folder' ? 'Folder' : formatFileSize(item.size)} • ${formatDate(item.modified || item.modifiedTime)}
+                    </p>
+                </div>
+            `;
+            
+            collectionEl.addEventListener('click', function() {
+                if (item.type === 'folder') {
+                    navigateToPath(item.path);
+                } else if (item.isImage) {
+                    previewImage(item.path);
+                } else {
+                    downloadFile(item.path);
+                }
+            });
+            
+            collectionsContainer.appendChild(collectionEl);
+        });
+    }
+
+    // Update breadcrumb navigation
+    function updateBreadcrumb() {
+        breadcrumb.innerHTML = '';
+        
+        // Add home link
+        const homeLink = document.createElement('a');
+        homeLink.href = '#';
+        homeLink.dataset.path = '';
+        homeLink.textContent = 'Home';
+        homeLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            navigateToPath('');
+        });
+        breadcrumb.appendChild(homeLink);
+        
+        // If we're in a subfolder, add the path components
+        if (currentPath) {
+            const pathParts = currentPath.split('/');
+            let currentPathBuild = '';
+            
+            pathParts.forEach((part, index) => {
+                if (!part) return;
+                
+                // Add separator
+                const separator = document.createElement('span');
+                separator.textContent = ' / ';
+                breadcrumb.appendChild(separator);
+                
+                // Build the path up to this part
+                currentPathBuild += (currentPathBuild ? '/' : '') + part;
+                
+                // Add the path part link
+                const partLink = document.createElement('a');
+                partLink.href = '#';
+                partLink.dataset.path = currentPathBuild;
+                partLink.textContent = part;
+                
+                // If it's the last part, make it active (non-clickable)
+                if (index === pathParts.length - 1) {
+                    partLink.classList.add('active');
+                } else {
+                    partLink.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        navigateToPath(this.dataset.path);
+                    });
+                }
+                
+                breadcrumb.appendChild(partLink);
+            });
+        }
+    }
+
+    // Navigate to a specific path
+    function navigateToPath(path) {
+        currentPath = path;
+        loadCollections();
+    }
+
+    // Filter collections by file type
+    function filterByType(type) {
+        const filtered = collections.filter(item => {
+            if (type === 'image') {
+                return item.isImage;
+            } else if (type === 'document') {
+                return !item.isDir && !item.isImage;
+            }
+            return true;
+        });
+        
+        displayFilteredCollections(filtered);
+    }
+
+    // Filter collections by search query
+    function filterCollections(query) {
+        if (!query) {
+            displayCollections();
+            return;
+        }
+        
+        const filtered = collections.filter(item => 
+            item.name.toLowerCase().includes(query)
+        );
+        
+        displayFilteredCollections(filtered);
+    }
+
+    // Display filtered collections
+    function displayFilteredCollections(filtered) {
+        collectionsContainer.innerHTML = '';
+        
+        if (filtered.length === 0) {
+            emptyState.style.display = 'block';
+            return;
+        }
+        
+        emptyState.style.display = 'none';
+        
+        filtered.forEach(item => {
+            // Same as displayCollections logic, but for filtered items
+            const collectionEl = document.createElement('div');
+            collectionEl.className = 'collection-item';
+            // ... rest of the logic
+        });
+    }
+
+    // Create a new folder
+    function createFolder() {
+        const folderNameInput = document.getElementById('folder-name');
+        const folderName = folderNameInput.value.trim();
+        
+        if (!folderName) {
+            alert('Please enter a folder name');
+            return;
+        }
+        
+        fetch('/api/collections/folder', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                path: currentPath,
+                name: folderName
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                showError(data.error);
+            } else {
+                bootstrap.Modal.getInstance(document.getElementById('new-folder-modal')).hide();
+                folderNameInput.value = '';
+                loadCollections();
+                showSuccess('Folder created successfully');
+            }
+        })
+        .catch(error => {
+            console.error('Error creating folder:', error);
+            showError('Failed to create folder');
+        });
+    }
+
+    // Upload files
+    function uploadFiles() {
+        const fileInput = document.getElementById('file-upload');
+        
+        if (fileInput.files.length === 0) {
+            alert('Please select at least one file');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('path', currentPath);
+        
+        for (let i = 0; i < fileInput.files.length; i++) {
+            formData.append('files[]', fileInput.files[i]);
+        }
+        
+        // Show upload progress
+        uploadProgressContainer.style.display = 'block';
+        uploadProgress.value = 0;
+        
+        // Setup XHR to track upload progress
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/collections/upload');
+        
+        xhr.upload.addEventListener('progress', function(e) {
+            if (e.lengthComputable) {
+                const percentComplete = (e.loaded / e.total) * 100;
+                uploadProgress.value = percentComplete;
+            }
+        });
+        
+        xhr.onload = function() {
+            uploadProgressContainer.style.display = 'none';
+            fileInput.value = '';
+            
+            if (xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                
+                if (response.success) {
+                    showSuccess('Files uploaded successfully');
+                    loadCollections();
+                } else {
+                    showError('Failed to upload some files');
+                }
+            } else {
+                showError('Upload failed');
+            }
+        };
+        
+        xhr.onerror = function() {
+            uploadProgressContainer.style.display = 'none';
+            showError('Upload failed');
+        };
+        
+        xhr.send(formData);
+    }
+
+    // Download a file
+    function downloadFile(path) {
+        window.location.href = `/api/collections/file/${encodeURIComponent(path)}?download=true`;
+    }
+
+    // Preview an image
+    function previewImage(path) {
+        const modal = document.getElementById('image-preview-modal');
+        const img = modal.querySelector('.modal-body img');
+        const title = modal.querySelector('.modal-title');
+        
+        img.src = `/api/collections/file/${encodeURIComponent(path)}`;
+        title.textContent = path.split('/').pop();
+        
+        // Set up action buttons
+        const downloadBtn = modal.querySelector('#preview-download');
+        const analyzeBtn = modal.querySelector('#preview-analyze');
+        
+        downloadBtn.onclick = function() {
+            downloadFile(path);
+        };
+        
+        analyzeBtn.onclick = function() {
+            analyzeImage(path);
+        };
+        
+        // Show the modal
+        const previewModal = new bootstrap.Modal(modal);
+        previewModal.show();
+        
+        // Setup download button
+        document.getElementById('preview-download').onclick = function() {
+            downloadFile(path);
+        };
+        
+        // Setup analyze button
+        document.getElementById('preview-analyze').onclick = function() {
+            analyzeImage(path);
+        };
+    }
+
+    // Image manipulation functions
+    let zoomLevel = 1;
+    let rotation = 0;
+    
+    function resetImageTransforms() {
+        zoomLevel = 1;
+        rotation = 0;
+        updateImageTransform();
+    }
+    
+    function updateImageTransform() {
+        const previewImg = document.getElementById('preview-image');
+        previewImg.style.transform = `scale(${zoomLevel}) rotate(${rotation}deg)`;
+    }
+    
+    document.getElementById('zoom-in-btn').addEventListener('click', function() {
+        zoomLevel = Math.min(zoomLevel + 0.1, 3);
+        updateImageTransform();
+    });
+    
+    document.getElementById('zoom-out-btn').addEventListener('click', function() {
+        zoomLevel = Math.max(zoomLevel - 0.1, 0.5);
+        updateImageTransform();
+    });
+    
+    document.getElementById('rotate-left-btn').addEventListener('click', function() {
+        rotation = (rotation - 90) % 360;
+        updateImageTransform();
+    });
+    
+    document.getElementById('rotate-right-btn').addEventListener('click', function() {
+        rotation = (rotation + 90) % 360;
+        updateImageTransform();
+    });
+    
+    document.getElementById('reset-image-btn').addEventListener('click', resetImageTransforms);
+
+    // Analyze an image
+    function analyzeImage(path) {
+        const resultsContainer = document.getElementById('analysis-results');
+        resultsContainer.innerHTML = '<div class="text-center"><div class="spinner-border"></div><p>Analyzing image...</p></div>';
+        
+        fetch('/api/collections/analyze', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                path: path
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                resultsContainer.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+            } else {
+                const results = data.results;
+                
+                // Display analysis results
+                resultsContainer.innerHTML = `
+                    <div class="analysis-section">
+                        <h5>Description</h5>
+                        <p>${results.description}</p>
+                    </div>
+                    
+                    <div class="analysis-section">
+                        <h5>Tags</h5>
+                        <div class="tags-container">
+                            ${results.tags.map(tag => `<span class="badge bg-primary">${tag}</span>`).join(' ')}
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-section">
+                        <h5>Colors</h5>
+                        <div class="colors-container">
+                            ${results.colors.map(color => `
+                                <div class="color-swatch" style="background-color: ${color}"></div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-section">
+                        <h5>Objects Detected</h5>
+                        <ul class="objects-list">
+                            ${results.objects.map(obj => `<li>${obj}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error analyzing image:', error);
+            resultsContainer.innerHTML = `<div class="alert alert-danger">Failed to analyze image</div>`;
+        });
+    }
+
+    // Utility functions
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 B';
+        
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    function formatDate(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const yesterday = new Date(now);
+        yesterday.setDate(yesterday.getDate() - 1);
+        
+        if (date.toDateString() === now.toDateString()) {
+            return 'Today';
+        } else if (date.toDateString() === yesterday.toDateString()) {
+            return 'Yesterday';
+        } else {
+            return date.toLocaleDateString();
+        }
+    }
+    
+    function showLoading(message = 'Loading...') {
+        // Implement loading indicator
+    }
+    
+    function hideLoading() {
+        // Hide loading indicator
+    }
+    
+    function showError(message) {
+        alert('Error: ' + message);
+    }
+    
+    function showSuccess(message) {
+        // Show success message
+    }
+</script>
+{% endblock %}

@@ -34,6 +34,7 @@ from openai import OpenAI
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import replicate
 import hashlib
+import mimetypes
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-key-for-sessions')
@@ -56,6 +57,9 @@ class User(db.Model, UserMixin):
     api_keys = db.Column(db.String(1000), nullable=True, default='{}') # Store user's API keys as JSON string
     reset_token = db.Column(db.String(32), nullable=True)
     reset_token_expiration = db.Column(db.DateTime, nullable=True)
+    
+    # Add relationship to Collection
+    collections = db.relationship('Collection', backref='owner', lazy='dynamic')
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -81,6 +85,41 @@ class User(db.Model, UserMixin):
             db.session.commit()
         except Exception as e:
             print(f"Error setting API key: {e}")
+
+# Collection model to track file ownership
+class Collection(db.Model):
+    __tablename__ = 'collection'
+    id = db.Column(db.Integer, primary_key=True)
+    path = db.Column(db.String(255), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    is_folder = db.Column(db.Boolean, default=False)
+    size = db.Column(db.Integer, nullable=True)
+    mime_type = db.Column(db.String(100), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    modified_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
+    def to_dict(self):
+        item = {
+            'id': self.id,
+            'name': self.name,
+            'path': self.path,
+            'type': 'folder' if self.is_folder else 'file',
+            'modified': self.modified_at.isoformat(),
+            'created': self.created_at.isoformat(),
+            'owner_id': self.owner_id
+        }
+        
+        if not self.is_folder:
+            item['size'] = self.size
+            item['url'] = url_for('get_collection_file', path=self.path)
+            
+            # Add preview URL for images
+            if is_image_file(self.name):
+                item['preview'] = url_for('get_collection_thumbnail', path=self.path)
+                item['isImage'] = True
+        
+        return item
 
 # File Sharing model
 class SharedFile(db.Model):
@@ -162,6 +201,53 @@ UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'upload
 COLLECTIONS_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'collections')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(COLLECTIONS_ROOT, exist_ok=True)
+
+# Helper function to get user collections directory
+def get_user_collections_dir(user_id):
+    user_dir = os.path.join(COLLECTIONS_ROOT, str(user_id))
+    os.makedirs(user_dir, exist_ok=True)
+    return user_dir
+
+# Helper function to verify directory ownership
+def verify_directory_ownership(path, user_id):
+    """
+    Verify that the specified path belongs to the user.
+    Returns True if the path is within the user's collections directory,
+    False otherwise.
+    """
+    user_dir = get_user_collections_dir(user_id)
+    abs_path = os.path.join(user_dir, path)
+    return os.path.normpath(abs_path).startswith(os.path.normpath(user_dir))
+
+# Helper function to verify collection ownership in the database
+def verify_collection_ownership(path, user_id):
+    """
+    Verify that the specified collection belongs to the user according to database records.
+    For folders, checks if any parent folder is owned by the user.
+    Returns True if the collection is owned by the user, False otherwise.
+    """
+    # Exact path match
+    collection = Collection.query.filter_by(path=path, owner_id=user_id).first()
+    if collection:
+        return True
+        
+    # For folders, check parent folders
+    if path:
+        parts = path.split('/')
+        for i in range(len(parts)):
+            parent_path = '/'.join(parts[:i]) if i > 0 else ''
+            parent = Collection.query.filter_by(path=parent_path, is_folder=True, owner_id=user_id).first()
+            if parent:
+                return True
+    
+    # For new paths that don't exist in DB yet, default to filesystem check
+    filesystem_check = verify_directory_ownership(path, user_id)
+    
+    # Log unauthorized access attempts
+    if not filesystem_check:
+        app.logger.warning(f"Unauthorized access attempt: User {user_id} tried to access path '{path}' which is outside their directory")
+    
+    return filesystem_check
 
 # Configure generation output paths
 GENERATED_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'generated')
@@ -1240,10 +1326,563 @@ def ai_image_generation_page():
     """
     return render_template('ai_image_generation.html')
 
-# Collections page placeholder
+# Collections page
 @app.route('/collections')
+@login_required
 def collections_page():
-    return render_template('collections.html')
+    return render_template('collections.html', user=current_user)
+
+@app.route('/api/collections', methods=['GET'])
+@login_required
+def get_collections():
+    try:
+        path = request.args.get('path', '')
+        user_id = current_user.id
+        
+        # Validate and sanitize path to prevent directory traversal
+        if not is_safe_path(path):
+            app.logger.warning(f"Invalid path attempt: User {user_id} tried to access unsafe path '{path}'")
+            return jsonify({'error': 'Invalid path'}), 400
+            
+        # Check if path is within user's directory
+        if not verify_collection_ownership(path, user_id):
+            app.logger.warning(f"Access denied: User {user_id} attempted to access path '{path}' outside their directory")
+            return jsonify({'error': 'Access denied: path is outside of user directory'}), 403
+        
+        # Create user's collections directory if it doesn't exist
+        user_collections_dir = get_user_collections_dir(user_id)
+        
+        # Create absolute path to the user's specific directory
+        abs_path = os.path.join(user_collections_dir, path)
+        
+        # Check if path exists
+        if not os.path.exists(abs_path):
+            # If the path doesn't exist but it's the root, create it
+            if not path:
+                os.makedirs(abs_path, exist_ok=True)
+            else:
+                return jsonify({'error': 'Path does not exist'}), 404
+        
+        # Get items in directory
+        items = []
+        
+        # Special case for "recent" virtual folder
+        if path == 'recent':
+            # Get recent collections from database
+            recent_files = Collection.query.filter_by(
+                owner_id=user_id, 
+                is_folder=False
+            ).order_by(Collection.modified_at.desc()).limit(20).all()
+            
+            for item in recent_files:
+                items.append(item.to_dict())
+        
+        # Special case for "favorites" virtual folder
+        elif path == 'favorites':
+            # This would be implemented with a favorites table or flag in production
+            # For now, return empty list
+            pass
+        
+        # Special case for "shared" virtual folder
+        elif path == 'shared':
+            # Get files shared with this user
+            shared_files = SharedFile.query.filter_by(shared_with_id=user_id).all()
+            
+            for shared in shared_files:
+                # Get the collection entry
+                collection = Collection.query.filter_by(path=shared.path, owner_id=shared.owner_id).first()
+                if collection:
+                    item_dict = collection.to_dict()
+                    item_dict['shared_by'] = User.query.get(shared.owner_id).username
+                    items.append(item_dict)
+        
+        # Normal directory listing
+        else:
+            try:
+                for item_name in os.listdir(abs_path):
+                    item_path = os.path.join(abs_path, item_name)
+                    rel_path = os.path.join(path, item_name) if path else item_name
+                    
+                    # Create item object
+                    item = {
+                        'name': item_name,
+                        'path': rel_path,
+                        'type': 'folder' if os.path.isdir(item_path) else 'file',
+                        'isDir': os.path.isdir(item_path),
+                        'modifiedTime': datetime.fromtimestamp(os.path.getmtime(item_path)).isoformat()
+                    }
+                    
+                    # Add size for files
+                    if os.path.isfile(item_path):
+                        item['size'] = os.path.getsize(item_path)
+                        
+                        # Mark as image if it's an image file
+                        if is_image_file(item_name):
+                            item['isImage'] = True
+                    
+                    items.append(item)
+                    
+                # Sort items (folders first, then alphabetically)
+                items.sort(key=lambda x: (0 if x.get('isDir', x.get('type') == 'folder') else 1, x['name'].lower()))
+            except PermissionError:
+                return jsonify({'error': 'Permission denied'}), 403
+            except Exception as e:
+                app.logger.error(f"Error listing collections: {str(e)}")
+                return jsonify({'error': 'Failed to list items'}), 500
+        
+        return jsonify({
+            'collections': items,
+            'path': path,
+            'parent': os.path.dirname(path) if path else None
+        })
+    except Exception as e:
+        app.logger.error(f"Unexpected error in get_collections: {str(e)}")
+        return jsonify({'error': 'An unexpected error occurred'}), 500
+
+@app.route('/api/collections/folder', methods=['POST'])
+@login_required
+def create_folder():
+    try:
+        # Validate request data
+        if not request.is_json:
+            return jsonify({'error': 'Invalid request format, JSON required'}), 400
+            
+        data = request.json
+        path = data.get('path', '')
+        name = data.get('name', '')
+        user_id = current_user.id
+        
+        # Validate inputs
+        if not name:
+            return jsonify({'error': 'Folder name is required'}), 400
+            
+        if not is_valid_filename(name):
+            return jsonify({'error': 'Invalid folder name'}), 400
+            
+        if not is_safe_path(path):
+            app.logger.warning(f"Invalid path attempt: User {user_id} tried to access unsafe path '{path}'")
+            return jsonify({'error': 'Invalid path'}), 400
+        
+        # Check if path is within user's directory
+        if not verify_collection_ownership(path, user_id):
+            app.logger.warning(f"Access denied: User {user_id} attempted to access path '{path}' outside their directory")
+            return jsonify({'error': 'Access denied: path is outside of user directory'}), 403
+        
+        # Create user's collections directory if it doesn't exist
+        user_collections_dir = get_user_collections_dir(user_id)
+        
+        # Create absolute path
+        parent_path = os.path.join(user_collections_dir, path)
+        new_folder_path = os.path.join(parent_path, name)
+        
+        # Check if parent directory exists
+        if not os.path.exists(parent_path):
+            return jsonify({'error': 'Parent directory does not exist'}), 404
+            
+        # Check if folder already exists
+        if os.path.exists(new_folder_path):
+            return jsonify({'error': 'Folder already exists'}), 409
+        
+        # Create folder
+        try:
+            os.makedirs(new_folder_path, exist_ok=True)
+            
+            # Add to database
+            folder_rel_path = os.path.join(path, name) if path else name
+            new_folder = Collection(
+                path=folder_rel_path,
+                name=name,
+                is_folder=True,
+                owner_id=user_id
+            )
+            db.session.add(new_folder)
+            db.session.commit()
+            
+            return jsonify({
+                'success': True,
+                'path': folder_rel_path
+            })
+        except PermissionError:
+            return jsonify({'error': 'Permission denied'}), 403
+        except Exception as e:
+            app.logger.error(f"Error creating folder: {str(e)}")
+            return jsonify({'error': 'Failed to create folder'}), 500
+    except Exception as e:
+        app.logger.error(f"Unexpected error in create_folder: {str(e)}")
+        return jsonify({'error': 'An unexpected error occurred'}), 500
+
+@app.route('/api/collections/upload', methods=['POST'])
+@login_required
+def upload_to_collection():
+    try:
+        path = request.form.get('path', '')
+        user_id = current_user.id
+        
+        # Validate path
+        if not is_safe_path(path):
+            app.logger.warning(f"Invalid path attempt: User {user_id} tried to access unsafe path '{path}'")
+            return jsonify({'error': 'Invalid path'}), 400
+        
+        # Check if path is within user's directory
+        if not verify_collection_ownership(path, user_id):
+            app.logger.warning(f"Access denied: User {user_id} attempted to access path '{path}' outside their directory")
+            return jsonify({'error': 'Access denied: path is outside of user directory'}), 403
+        
+        # Check if files are provided
+        if 'files[]' not in request.files and 'files' not in request.files:
+            return jsonify({'error': 'No files provided'}), 400
+        
+        # Get files
+        files = request.files.getlist('files[]') if 'files[]' in request.files else request.files.getlist('files')
+        
+        if len(files) == 0:
+            return jsonify({'error': 'No files provided'}), 400
+        
+        # Create user's collections directory if it doesn't exist
+        user_collections_dir = get_user_collections_dir(user_id)
+        
+        # Create absolute path
+        upload_path = os.path.join(user_collections_dir, path)
+        
+        # Check if directory exists
+        if not os.path.exists(upload_path):
+            os.makedirs(upload_path, exist_ok=True)
+        
+        # Upload files
+        uploaded_files = []
+        failed_files = []
+        
+        for file in files:
+            if file and file.filename:
+                filename = secure_filename(file.filename)
+                
+                # Check if filename is valid
+                if not filename or not is_valid_filename(filename):
+                    failed_files.append({
+                        'name': file.filename,
+                        'error': 'Invalid filename'
+                    })
+                    continue
+                
+                try:
+                    # Save file
+                    file_path = os.path.join(upload_path, filename)
+                    file.save(file_path)
+                    
+                    # Get file size
+                    file_size = os.path.getsize(file_path)
+                    
+                    # Process image if it's an image file
+                    is_image = is_image_file(filename)
+                    if is_image:
+                        create_thumbnail(file_path)
+                    
+                    # Add to database
+                    file_rel_path = os.path.join(path, filename) if path else filename
+                    new_file = Collection(
+                        path=file_rel_path,
+                        name=filename,
+                        is_folder=False,
+                        size=file_size,
+                        mime_type=file.content_type if hasattr(file, 'content_type') else None,
+                        owner_id=user_id
+                    )
+                    db.session.add(new_file)
+                    
+                    # Add to uploaded files
+                    uploaded_files.append({
+                        'name': filename,
+                        'path': file_rel_path,
+                        'size': file_size,
+                        'isImage': is_image
+                    })
+                except Exception as e:
+                    app.logger.error(f"Error uploading file {filename}: {str(e)}")
+                    failed_files.append({
+                        'name': file.filename,
+                        'error': str(e)
+                    })
+        
+        # Commit all database changes
+        db.session.commit()
+        
+        result = {
+            'success': len(uploaded_files) > 0,
+            'uploaded': uploaded_files,
+            'failed': failed_files
+        }
+        
+        if len(failed_files) > 0 and len(uploaded_files) == 0:
+            return jsonify(result), 500
+        
+        return jsonify(result)
+    except Exception as e:
+        app.logger.error(f"Unexpected error in upload_to_collection: {str(e)}")
+        return jsonify({'error': 'An unexpected error occurred'}), 500
+
+@app.route('/api/collections/file/<path:path>', methods=['GET'])
+@login_required
+def get_collection_file(path):
+    if not current_user.is_authenticated:
+        return jsonify({'error': 'Authentication required'}), 401
+    
+    user_id = current_user.id
+    
+    # Check if this is a shared file
+    if 'owner_id' in request.args:
+        try:
+            owner_id = int(request.args.get('owner_id'))
+            
+            # Check if this file is shared with the current user
+            shared = SharedFile.query.filter_by(
+                path=path,
+                owner_id=owner_id,
+                shared_with_id=user_id
+            ).first()
+            
+            if not shared:
+                app.logger.warning(f"Access denied: User {user_id} attempted to access shared file '{path}' not shared with them")
+                return jsonify({'error': 'Access denied: file not shared with you'}), 403
+        except:
+            owner_id = user_id
+    else:
+        owner_id = user_id
+    
+    # Create absolute path using the owner's directory
+    file_path = os.path.join(get_user_collections_dir(owner_id), path)
+    
+    # Security check: verify the requested path is within this user's collections directory
+    if not os.path.normpath(file_path).startswith(os.path.normpath(get_user_collections_dir(owner_id))):
+        app.logger.warning(f"Access denied: User {user_id} attempted to access path '{path}' outside their directory")
+        return jsonify({'error': 'Access denied: path is outside of user directory'}), 403
+    
+    # Check if file exists
+    if not os.path.exists(file_path) or not os.path.isfile(file_path):
+        return jsonify({'error': 'File not found'}), 404
+    
+    # Set the correct mime type for the file
+    mime_type, _ = mimetypes.guess_type(file_path)
+    
+    return send_file(file_path, mimetype=mime_type)
+
+@app.route('/api/collections/thumbnail/<path:path>', methods=['GET'])
+@login_required
+def get_collection_thumbnail(path):
+    if not current_user.is_authenticated:
+        return jsonify({'error': 'Authentication required'}), 401
+    
+    user_id = current_user.id
+    
+    # Check if this is a shared file
+    if 'owner_id' in request.args:
+        try:
+            owner_id = int(request.args.get('owner_id'))
+            
+            # Check if this file is shared with the current user
+            shared = SharedFile.query.filter_by(
+                path=path,
+                owner_id=owner_id,
+                shared_with_id=user_id
+            ).first()
+            
+            if not shared:
+                app.logger.warning(f"Access denied: User {user_id} attempted to access shared file '{path}' not shared with them")
+                return jsonify({'error': 'Access denied: file not shared with you'}), 403
+        except:
+            owner_id = user_id
+    else:
+        owner_id = user_id
+    
+    # Create absolute path using the owner's directory
+    file_path = os.path.join(get_user_collections_dir(owner_id), path)
+    
+    # Security check: verify the requested path is within this user's collections directory
+    if not os.path.normpath(file_path).startswith(os.path.normpath(get_user_collections_dir(owner_id))):
+        app.logger.warning(f"Access denied: User {user_id} attempted to access path '{path}' outside their directory")
+        return jsonify({'error': 'Access denied: path is outside of user directory'}), 403
+    
+    # Check if file exists
+    if not os.path.exists(file_path) or not os.path.isfile(file_path):
+        return jsonify({'error': 'File not found'}), 404
+    
+    # Check if file is an image
+    if not is_image_file(file_path):
+        return jsonify({'error': 'Not an image file'}), 400
+    
+    # Get thumbnail path
+    thumbnail_path = get_thumbnail_path(file_path)
+    
+    # Create thumbnail if it doesn't exist
+    if not os.path.exists(thumbnail_path):
+        create_thumbnail(file_path)
+    
+    # Return thumbnail
+    return send_file(thumbnail_path)
+
+@app.route('/api/collections/analyze', methods=['POST'])
+@login_required
+def analyze_collection_image():
+    try:
+        # Validate request data
+        if not request.is_json:
+            return jsonify({'error': 'Invalid request format, JSON required'}), 400
+            
+        data = request.json
+        path = data.get('path', '')
+        user_id = current_user.id
+        
+        # Validate path
+        if not path or not is_safe_path(path):
+            app.logger.warning(f"Invalid path attempt: User {user_id} tried to access unsafe path '{path}'")
+            return jsonify({'error': 'Invalid path'}), 400
+        
+        # Check if path is within user's directory
+        if not verify_collection_ownership(path, user_id):
+            app.logger.warning(f"Access denied: User {user_id} attempted to access path '{path}' outside their directory")
+            return jsonify({'error': 'Access denied: path is outside of user directory'}), 403
+        
+        # Check if user has access to this file
+        file_record = Collection.query.filter_by(path=path, owner_id=user_id).first()
+        
+        # If not owner, check if file is shared with user
+        if not file_record:
+            shared = SharedFile.query.filter_by(
+                path=path, 
+                shared_with_id=user_id
+            ).first()
+            
+            if not shared:
+                app.logger.warning(f"Access denied: User {user_id} attempted to access file '{path}' not shared with them")
+                return jsonify({'error': 'Access denied'}), 403
+            
+            # Get the actual owner ID for the file path
+            owner_id = shared.owner_id
+        else:
+            owner_id = user_id
+        
+        # Create absolute path using the owner's directory
+        file_path = os.path.join(get_user_collections_dir(owner_id), path)
+        
+        # Check if file exists
+        if not os.path.exists(file_path) or not os.path.isfile(file_path):
+            return jsonify({'error': 'File not found'}), 404
+        
+        # Check if file is an image
+        if not is_image_file(file_path):
+            return jsonify({'error': 'Not an image file'}), 400
+        
+        # Analyze image using existing AI functionality
+        analysis_results = analyze_image(file_path)
+        
+        return jsonify({
+            'success': True,
+            'path': path,
+            'results': analysis_results
+        })
+    except Exception as e:
+        app.logger.error(f"Error analyzing image {path if 'path' in locals() else 'unknown'}: {str(e)}")
+        return jsonify({'error': 'Failed to analyze image'}), 500
+
+def analyze_image(file_path):
+    """Analyze an image using AI features"""
+    try:
+        # Placeholder for actual AI analysis
+        # This would call existing AI functionality in your app
+        results = {
+            'description': 'An image analysis would appear here',
+            'tags': ['tag1', 'tag2', 'tag3'],
+            'colors': ['#FF5733', '#33FF57', '#3357FF'],
+            'objects': ['object1', 'object2'],
+            'ai_generated': False
+        }
+        
+        # In a real implementation, you would:
+        # 1. Load the image
+        # 2. Use existing AI models to analyze it
+        # 3. Return structured results
+        
+        return results
+    except Exception as e:
+        app.logger.error(f"Error in AI analysis for {file_path}: {str(e)}")
+        return {
+            'error': str(e),
+            'description': 'Analysis failed',
+            'tags': []
+        }
+
+# Utility functions for collections
+def is_safe_path(path):
+    """Check if a path is safe (no directory traversal)"""
+    if not path:
+        return True
+        
+    # Normalize path
+    norm_path = os.path.normpath(path)
+    
+    # Check for directory traversal attempts
+    if norm_path.startswith('..') or '/../' in norm_path or '/..' in norm_path:
+        return False
+    
+    return True
+
+def is_valid_filename(filename):
+    """Check if a filename is valid"""
+    # Check for empty filename
+    if not filename or filename.strip() == '':
+        return False
+    
+    # Check for invalid characters
+    invalid_chars = ['/', '\\', ':', '*', '?', '"', '<', '>', '|']
+    if any(char in filename for char in invalid_chars):
+        return False
+    
+    # Check if filename is too long
+    if len(filename) > 255:
+        return False
+    
+    return True
+
+def is_image_file(filename):
+    """Check if a file is an image based on extension"""
+    image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp']
+    _, ext = os.path.splitext(filename)
+    return ext.lower() in image_extensions
+
+def get_thumbnail_path(file_path):
+    """Get the path to the thumbnail for a file"""
+    # Create thumbnails directory if it doesn't exist
+    thumbnails_dir = os.path.join(os.path.dirname(COLLECTIONS_ROOT), 'thumbnails')
+    os.makedirs(thumbnails_dir, exist_ok=True)
+    
+    # Generate a unique hash for the file path
+    file_hash = hashlib.md5(file_path.encode()).hexdigest()
+    
+    # Get file extension
+    _, ext = os.path.splitext(file_path)
+    
+    # Return thumbnail path
+    return os.path.join(thumbnails_dir, f"{file_hash}{ext}")
+
+def create_thumbnail(file_path, size=(240, 180)):
+    """Create a thumbnail for an image file"""
+    # Get thumbnail path
+    thumbnail_path = get_thumbnail_path(file_path)
+    
+    try:
+        # Open image
+        img = Image.open(file_path)
+        
+        # Preserve aspect ratio
+        img.thumbnail(size, Image.LANCZOS)
+        
+        # Save thumbnail
+        img.save(thumbnail_path, optimize=True, quality=85)
+        
+        return thumbnail_path
+    except Exception as e:
+        app.logger.error(f"Error creating thumbnail for {file_path}: {str(e)}")
+        # Return original file path if thumbnail creation fails
+        return file_path
 
 # --- Person Page Route ---
 
@@ -1631,384 +2270,6 @@ def api_search_users():
         'success': True,
         'users': users_list
     })
-
-@app.route('/api/collections', methods=['GET'])
-def get_collections():
-    try:
-        path = request.args.get('path', '')
-        # Validate and sanitize path to prevent directory traversal
-        if not is_safe_path(path):
-            return jsonify({'error': 'Invalid path'}), 400
-            
-        # Create absolute path
-        abs_path = os.path.join(COLLECTIONS_ROOT, path)
-        
-        # Check if path exists
-        if not os.path.exists(abs_path):
-            return jsonify({'error': 'Path does not exist'}), 404
-        
-        # Get items in directory
-        items = []
-        try:
-            for item_name in os.listdir(abs_path):
-                item_path = os.path.join(abs_path, item_name)
-                rel_path = os.path.join(path, item_name) if path else item_name
-                
-                # Create item object
-                item = {
-                    'name': item_name,
-                    'path': rel_path,
-                    'type': 'folder' if os.path.isdir(item_path) else 'file',
-                    'modified': datetime.fromtimestamp(os.path.getmtime(item_path)).isoformat()
-                }
-                
-                # Add size for files
-                if os.path.isfile(item_path):
-                    item['size'] = os.path.getsize(item_path)
-                    
-                    # Add URL for files
-                    item['url'] = url_for('get_collection_file', path=rel_path)
-                    
-                    # Add preview URL for images
-                    if is_image_file(item_name):
-                        item['preview'] = url_for('get_collection_thumbnail', path=rel_path)
-                
-                items.append(item)
-                
-            # Sort items (folders first, then alphabetically)
-            items.sort(key=lambda x: (0 if x['type'] == 'folder' else 1, x['name'].lower()))
-            
-            return jsonify({
-                'items': items,
-                'path': path,
-                'parent': os.path.dirname(path) if path else None
-            })
-        except PermissionError:
-            return jsonify({'error': 'Permission denied'}), 403
-        except Exception as e:
-            app.logger.error(f"Error listing collections: {str(e)}")
-            return jsonify({'error': 'Failed to list items'}), 500
-    except Exception as e:
-        app.logger.error(f"Unexpected error in get_collections: {str(e)}")
-        return jsonify({'error': 'An unexpected error occurred'}), 500
-
-@app.route('/api/collections/folder', methods=['POST'])
-def create_folder():
-    try:
-        # Validate request data
-        if not request.is_json:
-            return jsonify({'error': 'Invalid request format, JSON required'}), 400
-            
-        data = request.json
-        path = data.get('path', '')
-        name = data.get('name', '')
-        
-        # Validate inputs
-        if not name:
-            return jsonify({'error': 'Folder name is required'}), 400
-            
-        if not is_valid_filename(name):
-            return jsonify({'error': 'Invalid folder name'}), 400
-            
-        if not is_safe_path(path):
-            return jsonify({'error': 'Invalid path'}), 400
-        
-        # Create absolute path
-        parent_path = os.path.join(COLLECTIONS_ROOT, path)
-        new_folder_path = os.path.join(parent_path, name)
-        
-        # Check if parent directory exists
-        if not os.path.exists(parent_path):
-            return jsonify({'error': 'Parent directory does not exist'}), 404
-            
-        # Check if folder already exists
-        if os.path.exists(new_folder_path):
-            return jsonify({'error': 'Folder already exists'}), 409
-        
-        # Create folder
-        try:
-            os.makedirs(new_folder_path, exist_ok=True)
-            return jsonify({
-                'success': True,
-                'path': os.path.join(path, name) if path else name
-            })
-        except PermissionError:
-            return jsonify({'error': 'Permission denied'}), 403
-        except Exception as e:
-            app.logger.error(f"Error creating folder: {str(e)}")
-            return jsonify({'error': 'Failed to create folder'}), 500
-    except Exception as e:
-        app.logger.error(f"Unexpected error in create_folder: {str(e)}")
-        return jsonify({'error': 'An unexpected error occurred'}), 500
-
-@app.route('/api/collections/upload', methods=['POST'])
-def upload_to_collection():
-    try:
-        path = request.form.get('path', '')
-        
-        # Validate path
-        if not is_safe_path(path):
-            return jsonify({'error': 'Invalid path'}), 400
-        
-        # Check if files are provided
-        if 'files[]' not in request.files and 'files' not in request.files:
-            return jsonify({'error': 'No files provided'}), 400
-        
-        # Get files
-        files = request.files.getlist('files[]') if 'files[]' in request.files else request.files.getlist('files')
-        
-        if len(files) == 0:
-            return jsonify({'error': 'No files provided'}), 400
-        
-        # Create absolute path
-        upload_path = os.path.join(COLLECTIONS_ROOT, path)
-        
-        # Check if directory exists
-        if not os.path.exists(upload_path):
-            return jsonify({'error': 'Directory does not exist'}), 404
-        
-        # Upload files
-        uploaded_files = []
-        failed_files = []
-        
-        for file in files:
-            if file and file.filename:
-                filename = secure_filename(file.filename)
-                
-                # Check if filename is valid
-                if not filename or not is_valid_filename(filename):
-                    failed_files.append({
-                        'name': file.filename,
-                        'error': 'Invalid filename'
-                    })
-                    continue
-                
-                try:
-                    # Save file
-                    file_path = os.path.join(upload_path, filename)
-                    file.save(file_path)
-                    
-                    # Process image if it's an image file
-                    if is_image_file(filename):
-                        create_thumbnail(file_path)
-                    
-                    # Add to uploaded files
-                    uploaded_files.append({
-                        'name': filename,
-                        'path': os.path.join(path, filename) if path else filename,
-                        'size': os.path.getsize(file_path),
-                        'url': url_for('get_collection_file', path=os.path.join(path, filename) if path else filename)
-                    })
-                except Exception as e:
-                    app.logger.error(f"Error uploading file {filename}: {str(e)}")
-                    failed_files.append({
-                        'name': file.filename,
-                        'error': str(e)
-                    })
-        
-        result = {
-            'success': len(uploaded_files) > 0,
-            'uploaded': uploaded_files,
-            'failed': failed_files
-        }
-        
-        if len(failed_files) > 0 and len(uploaded_files) == 0:
-            return jsonify(result), 500
-        
-        return jsonify(result)
-    except Exception as e:
-        app.logger.error(f"Unexpected error in upload_to_collection: {str(e)}")
-        return jsonify({'error': 'An unexpected error occurred'}), 500
-
-@app.route('/api/collections/file/<path:path>', methods=['GET'])
-def get_collection_file(path):
-    try:
-        # Validate path
-        if not is_safe_path(path):
-            return jsonify({'error': 'Invalid path'}), 400
-        
-        # Create absolute path
-        file_path = os.path.join(COLLECTIONS_ROOT, path)
-        
-        # Check if file exists
-        if not os.path.exists(file_path) or not os.path.isfile(file_path):
-            return jsonify({'error': 'File not found'}), 404
-        
-        # Return file
-        return send_file(file_path)
-    except Exception as e:
-        app.logger.error(f"Error serving file {path}: {str(e)}")
-        return jsonify({'error': 'Failed to serve file'}), 500
-
-@app.route('/api/collections/thumbnail/<path:path>', methods=['GET'])
-def get_collection_thumbnail(path):
-    try:
-        # Validate path
-        if not is_safe_path(path):
-            return jsonify({'error': 'Invalid path'}), 400
-        
-        # Create absolute path to original file
-        file_path = os.path.join(COLLECTIONS_ROOT, path)
-        
-        # Check if file exists
-        if not os.path.exists(file_path) or not os.path.isfile(file_path):
-            return jsonify({'error': 'File not found'}), 404
-        
-        # Check if file is an image
-        if not is_image_file(file_path):
-            return jsonify({'error': 'Not an image file'}), 400
-        
-        # Get thumbnail path
-        thumbnail_path = get_thumbnail_path(file_path)
-        
-        # Create thumbnail if it doesn't exist
-        if not os.path.exists(thumbnail_path):
-            create_thumbnail(file_path)
-        
-        # Return thumbnail
-        return send_file(thumbnail_path)
-    except Exception as e:
-        app.logger.error(f"Error serving thumbnail for {path}: {str(e)}")
-        return jsonify({'error': 'Failed to serve thumbnail'}), 500
-
-# Utility functions for collections
-def is_safe_path(path):
-    """Check if a path is safe (no directory traversal)"""
-    if not path:
-        return True
-        
-    # Normalize path
-    norm_path = os.path.normpath(path)
-    
-    # Check for directory traversal attempts
-    if norm_path.startswith('..') or '/../' in norm_path or '/..' in norm_path:
-        return False
-    
-    return True
-
-def is_valid_filename(filename):
-    """Check if a filename is valid"""
-    # Check for empty filename
-    if not filename or filename.strip() == '':
-        return False
-    
-    # Check for invalid characters
-    invalid_chars = ['/', '\\', ':', '*', '?', '"', '<', '>', '|']
-    if any(char in filename for char in invalid_chars):
-        return False
-    
-    # Check if filename is too long
-    if len(filename) > 255:
-        return False
-    
-    return True
-
-def is_image_file(filename):
-    """Check if a file is an image based on extension"""
-    image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp']
-    _, ext = os.path.splitext(filename)
-    return ext.lower() in image_extensions
-
-def get_thumbnail_path(file_path):
-    """Get the path to the thumbnail for a file"""
-    # Create thumbnails directory if it doesn't exist
-    thumbnails_dir = os.path.join(os.path.dirname(COLLECTIONS_ROOT), 'thumbnails')
-    os.makedirs(thumbnails_dir, exist_ok=True)
-    
-    # Generate a unique hash for the file path
-    file_hash = hashlib.md5(file_path.encode()).hexdigest()
-    
-    # Get file extension
-    _, ext = os.path.splitext(file_path)
-    
-    # Return thumbnail path
-    return os.path.join(thumbnails_dir, f"{file_hash}{ext}")
-
-def create_thumbnail(file_path, size=(240, 180)):
-    """Create a thumbnail for an image file"""
-    # Get thumbnail path
-    thumbnail_path = get_thumbnail_path(file_path)
-    
-    try:
-        # Open image
-        img = Image.open(file_path)
-        
-        # Preserve aspect ratio
-        img.thumbnail(size, Image.LANCZOS)
-        
-        # Save thumbnail
-        img.save(thumbnail_path, optimize=True, quality=85)
-        
-        return thumbnail_path
-    except Exception as e:
-        app.logger.error(f"Error creating thumbnail for {file_path}: {str(e)}")
-        # Return original file path if thumbnail creation fails
-        return file_path
-
-# AI integration with collections
-@app.route('/api/collections/analyze', methods=['POST'])
-def analyze_collection_image():
-    try:
-        # Validate request data
-        if not request.is_json:
-            return jsonify({'error': 'Invalid request format, JSON required'}), 400
-            
-        data = request.json
-        path = data.get('path', '')
-        
-        # Validate path
-        if not path or not is_safe_path(path):
-            return jsonify({'error': 'Invalid path'}), 400
-        
-        # Create absolute path
-        file_path = os.path.join(COLLECTIONS_ROOT, path)
-        
-        # Check if file exists
-        if not os.path.exists(file_path) or not os.path.isfile(file_path):
-            return jsonify({'error': 'File not found'}), 404
-        
-        # Check if file is an image
-        if not is_image_file(file_path):
-            return jsonify({'error': 'Not an image file'}), 400
-        
-        # Analyze image using existing AI functionality
-        analysis_results = analyze_image(file_path)
-        
-        return jsonify({
-            'success': True,
-            'path': path,
-            'results': analysis_results
-        })
-    except Exception as e:
-        app.logger.error(f"Error analyzing image {path if 'path' in locals() else 'unknown'}: {str(e)}")
-        return jsonify({'error': 'Failed to analyze image'}), 500
-
-def analyze_image(file_path):
-    """Analyze an image using AI features"""
-    try:
-        # Placeholder for actual AI analysis
-        # This would call existing AI functionality in your app
-        results = {
-            'description': 'An image analysis would appear here',
-            'tags': ['tag1', 'tag2', 'tag3'],
-            'colors': ['#FF5733', '#33FF57', '#3357FF'],
-            'objects': ['object1', 'object2'],
-            'ai_generated': False
-        }
-        
-        # In a real implementation, you would:
-        # 1. Load the image
-        # 2. Use existing AI models to analyze it
-        # 3. Return structured results
-        
-        return results
-    except Exception as e:
-        app.logger.error(f"Error in AI analysis for {file_path}: {str(e)}")
-        return {
-            'error': str(e),
-            'description': 'Analysis failed',
-            'tags': []
-        }
 
 if __name__ == '__main__':
     app.run(debug=True)
