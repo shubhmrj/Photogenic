@@ -396,9 +396,9 @@
         /* Collections Grid */
         .collections-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 16px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            padding: 20px;
         }
         
         .collections-grid.list-view {
@@ -406,24 +406,72 @@
         }
         
         .collection-item {
-            background-color: var(--bg-card);
-            border-radius: 8px;
-            overflow: hidden;
-            transition: all 0.2s ease-in-out;
             position: relative;
+            background-color: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 16px;
             cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            animation: fadeInUp 0.4s forwards;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
         
         .collection-item:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
         
         .collection-item.selected {
-            border: 2px solid #4285f4;
+            background-color: var(--bg-selected);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .collection-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.02), rgba(0,0,0,0.1));
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+        
+        .collection-item:hover::before {
+            opacity: 1;
+        }
+        
+        .collection-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+        }
+        
+        .collection-details {
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .collection-name {
+            font-weight: 500;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .collection-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            opacity: 0.7;
         }
         
         .collection-img-container {
@@ -444,27 +492,6 @@
         
         .collection-item:hover .collection-img {
             transform: scale(1.03);
-        }
-        
-        .collection-info {
-            padding: 12px;
-        }
-        
-        .collection-name {
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: var(--text-main);
-            margin: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        
-        .collection-date {
-            font-size: 0.8rem;
-            color: var(--secondary-text);
-            margin: 4px 0 0;
-            opacity: 0.8;
         }
         
         .folder-icon {
@@ -490,6 +517,134 @@
             padding: 3px 8px;
             border-radius: 12px;
             z-index: 2;
+        }
+        
+        /* Item Menu */
+        .item-menu {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+        }
+        
+        .item-menu-button {
+            background: rgba(0, 0, 0, 0.2);
+            border: none;
+            color: white;
+            opacity: 0;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .collection-item:hover .item-menu-button {
+            opacity: 0.8;
+        }
+        
+        .item-menu-button:hover {
+            opacity: 1 !important;
+            background: rgba(0, 0, 0, 0.4);
+            transform: scale(1.05);
+        }
+        
+        .item-dropdown {
+            position: absolute;
+            top: 36px;
+            right: 0;
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            padding: 6px 0;
+            display: none;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            min-width: 160px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.2s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .item-dropdown.show {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dropdown-item i {
+            font-size: 0.9rem;
+            width: 16px;
+            text-align: center;
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+        
+        .dropdown-item::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%, -50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .dropdown-item:focus::after,
+        .dropdown-item:active::after {
+            animation: ripple 0.6s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            20% {
+                transform: scale(25, 25);
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
+        }
+        
+        .item-menu-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--primary-color);
+            opacity: 1;
+        }
+        
+        .dropdown-item:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.05);
         }
         
         /* Empty folder state */
@@ -570,23 +725,16 @@
         }
         
         .modal-header h3 {
-            color: var(--text-main);
-            font-weight: 500;
+            margin: 0;
+            font-size: 1.2rem;
         }
         
-        .modal-close {
+        .close-modal {
             background: none;
             border: none;
+            font-size: 1.5rem;
             color: var(--text-color);
-            opacity: 0.7;
-            font-size: 0.9rem;
             cursor: pointer;
-            padding: 0 5px;
-            margin-left: 10px;
-        }
-        
-        .modal-close:hover {
-            opacity: 1;
         }
         
         .modal-body {
@@ -625,6 +773,23 @@
             justify-content: flex-end;
             gap: 10px;
             border-top: 1px solid var(--border-color);
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-secondary {
+            background-color: #4b5563;
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: #ff5252;
+            color: white;
         }
         
         /* Toast notifications */
@@ -706,36 +871,18 @@
         
         /* Animations */
         @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
         
         @keyframes slideOut {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
         }
         
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .page-transition {
@@ -976,6 +1123,68 @@
         .user-email {
             font-size: 0.8rem;
             color: var(--secondary-text);
+        }
+        
+        /* Modal Dialog */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .modal.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .modal-content {
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-body .warning {
+            color: #ff5252;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
         }
     </style>
 </head>
@@ -1371,6 +1580,16 @@
             
             // Key events for selection
             document.addEventListener('keydown', handleKeyDown);
+            
+            // Item menu
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.item-dropdown')) {
+                    // Close all dropdowns when clicking outside
+                    document.querySelectorAll('.item-dropdown').forEach(dropdown => {
+                        dropdown.classList.remove('show');
+                    });
+                }
+            });
         }
         
         // Set up drag and drop functionality
@@ -2104,19 +2323,41 @@
                             <span>${size}</span>
                         </div>
                     </div>
+                    <div class="item-menu">
+                        <button class="item-menu-button" data-path="${itemPath}" aria-label="Menu">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <div class="item-dropdown">
+                            <div class="dropdown-item rename-item" data-path="${itemPath}">
+                                <i class="fas fa-edit"></i> 
+                                <span>Rename</span>
+                            </div>
+                            <div class="dropdown-item delete-item" data-path="${itemPath}">
+                                <i class="fas fa-trash"></i> 
+                                <span>Delete</span>
+                            </div>
+                        </div>
+                    </div>
                 `;
                 
                 // Add click event for opening folders or previewing files
-                itemElement.addEventListener('click', (e) => {
+                itemElement.addEventListener('click', function(e) {
+                    // Don't open folder if clicking on menu or its children
+                    if (e.target.closest('.item-menu')) {
+                        return;
+                    }
+                    
                     // Don't trigger if Ctrl or Shift key is pressed (for multi-select)
-                    if (!e.ctrlKey && !e.shiftKey && !e.metaKey) {
-                        if (isFolder) {
-                            navigateToFolder(itemPath);
-                        } else if (isImageFile(item.name)) {
-                            previewFile(itemPath);
-                        } else {
-                            window.open(getFileUrl(itemPath), '_blank');
-                        }
+                    if (e.ctrlKey || e.shiftKey || e.metaKey) {
+                        return;
+                    }
+                    
+                    if (isFolder) {
+                        navigateToFolder(itemPath);
+                    } else if (isImageFile(item.name)) {
+                        previewFile(itemPath);
+                    } else {
+                        window.open(getFileUrl(itemPath), '_blank');
                     }
                 });
                 
@@ -2125,6 +2366,82 @@
                     if (e.button === 0) { // Left click only
                         handleItemSelection(itemElement, e);
                     }
+                });
+                
+                // Add menu button click handler directly to the button
+                const menuButton = itemElement.querySelector('.item-menu-button');
+                menuButton.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Stop event from bubbling up
+                    
+                    // Close all other open dropdowns first
+                    document.querySelectorAll('.item-dropdown.show').forEach(dropdown => {
+                        if (dropdown !== this.nextElementSibling) {
+                            dropdown.classList.remove('show');
+                        }
+                    });
+                    
+                    // Toggle this dropdown
+                    const dropdown = this.nextElementSibling;
+                    dropdown.classList.toggle('show');
+                    
+                    // If dropdown is now shown, focus the first item
+                    if (dropdown.classList.contains('show')) {
+                        setTimeout(() => {
+                            const firstItem = dropdown.querySelector('.dropdown-item');
+                            if (firstItem) firstItem.focus();
+                        }, 100);
+                    }
+                });
+                
+                // Add keyboard navigation for the dropdown
+                const dropdownItems = itemElement.querySelectorAll('.dropdown-item');
+                dropdownItems.forEach((item, index) => {
+                    item.setAttribute('tabindex', '0'); // Make focusable
+                    
+                    item.addEventListener('keydown', function(e) {
+                        // Handle keyboard navigation
+                        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                            e.preventDefault();
+                            
+                            const items = Array.from(this.parentNode.querySelectorAll('.dropdown-item'));
+                            const currentIndex = items.indexOf(this);
+                            let nextIndex;
+                            
+                            if (e.key === 'ArrowDown') {
+                                nextIndex = (currentIndex + 1) % items.length;
+                            } else {
+                                nextIndex = (currentIndex - 1 + items.length) % items.length;
+                            }
+                            
+                            items[nextIndex].focus();
+                        } else if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            this.click();
+                        } else if (e.key === 'Escape') {
+                            e.preventDefault();
+                            this.closest('.item-dropdown').classList.remove('show');
+                            this.closest('.item-menu').querySelector('.item-menu-button').focus();
+                        }
+                    });
+                });
+                
+                // Add click handlers for dropdown items
+                const renameItem = itemElement.querySelector('.rename-item');
+                renameItem.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    // Close dropdown
+                    this.closest('.item-dropdown').classList.remove('show');
+                    // Start rename
+                    startRenameItem(this.getAttribute('data-path'));
+                });
+                
+                const deleteItem = itemElement.querySelector('.delete-item');
+                deleteItem.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    // Close dropdown
+                    this.closest('.item-dropdown').classList.remove('show');
+                    // Confirm delete
+                    confirmDeleteItem(this.getAttribute('data-path'));
                 });
                 
                 collectionsGrid.appendChild(itemElement);
@@ -2223,16 +2540,15 @@
                     path: currentPath
                 })
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to create folder');
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    closeFolderModal();
+                    loadCollections(); // Reload to show new name
+                    showToast('success', 'Folder Created', `Folder "${folderName}" has been created`);
+                } else {
+                    showToast('error', 'Error', data.error || 'Failed to create folder');
                 }
-                return response.json();
-            })
-            .then(() => {
-                closeFolderModal();
-                loadCollections();
-                showToast('success', 'Folder Created', `Folder "${folderName}" has been created`);
             })
             .catch(error => {
                 console.error('Error creating folder:', error);
@@ -2301,7 +2617,7 @@
                         progressContainer.classList.remove('active');
                         setTimeout(() => {
                             progressContainer.remove();
-                        }, 300);
+                        }, 1000);
                     }, 1000);
                 } else {
                     progressStatus.textContent = 'Upload failed!';
@@ -2475,6 +2791,166 @@
             setTimeout(() => {
                 toast.remove();
             }, 300);
+        }
+        
+        // Rename item function
+        function startRenameItem(path) {
+            const itemElement = document.querySelector(`.collection-item[data-path="${path}"]`);
+            if (!itemElement) return;
+            
+            const nameElement = itemElement.querySelector('.collection-name');
+            const currentName = nameElement.textContent;
+            
+            // Create an input field
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentName;
+            input.className = 'rename-input';
+            input.style.width = '100%';
+            input.style.padding = '5px';
+            input.style.boxSizing = 'border-box';
+            
+            // Replace the name with the input
+            nameElement.innerHTML = '';
+            nameElement.appendChild(input);
+            
+            // Focus the input
+            input.focus();
+            input.select();
+            
+            // Handle enter key and blur
+            const handleRename = () => {
+                const newName = input.value.trim();
+                
+                // Restore original name if empty
+                if (!newName) {
+                    nameElement.textContent = currentName;
+                    return;
+                }
+                
+                // Skip if name hasn't changed
+                if (newName === currentName) {
+                    nameElement.textContent = currentName;
+                    return;
+                }
+                
+                // Call API to rename the item
+                fetch('/api/collections/rename', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        old_path: path,
+                        new_name: newName
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        closeFolderModal();
+                        loadCollections(); // Reload to show new name
+                        showToast('success', 'Renamed', `Item renamed to "${newName}"`);
+                    } else {
+                        nameElement.textContent = currentName;
+                        showToast('error', 'Error', data.error || 'Failed to rename item');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error renaming item:', error);
+                    nameElement.textContent = currentName;
+                    showToast('error', 'Error', 'Failed to rename item');
+                });
+            };
+            
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    input.blur();
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    nameElement.textContent = currentName;
+                }
+            });
+            
+            input.addEventListener('blur', handleRename);
+        }
+        
+        // Confirm and delete item
+        function confirmDeleteItem(path) {
+            // Get item name from path
+            const name = path.split('/').pop();
+            
+            // Create modal for confirmation
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Delete Item</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete "${name}"?</p>
+                        <p class="warning">This action cannot be undone.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary cancel-delete">Cancel</button>
+                        <button class="btn btn-danger confirm-delete">Delete</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Show modal with animation
+            setTimeout(() => modal.classList.add('show'), 10);
+            
+            // Add event listeners
+            const closeModal = () => {
+                modal.classList.remove('show');
+                setTimeout(() => modal.remove(), 300);
+            };
+            
+            modal.querySelector('.close-modal').addEventListener('click', closeModal);
+            modal.querySelector('.cancel-delete').addEventListener('click', closeModal);
+            
+            // Handle delete confirmation
+            modal.querySelector('.confirm-delete').addEventListener('click', () => {
+                // Call API to delete the item
+                fetch('/api/collections/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        path: path
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    closeModal();
+                    
+                    if (data.success) {
+                        showToast('success', 'Success', `Deleted "${name}"`);
+                        loadCollections(); // Reload the collections
+                    } else {
+                        showToast('error', 'Error', data.error || 'Failed to delete item');
+                    }
+                })
+                .catch(error => {
+                    closeModal();
+                    console.error('Error deleting item:', error);
+                    showToast('error', 'Error', 'Failed to delete item');
+                });
+            });
+            
+            // Close when clicking outside
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
         }
     </script>
 </body>

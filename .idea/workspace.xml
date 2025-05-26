@@ -5,17 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="18caa132-e367-42fb-b2e3-69439bd46031" name="Changes" comment="chore: commit unstaged changes before remote sync&#10;commit">
-      <change afterPath="$PROJECT_DIR$/templates/collections_temp.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/collections/Faces/face_organization_results.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/collections/Faces/person_0/20240524_201135.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/collections/Faces/person_1/20240913_111005.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/collections/Faces/person_2/20241002_135136.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/collections/Trial/20240524_201135.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/collections/Trial/20240913_111005.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/collections/Trial/20241002_135136.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/collections/sh/20240424_093247.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/collections/sh/20240913_111005.jpg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/instance/photogenic.db" beforeDir="false" afterPath="$PROJECT_DIR$/instance/photogenic.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/collections.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/collections.html" afterDir="false" />

@@ -2271,5 +2271,158 @@ def api_search_users():
         'users': users_list
     })
 
+@app.route('/api/collections/rename', methods=['POST'])
+@login_required
+def rename_collection_item():
+    """Rename a file or folder in the user's collections"""
+    try:
+        data = request.json
+        old_path = data.get('old_path')
+        new_name = data.get('new_name')
+        user_id = current_user.id
+        
+        # Validate parameters
+        if not old_path or not new_name:
+            return jsonify({'error': 'Missing path or new name'}), 400
+            
+        if not is_safe_path(old_path):
+            return jsonify({'error': 'Invalid path'}), 400
+            
+        # Prevent directory traversal in new name
+        if '/' in new_name or '\\' in new_name or new_name.startswith('.'):
+            return jsonify({'error': 'Invalid new name'}), 400
+            
+        # Verify ownership
+        if not verify_collection_ownership(old_path, user_id):
+            return jsonify({'error': 'Access denied'}), 403
+            
+        # Get user's collections directory
+        user_dir = get_user_collections_dir(user_id)
+        
+        # Construct full paths
+        old_full_path = os.path.join(user_dir, old_path)
+        
+        # Get the parent directory path
+        parent_path = os.path.dirname(old_path)
+        
+        # Construct new path
+        new_path = os.path.join(parent_path, new_name) if parent_path else new_name
+        new_full_path = os.path.join(user_dir, new_path)
+        
+        # Verify old path exists
+        if not os.path.exists(old_full_path):
+            return jsonify({'error': 'Item not found'}), 404
+            
+        # Check if new path already exists
+        if os.path.exists(new_full_path):
+            return jsonify({'error': 'An item with this name already exists'}), 409
+            
+        # Perform the rename
+        try:
+            os.rename(old_full_path, new_full_path)
+            
+            # Update database records
+            collection = Collection.query.filter_by(path=old_path, owner_id=user_id).first()
+            if collection:
+                collection.path = new_path
+                collection.name = new_name
+                
+                # If it's a folder, update paths of items inside
+                if collection.is_folder:
+                    # Find all items that start with the old path
+                    items = Collection.query.filter(
+                        Collection.owner_id == user_id,
+                        Collection.path.like(f"{old_path}/%")
+                    ).all()
+                    
+                    for item in items:
+                        # Replace old path prefix with new path
+                        item.path = item.path.replace(old_path, new_path, 1)
+                
+                db.session.commit()
+            
+            return jsonify({
+                'success': True,
+                'old_path': old_path,
+                'new_path': new_path
+            })
+            
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f"Error renaming item: {str(e)}")
+            return jsonify({'error': f'Failed to rename item: {str(e)}'}), 500
+            
+    except Exception as e:
+        app.logger.error(f"Error in rename operation: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+@app.route('/api/collections/delete', methods=['POST'])
+@login_required
+def delete_collection_item():
+    """Delete a file or folder from the user's collections"""
+    try:
+        data = request.json
+        path = data.get('path')
+        user_id = current_user.id
+        
+        # Validate path
+        if not path:
+            return jsonify({'error': 'Missing path'}), 400
+            
+        if not is_safe_path(path):
+            return jsonify({'error': 'Invalid path'}), 400
+            
+        # Verify ownership
+        if not verify_collection_ownership(path, user_id):
+            return jsonify({'error': 'Access denied'}), 403
+            
+        # Get user's collections directory
+        user_dir = get_user_collections_dir(user_id)
+        
+        # Construct full path
+        full_path = os.path.join(user_dir, path)
+        
+        # Verify path exists
+        if not os.path.exists(full_path):
+            return jsonify({'error': 'Item not found'}), 404
+            
+        # Delete the file or directory
+        try:
+            if os.path.isdir(full_path):
+                shutil.rmtree(full_path)
+            else:
+                os.remove(full_path)
+            
+            # Delete database records
+            collection = Collection.query.filter_by(path=path, owner_id=user_id).first()
+            if collection:
+                db.session.delete(collection)
+                
+                # If it's a folder, delete all items inside
+                if collection.is_folder:
+                    items = Collection.query.filter(
+                        Collection.owner_id == user_id,
+                        Collection.path.like(f"{path}/%")
+                    ).all()
+                    
+                    for item in items:
+                        db.session.delete(item)
+                
+                db.session.commit()
+            
+            return jsonify({
+                'success': True,
+                'path': path
+            })
+            
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f"Error deleting item: {str(e)}")
+            return jsonify({'error': f'Failed to delete item: {str(e)}'}), 500
+            
+    except Exception as e:
+        app.logger.error(f"Error in delete operation: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
+
 if __name__ == '__main__':
     app.run(debug=True)
