@@ -213,6 +213,124 @@
             gap: 10px;
         }
         
+        /* User Nav */
+        .user-nav-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .user-nav-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 8px;
+        }
+        
+        .user-nav-avatar i {
+            font-size: 1.2rem;
+            color: var(--text-main);
+        }
+        
+        .user-nav-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-nav-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+        
+        .user-dropdown {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 6px 0;
+            display: none;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            min-width: 160px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.2s ease;
+        }
+        
+        .user-dropdown.show {
+            display: block;
+        }
+        
+        .user-dropdown-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .user-dropdown-item i {
+            font-size: 0.9rem;
+            width: 16px;
+            text-align: center;
+        }
+        
+        .user-dropdown-item:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+        
+        .user-dropdown-item::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%, -50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .user-dropdown-item:focus::after,
+        .user-dropdown-item:active::after {
+            animation: ripple 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            20% {
+                transform: scale(25, 25);
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
+        }
+        
+        .user-nav-info:hover .user-dropdown {
+            display: block;
+        }
+        
         /* Main Layout */
         .google-style {
             display: flex;
@@ -1246,6 +1364,27 @@
                 <i class="fas fa-folder-plus"></i>
                 <span>New Folder</span>
             </button>
+            <div class="user-nav-info">
+                <div class="user-nav-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-nav-details">
+                    <span class="user-nav-name">{{ user.username }}</span>
+                </div>
+                <i class="fas fa-chevron-down"></i>
+                <div class="user-dropdown">
+                    <a href="#" class="user-dropdown-item">
+                        <i class="fas fa-user"></i> Profile
+                    </a>
+                    <a href="#" class="user-dropdown-item">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="/logout" class="user-dropdown-item">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -1263,6 +1402,10 @@
                 <a href="#" class="sidebar-item">
                     <i class="fas fa-star"></i>
                     Favorites
+                </a>
+                <a href="#" class="sidebar-item">
+                    <i class="fas fa-user-shield"></i>
+                    Permitted
                 </a>
                 <a href="#" class="sidebar-item">
                     <i class="fas fa-trash"></i>
@@ -3124,12 +3267,7 @@
                         path: path
                     })
                 })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
                     document.body.removeChild(modal);
                     document.body.classList.remove('modal-open');
