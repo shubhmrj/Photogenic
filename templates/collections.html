@@ -400,11 +400,11 @@
             gap: 20px;
             padding: 20px;
         }
-        
+
         .collections-grid.list-view {
             grid-template-columns: 1fr;
         }
-        
+
         .collection-item {
             position: relative;
             background-color: var(--bg-card);
@@ -416,17 +416,17 @@
             flex-direction: column;
             overflow: hidden;
         }
-        
+
         .collection-item:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
-        
+
         .collection-item.selected {
             background-color: var(--bg-selected);
             border: 1px solid var(--primary-color);
         }
-        
+
         .collection-item::before {
             content: '';
             position: absolute;
@@ -439,11 +439,11 @@
             transition: opacity 0.2s ease;
             pointer-events: none;
         }
-        
+
         .collection-item:hover::before {
             opacity: 1;
         }
-        
+
         .collection-icon {
             display: flex;
             align-items: center;
@@ -452,12 +452,12 @@
             color: var(--primary-color);
             margin-bottom: 12px;
         }
-        
+
         .collection-details {
             width: 100%;
             overflow: hidden;
         }
-        
+
         .collection-name {
             font-weight: 500;
             margin-bottom: 4px;
@@ -465,7 +465,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         .collection-info {
             display: flex;
             justify-content: space-between;
@@ -473,13 +473,13 @@
             color: var(--text-secondary);
             opacity: 0.7;
         }
-        
+
         .collection-img-container {
             position: relative;
             overflow: hidden;
             padding-top: 75%;
         }
-        
+
         .collection-img {
             position: absolute;
             top: 0;
@@ -489,11 +489,11 @@
             object-fit: cover;
             transition: transform 0.3s ease;
         }
-        
+
         .collection-item:hover .collection-img {
             transform: scale(1.03);
         }
-        
+
         .folder-icon {
             position: absolute;
             top: 0;
@@ -506,7 +506,7 @@
             font-size: 3rem;
             color: #4285f4;
         }
-        
+
         .item-count {
             position: absolute;
             bottom: 8px;
@@ -518,7 +518,7 @@
             border-radius: 12px;
             z-index: 2;
         }
-        
+
         /* Item Menu */
         .item-menu {
             position: absolute;
@@ -529,7 +529,7 @@
             justify-content: center;
             z-index: 5;
         }
-        
+
         .item-menu-button {
             background: rgba(0, 0, 0, 0.2);
             border: none;
@@ -546,17 +546,17 @@
             justify-content: center;
             transition: all 0.2s ease;
         }
-        
+
         .collection-item:hover .item-menu-button {
             opacity: 0.8;
         }
-        
+
         .item-menu-button:hover {
             opacity: 1 !important;
             background: rgba(0, 0, 0, 0.4);
             transform: scale(1.05);
         }
-        
+
         .item-dropdown {
             position: absolute;
             top: 36px;
@@ -571,16 +571,16 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             animation: fadeIn 0.2s ease;
         }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+
         .item-dropdown.show {
             display: block;
         }
-        
+
         .dropdown-item {
             padding: 10px 16px;
             cursor: pointer;
@@ -591,17 +591,17 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .dropdown-item i {
             font-size: 0.9rem;
             width: 16px;
             text-align: center;
         }
-        
+
         .dropdown-item:hover {
             background-color: rgba(255, 255, 255, 0.08);
         }
-        
+
         .dropdown-item::after {
             content: '';
             position: absolute;
@@ -615,12 +615,12 @@
             transform: scale(1, 1) translate(-50%, -50%);
             transform-origin: 50% 50%;
         }
-        
+
         .dropdown-item:focus::after,
         .dropdown-item:active::after {
             animation: ripple 0.6s ease-out;
         }
-        
+
         @keyframes ripple {
             0% {
                 transform: scale(0, 0);
@@ -635,18 +635,18 @@
                 transform: scale(40, 40);
             }
         }
-        
+
         .item-menu-button:focus {
             outline: none;
             box-shadow: 0 0 0 2px var(--primary-color);
             opacity: 1;
         }
-        
+
         .dropdown-item:focus {
             outline: none;
             background-color: rgba(255, 255, 255, 0.05);
         }
-        
+
         /* Empty folder state */
         .empty-folder-state {
             display: flex;
@@ -657,29 +657,29 @@
             padding: 40px 20px;
             margin-top: 40px;
         }
-        
+
         .empty-folder-state img {
             width: 150px;
             margin-bottom: 20px;
             opacity: 0.7;
         }
-        
+
         .empty-folder-state h3 {
             color: var(--text-main);
             font-size: 1.2rem;
             margin-bottom: 10px;
         }
-        
+
         .empty-folder-state p {
             color: var(--secondary-text);
             margin-bottom: 25px;
         }
-        
+
         .empty-actions {
             display: flex;
             gap: 15px;
         }
-        
+
         /* Modal */
         .modal {
             position: fixed;
@@ -696,12 +696,12 @@
             visibility: hidden;
             transition: opacity 0.3s ease, visibility 0.3s ease;
         }
-        
-        .modal.active {
+
+        .modal.show {
             opacity: 1;
             visibility: visible;
         }
-        
+
         .modal-content {
             background-color: var(--bg-secondary);
             border-radius: var(--radius-md);
@@ -711,11 +711,11 @@
             transform: scale(0.9);
             transition: transform 0.3s ease;
         }
-        
-        .modal.active .modal-content {
+
+        .modal.show .modal-content {
             transform: scale(1);
         }
-        
+
         .modal-header {
             padding: 15px 20px;
             display: flex;
@@ -723,12 +723,12 @@
             align-items: center;
             border-bottom: 1px solid var(--border-color);
         }
-        
+
         .modal-header h3 {
             margin: 0;
             font-size: 1.2rem;
         }
-        
+
         .close-modal {
             background: none;
             border: none;
@@ -736,21 +736,21 @@
             color: var(--text-color);
             cursor: pointer;
         }
-        
+
         .modal-body {
             padding: 20px;
         }
-        
+
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         .form-group label {
             display: block;
             margin-bottom: 8px;
             color: var(--text-main);
         }
-        
+
         .form-group input {
             width: 100%;
             padding: 10px 15px;
@@ -761,12 +761,12 @@
             font-family: var(--font-main);
             transition: border-color 0.2s ease;
         }
-        
+
         .form-group input:focus {
             border-color: #4285f4;
             outline: none;
         }
-        
+
         .modal-footer {
             padding: 15px 20px;
             display: flex;
@@ -774,24 +774,24 @@
             gap: 10px;
             border-top: 1px solid var(--border-color);
         }
-        
+
         .btn {
             padding: 8px 16px;
             border-radius: 4px;
             cursor: pointer;
             border: none;
         }
-        
+
         .btn-secondary {
             background-color: #4b5563;
             color: white;
         }
-        
+
         .btn-danger {
             background-color: #ff5252;
             color: white;
         }
-        
+
         /* Toast notifications */
         #toast-container {
             position: fixed;
@@ -799,7 +799,7 @@
             right: 20px;
             z-index: 9999;
         }
-        
+
         .toast {
             display: flex;
             align-items: flex-start;
@@ -814,46 +814,46 @@
             animation: slideIn 0.3s ease forwards;
             position: relative;
         }
-        
+
         .toast.toast-hide {
             animation: slideOut 0.3s ease forwards;
         }
-        
+
         .toast-icon {
             margin-right: 10px;
             font-size: 1.4rem;
         }
-        
+
         .toast-info .toast-icon {
             color: var(--info);
         }
-        
+
         .toast-success .toast-icon {
             color: var(--success);
         }
-        
+
         .toast-warning .toast-icon {
             color: var(--warning);
         }
-        
+
         .toast-error .toast-icon {
             color: var(--error);
         }
-        
+
         .toast-content {
             flex: 1;
         }
-        
+
         .toast-title {
             font-weight: 600;
             margin-bottom: 5px;
         }
-        
+
         .toast-message {
             font-size: 0.9rem;
             opacity: 0.9;
         }
-        
+
         .toast-close {
             background: none;
             border: none;
@@ -864,74 +864,74 @@
             padding: 0 5px;
             margin-left: 10px;
         }
-        
+
         .toast-close:hover {
             opacity: 1;
         }
-        
+
         /* Animations */
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
-        
+
         @keyframes slideOut {
             from { transform: translateX(0); opacity: 1; }
             to { transform: translateX(100%); opacity: 0; }
         }
-        
+
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+
         .page-transition {
             animation: fadeIn 0.3s ease-in-out;
         }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
-        
+
         /* Responsive styles */
         @media (max-width: 992px) {
             .google-style .main-container {
                 padding-left: 20px;
             }
-            
+
             .google-style .sidebar {
                 transform: translateX(-100%);
                 z-index: 999;
                 transition: transform 0.3s ease;
             }
-            
+
             .google-style .sidebar.active {
                 transform: translateX(0);
             }
-            
+
             .sidebar-toggle {
                 display: block;
             }
         }
-        
+
         @media (max-width: 768px) {
             .header {
                 padding: 10px 15px;
             }
-            
+
             .search-container {
                 display: none;
             }
-            
+
             .collections-grid {
                 grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             }
-            
+
             .header-actions .btn span {
                 display: none;
             }
-            
+
             .header-actions .btn {
                 width: 40px;
                 height: 40px;
@@ -939,97 +939,126 @@
                 padding: 0;
             }
         }
-        
+
         @media (max-width: 576px) {
             .collections-grid {
                 grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
             }
-            
+
             .empty-actions {
                 flex-direction: column;
                 width: 100%;
                 max-width: 200px;
             }
         }
-        
+
         /* Image Preview Styles */
         .image-preview-content {
-            max-width: 90%;
-            max-height: 90%;
-            width: auto;
-        }
-        
-        .image-preview-body {
+            width: 90%;
+            max-width: 1200px;
+            height: 90%;
+            max-height: 800px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            max-height: 80vh;
-            overflow: hidden;
         }
-        
+
+        .image-preview-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 0;
+        }
+
         .image-preview-container {
+            flex: 1;
             position: relative;
-            width: 100%;
-            height: 100%;
-            margin-bottom: 20px;
             overflow: hidden;
+            background-color: #1a1a1a;
+            display: flex;
+            flex-direction: column;
         }
-        
-        .image-preview-wrapper {
-            position: relative;
-            width: 100%;
-            height: 500px;
-            overflow: hidden;
+
+        .image-controls {
+            display: flex;
+            justify-content: center;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .image-control-btn {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin: 0 5px;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 8px;
-            background-color: #f0f0f0;
+            transition: background-color 0.2s;
+            font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
-        
+
+        .image-control-btn:hover {
+            background-color: #555;
+        }
+
+        .image-control-btn:active {
+            background-color: #007bff;
+        }
+
+        .image-preview-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
         #preview-image {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
             transition: transform 0.3s ease;
+            cursor: grab;
         }
-        
-        .image-controls {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 15px;
+
+        #preview-image:active {
+            cursor: grabbing;
         }
-        
-        .image-control-btn {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .image-control-btn:hover {
-            background-color: #f5f5f5;
-            transform: scale(1.05);
-        }
-        
+
         .image-preview-info {
-            width: 100%;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-top: 1px solid #ddd;
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
         }
-        
+
+        .info-item {
+            margin-right: 20px;
+            margin-bottom: 5px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
         /* Upload Progress Bar */
         .upload-progress-container {
             position: fixed;
@@ -1046,12 +1075,12 @@
             visibility: hidden;
             transition: opacity 0.3s ease, visibility 0.3s ease;
         }
-        
+
         .upload-progress-container.active {
             opacity: 1;
             visibility: visible;
         }
-        
+
         .upload-progress-box {
             width: 400px;
             background-color: white;
@@ -1059,13 +1088,13 @@
             padding: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
-        
+
         .upload-progress-title {
             font-size: 1.1rem;
             font-weight: 500;
             margin-bottom: 15px;
         }
-        
+
         .upload-progress-bar {
             height: 8px;
             background-color: #f0f0f0;
@@ -1073,19 +1102,19 @@
             margin-bottom: 10px;
             overflow: hidden;
         }
-        
+
         .upload-progress-fill {
             height: 100%;
             background-color: var(--primary);
             width: 0%;
             transition: width 0.2s ease;
         }
-        
+
         .upload-progress-status {
             font-size: 0.9rem;
             color: var(--text-main);
         }
-        
+
         /* User info styles */
         .user-info {
             display: flex;
@@ -1093,7 +1122,7 @@
             padding: 12px;
             border-bottom: 1px solid var(--border-color);
         }
-        
+
         .user-avatar {
             width: 40px;
             height: 40px;
@@ -1103,28 +1132,28 @@
             align-items: center;
             margin-right: 12px;
         }
-        
+
         .user-avatar i {
             font-size: 1.4rem;
             color: var(--text-main);
         }
-        
+
         .user-details {
             display: flex;
             flex-direction: column;
         }
-        
+
         .user-name {
             font-size: 0.9rem;
             font-weight: 500;
             color: var(--text-main);
         }
-        
+
         .user-email {
             font-size: 0.8rem;
             color: var(--secondary-text);
         }
-        
+
         /* Modal Dialog */
         .modal {
             position: fixed;
@@ -1141,12 +1170,12 @@
             transition: opacity 0.3s ease;
             pointer-events: none;
         }
-        
+
         .modal.show {
             opacity: 1;
             pointer-events: auto;
         }
-        
+
         .modal-content {
             background-color: var(--bg-card);
             border-radius: 8px;
@@ -1156,11 +1185,11 @@
             transform: scale(0.9);
             transition: transform 0.3s ease;
         }
-        
+
         .modal.show .modal-content {
             transform: scale(1);
         }
-        
+
         .modal-header {
             display: flex;
             justify-content: space-between;
@@ -1168,17 +1197,17 @@
             padding: 15px 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .modal-body {
             padding: 20px;
         }
-        
+
         .modal-body .warning {
             color: #ff5252;
             font-size: 0.9rem;
             margin-top: 10px;
         }
-        
+
         .modal-footer {
             padding: 15px 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -1240,9 +1269,9 @@
                     Trash
                 </a>
             </div>
-            
+
             <div class="sidebar-divider"></div>
-            
+
             <div class="sidebar-section">
                 <div class="sidebar-title">AI Features</div>
                 <a href="#" class="sidebar-item">
@@ -1258,9 +1287,9 @@
                     Smart Tags
                 </a>
             </div>
-            
+
             <div class="sidebar-divider"></div>
-            
+
             <div class="user-info">
                 <div class="user-avatar">
                     <i class="fas fa-user-circle"></i>
@@ -1270,9 +1299,9 @@
                     <div class="user-email">{{ user.email }}</div>
                 </div>
             </div>
-            
+
             <div class="sidebar-divider"></div>
-            
+
             <div class="storage-info">
                 <div class="storage-bar">
                     <div class="storage-used" style="width: 35%;"></div>
@@ -1370,8 +1399,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn" id="cancel-folder-btn">Cancel</button>
-                <button class="btn active" id="create-folder-btn">Create</button>
+                <button class="btn btn-secondary" id="cancel-folder-btn">Cancel</button>
+                <button class="btn btn-primary" id="create-folder-btn">Create</button>
             </div>
         </div>
     </div>
@@ -1407,10 +1436,10 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn" id="download-btn">
+                <button class="btn btn-primary" id="download-btn">
                     <i class="fas fa-download"></i> Download
                 </button>
-                <button class="btn" id="analyze-btn">
+                <button class="btn btn-secondary" id="analyze-btn">
                     <i class="fas fa-magic"></i> Analyze with AI
                 </button>
             </div>
@@ -1462,7 +1491,7 @@
         let currentViewMode = 'grid'; // 'grid' or 'list'
         let sortBy = 'name'; // 'name', 'date', 'size'
         let collections = []; // Will store folders and files
-        
+
         // DOM elements
         const preloader = document.querySelector('.preloader');
         const collectionsGrid = document.querySelector('.collections-grid');
@@ -1478,25 +1507,25 @@
         const createFolderBtn = document.getElementById('create-folder-btn');
         const cancelFolderBtn = document.getElementById('cancel-folder-btn');
         const closeFolderModalBtn = document.querySelector('.modal-close');
-        
+
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
             // Load collections
             loadCollections();
-            
+
             // Set up event listeners
             setupEventListeners();
-            
+
             // Set up drag and drop
             setupDragAndDrop();
-            
+
             // Set up multi-select
             setupMultiSelect();
-            
+
             // Set up context menu
             setupContextMenu();
         });
-        
+
         // Hide preloader after page loads
         window.addEventListener('load', () => {
             setTimeout(() => {
@@ -1506,81 +1535,81 @@
                 }, 500);
             }, 1000);
         });
-        
+
         // Set up all event listeners
         function setupEventListeners() {
             // New folder button
             newFolderBtn.addEventListener('click', () => {
                 openFolderModal();
             });
-            
+
             // Close folder modal
             closeFolderModalBtn.addEventListener('click', () => {
                 closeFolderModal();
             });
-            
+
             cancelFolderBtn.addEventListener('click', () => {
                 closeFolderModal();
             });
-            
+
             // Create folder
             createFolderBtn.addEventListener('click', () => {
                 createFolder();
             });
-            
+
             folderNameInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     createFolder();
                 }
             });
-            
+
             // Upload button
             uploadBtn.addEventListener('click', () => {
                 fileInput.click();
             });
-            
+
             // File input change
             fileInput.addEventListener('change', (e) => {
                 if (e.target.files.length > 0) {
                     uploadFiles(e.target.files);
                 }
             });
-            
+
             // View mode toggles
             gridViewBtn.addEventListener('click', () => {
                 setViewMode('grid');
             });
-            
+
             listViewBtn.addEventListener('click', () => {
                 setViewMode('list');
             });
-            
+
             // Sort select
             sortSelect.addEventListener('change', () => {
                 sortBy = sortSelect.value;
                 sortCollections();
                 displayCollections();
             });
-            
+
             // Selection panel buttons
             document.getElementById('download-selected-btn').addEventListener('click', downloadSelectedItems);
             document.getElementById('analyze-selected-btn').addEventListener('click', analyzeSelectedItems);
             document.getElementById('delete-selected-btn').addEventListener('click', deleteSelectedItems);
             document.getElementById('clear-selection-btn').addEventListener('click', clearSelection);
-            
+
             // Image preview modal
             document.getElementById('close-preview-btn').addEventListener('click', closeImagePreview);
             document.getElementById('download-btn').addEventListener('click', downloadPreviewImage);
             document.getElementById('analyze-btn').addEventListener('click', analyzePreviewImage);
-            
+
             // AI Analysis modal
             document.getElementById('close-analysis-btn').addEventListener('click', closeAnalysisModal);
             document.getElementById('close-analysis-btn-footer').addEventListener('click', closeAnalysisModal);
             document.getElementById('apply-tags-btn').addEventListener('click', applyAITags);
-            
+
             // Key events for selection
             document.addEventListener('keydown', handleKeyDown);
-            
+
             // Item menu
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.item-dropdown')) {
@@ -1591,39 +1620,39 @@
                 }
             });
         }
-        
+
         // Set up drag and drop functionality
         function setupDragAndDrop() {
             const dropZone = document.getElementById('dropzone-container');
-            
+
             // Prevent default drag behaviors
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 dropZone.addEventListener(eventName, preventDefaults, false);
                 document.body.addEventListener(eventName, preventDefaults, false);
             });
-            
+
             // Highlight drop zone when item is dragged over it
             ['dragenter', 'dragover'].forEach(eventName => {
                 dropZone.addEventListener(eventName, highlight, false);
             });
-            
+
             ['dragleave', 'drop'].forEach(eventName => {
                 dropZone.addEventListener(eventName, unhighlight, false);
             });
-            
+
             // Handle dropped files
             dropZone.addEventListener('drop', handleDrop, false);
-            
+
             function preventDefaults(e) {
                 e.preventDefault();
                 e.stopPropagation();
             }
-            
+
             function highlight() {
                 dropZone.classList.add('highlight');
                 showToast('info', 'Drop Files', 'Drop files here to upload');
             }
-            
+
             function unhighlight() {
                 dropZone.classList.remove('highlight');
                 // Find and remove the drop toast
@@ -1634,22 +1663,22 @@
                     }
                 });
             }
-            
+
             function handleDrop(e) {
                 const dt = e.dataTransfer;
                 const files = dt.files;
-                
+
                 if (files.length > 0) {
                     uploadFiles(files);
                 }
             }
         }
-        
+
         // Set up multi-select functionality
         let selectedItems = new Set();
         let lastSelectedItem = null;
         const selectionPanel = document.getElementById('selection-panel');
-        
+
         function setupMultiSelect() {
             // Add ctrl key handling to select multiple items
             document.addEventListener('click', (e) => {
@@ -1659,33 +1688,33 @@
                 }
             });
         }
-        
+
         function handleItemSelection(item, e) {
             const itemPath = item.getAttribute('data-path');
-            
+
             // Handle Ctrl key (multi-select individual items)
             if (e.ctrlKey || e.metaKey) {
                 toggleItemSelection(item, itemPath);
-            } 
+            }
             // Handle Shift key (select range)
             else if (e.shiftKey && lastSelectedItem) {
                 selectItemRange(item);
-            } 
+            }
             // Normal click (select single item)
             else {
                 clearSelection();
                 selectItem(item, itemPath);
             }
-            
+
             updateSelectionPanel();
         }
-        
+
         function selectItem(item, itemPath) {
             item.classList.add('selected');
             selectedItems.add(itemPath);
             lastSelectedItem = item;
         }
-        
+
         function toggleItemSelection(item, itemPath) {
             if (selectedItems.has(itemPath)) {
                 item.classList.remove('selected');
@@ -1699,33 +1728,33 @@
                 lastSelectedItem = item;
             }
         }
-        
+
         function selectItemRange(endItem) {
             // Get all items
             const allItems = Array.from(document.querySelectorAll('.collection-item'));
-            
+
             // Find indices of start and end items
             const startIndex = allItems.indexOf(lastSelectedItem);
             const endIndex = allItems.indexOf(endItem);
-            
+
             if (startIndex === -1 || endIndex === -1) return;
-            
+
             // Clear existing selection
             clearSelection();
-            
+
             // Select items in range
             const start = Math.min(startIndex, endIndex);
             const end = Math.max(startIndex, endIndex);
-            
+
             for (let i = start; i <= end; i++) {
                 const item = allItems[i];
                 const itemPath = item.getAttribute('data-path');
                 selectItem(item, itemPath);
             }
-            
+
             lastSelectedItem = endItem;
         }
-        
+
         function clearSelection() {
             document.querySelectorAll('.collection-item.selected').forEach(item => {
                 item.classList.remove('selected');
@@ -1734,14 +1763,14 @@
             lastSelectedItem = null;
             updateSelectionPanel();
         }
-        
+
         function updateSelectionPanel() {
             const count = selectedItems.size;
-            
+
             if (count > 0) {
                 document.querySelector('.selection-count').textContent = `${count} item${count > 1 ? 's' : ''} selected`;
                 selectionPanel.classList.add('active');
-                
+
                 // Enable/disable buttons based on selection
                 document.getElementById('analyze-selected-btn').disabled = !Array.from(selectedItems).some(path => {
                     return isImageFile(path);
@@ -1750,7 +1779,7 @@
                 selectionPanel.classList.remove('active');
             }
         }
-        
+
         // Handle key events for selection
         function handleKeyDown(e) {
             // Ctrl+A or Cmd+A to select all
@@ -1758,25 +1787,25 @@
                 e.preventDefault();
                 selectAllItems();
             }
-            
+
             // Delete key to delete selected items
             if (e.key === 'Delete' && selectedItems.size > 0) {
                 e.preventDefault();
                 deleteSelectedItems();
             }
-            
+
             // Escape to clear selection
             if (e.key === 'Escape') {
                 e.preventDefault();
                 clearSelection();
-                
+
                 // Also close any open modals
                 document.querySelectorAll('.modal.active').forEach(modal => {
                     modal.classList.remove('active');
                 });
             }
         }
-        
+
         function selectAllItems() {
             document.querySelectorAll('.collection-item').forEach(item => {
                 const itemPath = item.getAttribute('data-path');
@@ -1784,35 +1813,35 @@
             });
             updateSelectionPanel();
         }
-        
+
         // Setup context menu
         const contextMenu = document.getElementById('context-menu');
         let contextTarget = null;
-        
+
         function setupContextMenu() {
             // Show context menu on right click
             document.addEventListener('contextmenu', (e) => {
                 const collectionItem = e.target.closest('.collection-item');
-                
+
                 if (collectionItem) {
                     e.preventDefault();
-                    
+
                     // Set the context target
                     contextTarget = collectionItem;
-                    
+
                     // Position the menu
                     positionContextMenu(e.clientX, e.clientY);
-                    
+
                     // Show appropriate menu items based on item type
                     customizeContextMenu(collectionItem);
                 }
             });
-            
+
             // Hide context menu on click outside
             document.addEventListener('click', () => {
                 contextMenu.style.display = 'none';
             });
-            
+
             // Context menu item click handlers
             document.getElementById('context-open').addEventListener('click', handleContextOpen);
             document.getElementById('context-download').addEventListener('click', handleContextDownload);
@@ -1821,62 +1850,62 @@
             document.getElementById('context-rename').addEventListener('click', handleContextRename);
             document.getElementById('context-delete').addEventListener('click', handleContextDelete);
         }
-        
+
         function positionContextMenu(x, y) {
             // Position the menu at cursor position
             contextMenu.style.left = `${x}px`;
             contextMenu.style.top = `${y}px`;
-            
+
             // Check if menu goes outside viewport
             const menuRect = contextMenu.getBoundingClientRect();
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
-            
+
             // Adjust horizontal position if needed
             if (menuRect.right > viewportWidth) {
                 contextMenu.style.left = `${x - menuRect.width}px`;
             }
-            
+
             // Adjust vertical position if needed
             if (menuRect.bottom > viewportHeight) {
                 contextMenu.style.top = `${y - menuRect.height}px`;
             }
-            
+
             // Show the menu
             contextMenu.style.display = 'block';
         }
-        
+
         function customizeContextMenu(item) {
             const isFolder = item.getAttribute('data-type') === 'folder';
             const isImage = isImageFile(item.getAttribute('data-name'));
-            
+
             // Show/hide menu items based on item type
             document.getElementById('context-open').style.display = isFolder ? 'block' : 'none';
             document.getElementById('context-download').style.display = !isFolder ? 'block' : 'none';
             document.getElementById('context-analyze').style.display = isImage ? 'block' : 'none';
         }
-        
+
         function handleContextOpen() {
             if (contextTarget) {
                 const path = contextTarget.getAttribute('data-path');
                 navigateToFolder(path);
             }
         }
-        
+
         function handleContextDownload() {
             if (contextTarget) {
                 const path = contextTarget.getAttribute('data-path');
                 window.open(getFileUrl(path), '_blank');
             }
         }
-        
+
         function handleContextAnalyze() {
             if (contextTarget) {
                 const path = contextTarget.getAttribute('data-path');
                 analyzeImage(path);
             }
         }
-        
+
         function handleContextSelect() {
             if (contextTarget) {
                 const path = contextTarget.getAttribute('data-path');
@@ -1891,60 +1920,163 @@
                 updateSelectionPanel();
             }
         }
-        
+
         function handleContextRename() {
             if (contextTarget) {
                 // TODO: Implement rename functionality
                 showToast('info', 'Coming Soon', 'Rename functionality will be available soon');
             }
         }
-        
+
         function handleContextDelete() {
             if (contextTarget) {
-                // TODO: Implement delete functionality
-                showToast('info', 'Coming Soon', 'Delete functionality will be available soon');
+                const path = contextTarget.getAttribute('data-path');
+                confirmDeleteItem(path);
             }
         }
-        
+
         // Functions for selection actions
         function downloadSelectedItems() {
             if (selectedItems.size === 0) return;
-            
+
             // For a single item, just open it in a new tab
             if (selectedItems.size === 1) {
                 const path = Array.from(selectedItems)[0];
                 window.open(getFileUrl(path), '_blank');
                 return;
             }
-            
+
             // TODO: For multiple items, implement zip download
             showToast('info', 'Coming Soon', 'Multiple file download will be available soon');
         }
-        
+
         function analyzeSelectedItems() {
             if (selectedItems.size === 0) return;
-            
+
             // For now, just analyze the first selected image
             const selectedImages = Array.from(selectedItems).filter(path => isImageFile(path));
-            
+
             if (selectedImages.length > 0) {
                 analyzeImage(selectedImages[0]);
             } else {
                 showToast('warning', 'No Images', 'Please select at least one image to analyze');
             }
         }
-        
+
         function deleteSelectedItems() {
             if (selectedItems.size === 0) return;
+
+            // Get item names for confirmation message
+            const itemPaths = Array.from(selectedItems);
+            const itemCount = itemPaths.length;
             
-            // TODO: Implement delete functionality
-            showToast('info', 'Coming Soon', 'Delete functionality will be available soon');
+            // Create modal for confirmation
+            const modal = document.createElement('div');
+            modal.className = 'modal show';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Delete ${itemCount} Item${itemCount > 1 ? 's' : ''}</h3>
+                        <button class="modal-close">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete ${itemCount} selected item${itemCount > 1 ? 's' : ''}?</p>
+                        <p class="warning">This action cannot be undone.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary cancel-delete">Cancel</button>
+                        <button class="btn btn-danger confirm-delete">Delete</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            document.body.classList.add('modal-open');
+            
+            // Add close button functionality
+            modal.querySelector('.modal-close').addEventListener('click', () => {
+                document.body.removeChild(modal);
+                document.body.classList.remove('modal-open');
+            });
+            
+            modal.querySelector('.cancel-delete').addEventListener('click', () => {
+                document.body.removeChild(modal);
+                document.body.classList.remove('modal-open');
+            });
+            
+            // Handle delete confirmation
+            modal.querySelector('.confirm-delete').addEventListener('click', () => {
+                // Create a counter for tracking deletion progress
+                let deletedCount = 0;
+                let errorCount = 0;
+                
+                // Process each item for deletion
+                itemPaths.forEach(path => {
+                    fetch('/api/collections/delete', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            path: path
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            deletedCount++;
+                        } else {
+                            errorCount++;
+                            console.error('Error deleting item:', data.error);
+                        }
+                        
+                        // When all items have been processed
+                        if (deletedCount + errorCount === itemPaths.length) {
+                            document.body.removeChild(modal);
+                            document.body.classList.remove('modal-open');
+                            
+                            if (errorCount === 0) {
+                                showToast('success', 'Success', `Deleted ${deletedCount} item${deletedCount !== 1 ? 's' : ''}`);
+                            } else if (deletedCount === 0) {
+                                showToast('error', 'Error', 'Failed to delete selected items');
+                            } else {
+                                showToast('warning', 'Partial Success', `Deleted ${deletedCount} item${deletedCount !== 1 ? 's' : ''}, but failed to delete ${errorCount} item${errorCount !== 1 ? 's' : ''}`);
+                            }
+                            
+                            // Clear selection and reload collections
+                            clearSelection();
+                            loadCollections();
+                        }
+                    })
+                    .catch(error => {
+                        errorCount++;
+                        console.error('Error deleting item:', error);
+                        
+                        // When all items have been processed
+                        if (deletedCount + errorCount === itemPaths.length) {
+                            document.body.removeChild(modal);
+                            document.body.classList.remove('modal-open');
+                            showToast('error', 'Error', 'Failed to delete some or all items');
+                            clearSelection();
+                            loadCollections();
+                        }
+                    });
+                });
+            });
+            
+            // Close when clicking outside
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                    document.body.classList.remove('modal-open');
+                }
+            });
         }
-        
+
         // Image preview functionality
         const imagePreviewModal = document.getElementById('image-preview-modal');
         let currentPreviewItem = null;
-        
+
         // Image preview variables
         let currentZoom = 1;
         let currentRotation = 0;
@@ -1953,7 +2085,7 @@
         let dragStartY = 0;
         let translateX = 0;
         let translateY = 0;
-        
+
         // Image control functions
         function zoomIn() {
             if (currentZoom < 3) { // max zoom 3x
@@ -1961,24 +2093,24 @@
                 updateImageTransform();
             }
         }
-        
+
         function zoomOut() {
             if (currentZoom > 0.5) { // min zoom 0.5x
                 currentZoom -= 0.2;
                 updateImageTransform();
             }
         }
-        
+
         function rotateLeft() {
             currentRotation -= 90;
             updateImageTransform();
         }
-        
+
         function rotateRight() {
             currentRotation += 90;
             updateImageTransform();
         }
-        
+
         function resetImageTransforms() {
             currentZoom = 1;
             currentRotation = 0;
@@ -1986,17 +2118,17 @@
             translateY = 0;
             updateImageTransform();
         }
-        
+
         function updateImageTransform() {
             const previewImage = document.getElementById('preview-image');
             previewImage.style.transform = `translate(${translateX}px, ${translateY}px) rotate(${currentRotation}deg) scale(${currentZoom})`;
         }
-        
+
         // Handle image drag
         function setupImageDrag() {
             const previewImage = document.getElementById('preview-image');
             const imageWrapper = document.querySelector('.image-preview-wrapper');
-            
+
             imageWrapper.addEventListener('mousedown', (e) => {
                 if (currentZoom > 1) {
                     isDragging = true;
@@ -2005,7 +2137,7 @@
                     imageWrapper.style.cursor = 'grabbing';
                 }
             });
-            
+
             imageWrapper.addEventListener('mousemove', (e) => {
                 if (isDragging) {
                     translateX = e.clientX - dragStartX;
@@ -2013,17 +2145,17 @@
                     updateImageTransform();
                 }
             });
-            
+
             imageWrapper.addEventListener('mouseup', () => {
                 isDragging = false;
                 imageWrapper.style.cursor = 'grab';
             });
-            
+
             imageWrapper.addEventListener('mouseleave', () => {
                 isDragging = false;
                 imageWrapper.style.cursor = 'grab';
             });
-            
+
             // Handle mouse wheel zoom
             imageWrapper.addEventListener('wheel', (e) => {
                 e.preventDefault();
@@ -2034,47 +2166,75 @@
                 }
             });
         }
-        
+
         function previewFile(path) {
             const previewModal = document.getElementById('image-preview-modal');
             const previewImage = document.getElementById('preview-image');
             const previewTitle = document.getElementById('image-preview-title');
             const previewSize = document.getElementById('preview-size');
             const previewDate = document.getElementById('preview-date');
-            
+
             // Reset image transformations
             resetImageTransforms();
-            
+
             // Find the file in collections
             const fileName = path.split('/').pop();
-            const file = collections.find(item => item.name === fileName && item.type === 'file');
-            
-            if (file) {
+
+            // Look for the file in the current collections array
+            let file = null;
+            for (let i = 0; i < collections.length; i++) {
+                if (collections[i].name === fileName && collections[i].type === 'file') {
+                    file = collections[i];
+                    break;
+                }
+            }
+
+            // If file not found in collections array, still try to display it
+            if (!file) {
+                console.warn(`File not found in collections array: ${fileName}`);
                 previewTitle.textContent = fileName;
-                previewSize.textContent = formatSize(file.size);
-                previewDate.textContent = formatDate(file.modified);
-                
-                // Set image source
+                previewSize.textContent = 'Unknown size';
+                previewDate.textContent = 'Unknown date';
+
+                // Set image source directly from path
                 previewImage.src = getFileUrl(path);
-                
-                // Set current path for download/analyze buttons
                 previewImage.setAttribute('data-path', path);
-                
+
                 // Show the modal
-                previewModal.classList.add('active');
-                
+                previewModal.classList.add('show');
+                document.body.classList.add('modal-open');
+
                 // Add keyboard navigation
                 document.addEventListener('keydown', handleImageKeyboardControls);
+                return;
             }
+
+            // If file found, set all the details
+            previewTitle.textContent = fileName;
+            previewSize.textContent = formatSize(file.size);
+            previewDate.textContent = formatDate(file.modified);
+
+            // Set image source
+            previewImage.src = getFileUrl(path);
+
+            // Set current path for download/analyze buttons
+            previewImage.setAttribute('data-path', path);
+
+            // Show the modal
+            previewModal.classList.add('show');
+            document.body.classList.add('modal-open');
+
+            // Add keyboard navigation
+            document.addEventListener('keydown', handleImageKeyboardControls);
         }
-        
+
         // Handle keyboard controls for image preview
         function handleImageKeyboardControls(e) {
-            if (!document.getElementById('image-preview-modal').classList.contains('active')) {
+            if (!document.getElementById('image-preview-modal').classList.contains('show')) {
                 document.removeEventListener('keydown', handleImageKeyboardControls);
                 return;
             }
-            
+
             switch (e.key) {
                 case '+':
                 case '=':
@@ -2103,54 +2263,54 @@
                     break;
             }
         }
-        
+
         // Close image preview
         function closeImagePreview() {
-            document.getElementById('image-preview-modal').classList.remove('active');
+            document.getElementById('image-preview-modal').classList.remove('show');
             document.removeEventListener('keydown', handleImageKeyboardControls);
         }
-        
+
         // Download preview image
         function downloadPreviewImage() {
             const previewImage = document.getElementById('preview-image');
             const path = previewImage.getAttribute('data-path');
-            
+
             if (path) {
                 window.open(getFileUrl(path), '_blank');
             }
         }
-        
+
         // Analyze preview image
         function analyzePreviewImage() {
             const previewImage = document.getElementById('preview-image');
             const path = previewImage.getAttribute('data-path');
-            
+
             if (path) {
                 analyzeImage(path);
             }
         }
-        
+
         // Set up image controls
         document.getElementById('zoom-in-btn').addEventListener('click', zoomIn);
         document.getElementById('zoom-out-btn').addEventListener('click', zoomOut);
         document.getElementById('rotate-left-btn').addEventListener('click', rotateLeft);
         document.getElementById('rotate-right-btn').addEventListener('click', rotateRight);
         document.getElementById('reset-image-btn').addEventListener('click', resetImageTransforms);
-        
+
         // Set up image drag functionality
         setupImageDrag();
-        
+
         // AI Analysis functionality
         const aiAnalysisModal = document.getElementById('ai-analysis-modal');
         const analysisLoading = document.getElementById('analysis-loading');
         const analysisResults = document.getElementById('analysis-results');
-        
+
         function analyzeImage(path) {
             // Show the analysis modal with loading state
-            aiAnalysisModal.classList.add('active');
+            aiAnalysisModal.classList.add('show');
             analysisLoading.style.display = 'flex';
             analysisResults.style.display = 'none';
-            
+
             // Call the API to analyze the image
             fetch('/api/collections/analyze', {
                 method: 'POST',
@@ -2174,30 +2334,30 @@
                 closeAnalysisModal();
             });
         }
-        
+
         function displayAnalysisResults(results) {
             // Hide loading, show results
             analysisLoading.style.display = 'none';
             analysisResults.style.display = 'block';
-            
+
             // Update UI with results
             document.getElementById('analysis-description').textContent = results.description;
-            
+
             // Display tags
             const tagsContainer = document.getElementById('analysis-tags');
             tagsContainer.innerHTML = '';
-            
+
             results.tags.forEach(tag => {
                 const tagElement = document.createElement('span');
                 tagElement.className = 'tag';
                 tagElement.textContent = tag;
                 tagsContainer.appendChild(tagElement);
             });
-            
+
             // Display colors
             const colorsContainer = document.getElementById('analysis-colors');
             colorsContainer.innerHTML = '';
-            
+
             results.colors.forEach(color => {
                 const colorElement = document.createElement('div');
                 colorElement.className = 'color-swatch';
@@ -2205,33 +2365,35 @@
                 colorElement.title = color;
                 colorsContainer.appendChild(colorElement);
             });
-            
+
             // Display objects
             const objectsList = document.getElementById('analysis-objects');
             objectsList.innerHTML = '';
-            
+
             results.objects.forEach(object => {
                 const objectElement = document.createElement('li');
                 objectElement.textContent = object;
                 objectsList.appendChild(objectElement);
             });
         }
-        
+
         function closeAnalysisModal() {
-            aiAnalysisModal.classList.remove('active');
+            aiAnalysisModal.classList.remove('show');
         }
-        
+
         function applyAITags() {
             // TODO: Implement tag application
             showToast('success', 'Tags Applied', 'AI tags have been applied to the image');
             closeAnalysisModal();
         }
-        
+
         // Helper to get file URL
         function getFileUrl(path) {
-            return `/api/collections/file/${path}`;
+            // Encode the path to handle special characters
+            const encodedPath = encodeURIComponent(path);
+            return `/api/collections/file/${encodedPath}?t=${Date.now()}`; // Add timestamp to prevent caching
         }
-        
+
         // Load collections from the API
         function loadCollections() {
             fetch(`/api/collections?path=${encodeURIComponent(currentPath)}`)
@@ -2259,7 +2421,7 @@
                 // Always put folders first
                 if (a.type === 'folder' && b.type !== 'folder') return -1;
                 if (a.type !== 'folder' && b.type === 'folder') return 1;
-                
+
                 // Then sort by selected criteria
                 switch (sortBy) {
                     case 'name':
@@ -2273,11 +2435,11 @@
                 }
             });
         }
-        
+
         // Display collections in the grid
         function displayCollections() {
             collectionsGrid.innerHTML = '';
-            
+
             if (collections.length === 0) {
                 collectionsGrid.innerHTML = `
                     <div class="empty-state">
@@ -2298,20 +2460,20 @@
                 `;
                 return;
             }
-            
+
             collections.forEach(item => {
                 const isFolder = item.type === 'folder';
                 const itemPath = currentPath ? `${currentPath}/${item.name}` : item.name;
-                
+
                 const itemElement = document.createElement('div');
                 itemElement.className = `collection-item ${currentViewMode === 'list' ? 'list-view' : ''}`;
                 itemElement.setAttribute('data-path', itemPath);
                 itemElement.setAttribute('data-type', item.type);
-                
+
                 const icon = isFolder ? 'folder' : getFileIcon(item.name);
                 const size = isFolder ? `${item.items || 0} item${item.items !== 1 ? 's' : ''}` : formatSize(item.size);
                 const date = formatDate(item.modified);
-                
+
                 itemElement.innerHTML = `
                     <div class="collection-icon">
                         <i class="fas fa-${icon}"></i>
@@ -2329,29 +2491,29 @@
                         </button>
                         <div class="item-dropdown">
                             <div class="dropdown-item rename-item" data-path="${itemPath}">
-                                <i class="fas fa-edit"></i> 
+                                <i class="fas fa-edit"></i>
                                 <span>Rename</span>
                             </div>
                             <div class="dropdown-item delete-item" data-path="${itemPath}">
-                                <i class="fas fa-trash"></i> 
+                                <i class="fas fa-trash"></i>
                                 <span>Delete</span>
                             </div>
                         </div>
                     </div>
                 `;
-                
+
                 // Add click event for opening folders or previewing files
                 itemElement.addEventListener('click', function(e) {
                     // Don't open folder if clicking on menu or its children
                     if (e.target.closest('.item-menu')) {
                         return;
                     }
-                    
+
                     // Don't trigger if Ctrl or Shift key is pressed (for multi-select)
                     if (e.ctrlKey || e.shiftKey || e.metaKey) {
                         return;
                     }
-                    
+
                     if (isFolder) {
                         navigateToFolder(itemPath);
                     } else if (isImageFile(item.name)) {
@@ -2360,30 +2522,30 @@
                         window.open(getFileUrl(itemPath), '_blank');
                     }
                 });
-                
+
                 // Add click event for selection
                 itemElement.addEventListener('mousedown', (e) => {
                     if (e.button === 0) { // Left click only
                         handleItemSelection(itemElement, e);
                     }
                 });
-                
+
                 // Add menu button click handler directly to the button
                 const menuButton = itemElement.querySelector('.item-menu-button');
                 menuButton.addEventListener('click', function(e) {
                     e.stopPropagation(); // Stop event from bubbling up
-                    
+
                     // Close all other open dropdowns first
                     document.querySelectorAll('.item-dropdown.show').forEach(dropdown => {
                         if (dropdown !== this.nextElementSibling) {
                             dropdown.classList.remove('show');
                         }
                     });
-                    
+
                     // Toggle this dropdown
                     const dropdown = this.nextElementSibling;
                     dropdown.classList.toggle('show');
-                    
+
                     // If dropdown is now shown, focus the first item
                     if (dropdown.classList.contains('show')) {
                         setTimeout(() => {
@@ -2392,27 +2554,27 @@
                         }, 100);
                     }
                 });
-                
+
                 // Add keyboard navigation for the dropdown
                 const dropdownItems = itemElement.querySelectorAll('.dropdown-item');
                 dropdownItems.forEach((item, index) => {
                     item.setAttribute('tabindex', '0'); // Make focusable
-                    
+
                     item.addEventListener('keydown', function(e) {
                         // Handle keyboard navigation
                         if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
                             e.preventDefault();
-                            
+
                             const items = Array.from(this.parentNode.querySelectorAll('.dropdown-item'));
                             const currentIndex = items.indexOf(this);
                             let nextIndex;
-                            
+
                             if (e.key === 'ArrowDown') {
                                 nextIndex = (currentIndex + 1) % items.length;
                             } else {
                                 nextIndex = (currentIndex - 1 + items.length) % items.length;
                             }
-                            
+
                             items[nextIndex].focus();
                         } else if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
@@ -2424,7 +2586,7 @@
                         }
                     });
                 });
-                
+
                 // Add click handlers for dropdown items
                 const renameItem = itemElement.querySelector('.rename-item');
                 renameItem.addEventListener('click', function(e) {
@@ -2434,7 +2596,7 @@
                     // Start rename
                     startRenameItem(this.getAttribute('data-path'));
                 });
-                
+
                 const deleteItem = itemElement.querySelector('.delete-item');
                 deleteItem.addEventListener('click', function(e) {
                     e.stopPropagation();
@@ -2443,15 +2605,15 @@
                     // Confirm delete
                     confirmDeleteItem(this.getAttribute('data-path'));
                 });
-                
+
                 collectionsGrid.appendChild(itemElement);
             });
         }
-        
+
         // Update breadcrumb navigation
         function updateBreadcrumb() {
             breadcrumbContainer.innerHTML = '';
-            
+
             // Home / root item
             const homeItem = document.createElement('a');
             homeItem.href = '#';
@@ -2461,75 +2623,77 @@
                 e.preventDefault();
                 navigateToFolder('');
             });
-            
+
             breadcrumbContainer.appendChild(homeItem);
-            
+
             // Path segments
             if (currentPath) {
                 const segments = currentPath.split('/');
                 let path = '';
-                
+
                 segments.forEach((segment, index) => {
                     path += path ? `/${segment}` : segment;
-                    
+
                     const item = document.createElement('a');
                     item.href = '#';
                     item.className = 'breadcrumb-item';
                     item.textContent = segment;
-                    
+
                     if (index < segments.length - 1) {
                         item.addEventListener('click', (e) => {
                             e.preventDefault();
                             navigateToFolder(path);
                         });
                     }
-                    
+
                     breadcrumbContainer.appendChild(item);
                 });
             }
         }
-        
+
         // Navigate to a folder
         function navigateToFolder(path) {
             currentPath = path;
             loadCollections();
         }
-        
+
         // Set the view mode (grid or list)
         function setViewMode(mode) {
             currentViewMode = mode;
-            
+
             // Update active button
             gridViewBtn.classList.toggle('active', mode === 'grid');
             listViewBtn.classList.toggle('active', mode === 'list');
-            
+
             // Update collection items
             document.querySelectorAll('.collection-item').forEach(item => {
                 item.classList.toggle('list-view', mode === 'list');
             });
         }
-        
+
         // Open folder modal
         function openFolderModal() {
-            folderModal.classList.add('active');
+            folderModal.classList.add('show');
             folderNameInput.value = '';
             folderNameInput.focus();
+            document.body.classList.add('modal-open');
         }
-        
+
         // Close folder modal
         function closeFolderModal() {
-            folderModal.classList.remove('active');
+            folderModal.classList.remove('show');
+            document.body.classList.remove('modal-open');
         }
-        
+
         // Create a new folder
         function createFolder() {
             const folderName = folderNameInput.value.trim();
-            
+
             if (!folderName) {
                 showToast('error', 'Error', 'Please enter a folder name');
                 return;
             }
-            
+
             fetch('/api/collections/folder', {
                 method: 'POST',
                 headers: {
@@ -2555,11 +2719,11 @@
                 showToast('error', 'Error', 'Failed to create folder');
             });
         }
-        
+
         // Upload files
         function uploadFiles(files) {
             if (files.length === 0) return;
-            
+
             // Create and show progress bar UI
             const progressContainer = document.createElement('div');
             progressContainer.className = 'upload-progress-container active';
@@ -2572,25 +2736,26 @@
                     <div class="upload-progress-status">0%</div>
                 </div>
             `;
+            
             document.body.appendChild(progressContainer);
             
             // Get progress bar elements
             const progressBar = progressContainer.querySelector('.upload-progress-fill');
             const progressStatus = progressContainer.querySelector('.upload-progress-status');
-            
+
             // Create form data
             const formData = new FormData();
             formData.append('path', currentPath);
-            
+
             // Add all files
             for (const file of files) {
                 formData.append('files[]', file);
             }
-            
+
             // Create XMLHttpRequest
             const xhr = new XMLHttpRequest();
             xhr.open('POST', '/api/collections/upload');
-            
+
             // Track upload progress
             xhr.upload.addEventListener('progress', (e) => {
                 if (e.lengthComputable) {
@@ -2599,19 +2764,31 @@
                     progressStatus.textContent = `${percentComplete}% - Uploading...`;
                 }
             });
-            
+
             // Handle response
             xhr.onload = function() {
                 if (xhr.status === 200) {
                     progressBar.style.width = '100%';
                     progressStatus.textContent = 'Upload complete!';
-                    
-                    // Parse response
-                    const response = JSON.parse(xhr.responseText);
-                    
-                    // Refresh the current view
-                    loadItems(currentPath);
-                    
+
+                    try {
+                        // Parse response
+                        const response = JSON.parse(xhr.responseText);
+                        
+                        // Show success message
+                        if (response.success) {
+                            showToast('success', 'Upload Complete', `Successfully uploaded ${files.length} file${files.length > 1 ? 's' : ''}`);
+                        } else {
+                            showToast('error', 'Upload Error', response.error || 'Failed to upload files');
+                        }
+                        
+                        // Refresh the current view
+                        loadCollections();
+                    } catch (e) {
+                        console.error('Error parsing upload response:', e);
+                        showToast('error', 'Upload Error', 'Failed to process server response');
+                    }
+
                     // Clean up UI after a delay
                     setTimeout(() => {
                         progressContainer.classList.remove('active');
@@ -2622,7 +2799,8 @@
                 } else {
                     progressStatus.textContent = 'Upload failed!';
                     console.error('Upload failed:', xhr.responseText);
-                    
+                    showToast('error', 'Upload Failed', 'Server returned an error');
+
                     // Clean up UI after a delay
                     setTimeout(() => {
                         progressContainer.classList.remove('active');
@@ -2632,12 +2810,13 @@
                     }, 3000);
                 }
             };
-            
+
             // Handle errors
             xhr.onerror = function() {
                 progressStatus.textContent = 'Network error!';
                 console.error('Network error during upload');
-                
+                showToast('error', 'Upload Failed', 'Network error occurred');
+
                 // Clean up UI after a delay
                 setTimeout(() => {
                     progressContainer.classList.remove('active');
@@ -2646,15 +2825,15 @@
                     }, 3000);
                 }, 3000);
             };
-            
+
             // Send the data
             xhr.send(formData);
         }
-        
+
         // Get appropriate icon for file type
         function getFileIcon(filename) {
             const extension = filename.split('.').pop().toLowerCase();
-            
+
             const iconMap = {
                 // Images
                 'jpg': 'image',
@@ -2689,28 +2868,28 @@
                 'avi': 'file-video',
                 'mov': 'file-video'
             };
-            
+
             return iconMap[extension] || 'file';
         }
-        
+
         // Format file size in human-readable format
         function formatSize(bytes) {
             if (bytes === 0) return '0 B';
-            
+
             const k = 1024;
             const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
-            
+
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
-        
+
         // Format date in human-readable format
         function formatDate(dateString) {
             const date = new Date(dateString);
             const now = new Date();
             const diffMs = now - date;
             const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-            
+
             if (diffDays === 0) {
                 return 'Today, ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             } else if (diffDays === 1) {
@@ -2722,18 +2901,18 @@
                 return date.toLocaleDateString();
             }
         }
-        
+
         // Check if a file is an image based on extension
         function isImageFile(filename) {
             const extension = filename.split('.').pop().toLowerCase();
             return ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg'].includes(extension);
         }
-        
+
         // Show toast notification
         function showToast(type, title, message) {
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
-            
+
             // Customize icon based on type
             let icon;
             switch (type) {
@@ -2751,7 +2930,7 @@
                     icon = 'info-circle';
                     break;
             }
-            
+
             toast.innerHTML = `
                 <div class="toast-icon">
                     <i class="fas fa-${icon}"></i>
@@ -2768,23 +2947,23 @@
             // Add to toast container
             const toastContainer = document.getElementById('toast-container');
             toastContainer.appendChild(toast);
-            
+
             // Animate in
             setTimeout(() => {
                 toast.classList.add('show');
             }, 10);
-            
+
             // Close toast on click
             toast.querySelector('.toast-close').addEventListener('click', () => {
                 closeToast(toast);
             });
-            
+
             // Auto close after 5 seconds
             setTimeout(() => {
                 closeToast(toast);
             }, 5000);
         }
-        
+
         // Close toast notification
         function closeToast(toast) {
             toast.classList.remove('show');
@@ -2792,7 +2971,7 @@
                 toast.remove();
             }, 300);
         }
-        
+
         // Rename item function
         function startRenameItem(path) {
             const itemElement = document.querySelector(`.collection-item[data-path="${path}"]`);
@@ -2800,11 +2979,24 @@
             
             const nameElement = itemElement.querySelector('.collection-name');
             const currentName = nameElement.textContent;
+            const itemType = itemElement.getAttribute('data-type');
+            
+            // For files, separate name and extension to preserve the extension
+            let baseName = currentName;
+            let extension = '';
+            
+            if (itemType === 'file') {
+                const lastDotIndex = currentName.lastIndexOf('.');
+                if (lastDotIndex > 0) {
+                    baseName = currentName.substring(0, lastDotIndex);
+                    extension = currentName.substring(lastDotIndex);
+                }
+            }
             
             // Create an input field
             const input = document.createElement('input');
             input.type = 'text';
-            input.value = currentName;
+            input.value = baseName; // Only set the base name without extension for files
             input.className = 'rename-input';
             input.style.width = '100%';
             input.style.padding = '5px';
@@ -2820,12 +3012,17 @@
             
             // Handle enter key and blur
             const handleRename = () => {
-                const newName = input.value.trim();
+                let newName = input.value.trim();
                 
                 // Restore original name if empty
                 if (!newName) {
                     nameElement.textContent = currentName;
                     return;
+                }
+                
+                // Add back the extension for files
+                if (itemType === 'file' && extension) {
+                    newName = newName + extension;
                 }
                 
                 // Skip if name hasn't changed
@@ -2875,7 +3072,7 @@
             
             input.addEventListener('blur', handleRename);
         }
-        
+
         // Confirm and delete item
         function confirmDeleteItem(path) {
             // Get item name from path
@@ -2883,12 +3080,12 @@
             
             // Create modal for confirmation
             const modal = document.createElement('div');
-            modal.className = 'modal';
+            modal.className = 'modal show';
             modal.innerHTML = `
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3>Delete Item</h3>
-                        <button class="close-modal">&times;</button>
+                        <button class="modal-close">×</button>
                     </div>
                     <div class="modal-body">
                         <p>Are you sure you want to delete "${name}"?</p>
@@ -2902,18 +3099,18 @@
             `;
             
             document.body.appendChild(modal);
+            document.body.classList.add('modal-open');
             
-            // Show modal with animation
-            setTimeout(() => modal.classList.add('show'), 10);
+            // Add close button functionality
+            modal.querySelector('.modal-close').addEventListener('click', () => {
+                document.body.removeChild(modal);
+                document.body.classList.remove('modal-open');
+            });
             
-            // Add event listeners
-            const closeModal = () => {
-                modal.classList.remove('show');
-                setTimeout(() => modal.remove(), 300);
-            };
-            
-            modal.querySelector('.close-modal').addEventListener('click', closeModal);
-            modal.querySelector('.cancel-delete').addEventListener('click', closeModal);
+            modal.querySelector('.cancel-delete').addEventListener('click', () => {
+                document.body.removeChild(modal);
+                document.body.classList.remove('modal-open');
+            });
             
             // Handle delete confirmation
             modal.querySelector('.confirm-delete').addEventListener('click', () => {
@@ -2927,9 +3124,15 @@
                         path: path
                     })
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    closeModal();
+                    document.body.removeChild(modal);
+                    document.body.classList.remove('modal-open');
                     
                     if (data.success) {
                         showToast('success', 'Success', `Deleted "${name}"`);
@@ -2939,7 +3142,8 @@
                     }
                 })
                 .catch(error => {
-                    closeModal();
+                    document.body.removeChild(modal);
+                    document.body.classList.remove('modal-open');
                     console.error('Error deleting item:', error);
                     showToast('error', 'Error', 'Failed to delete item');
                 });
@@ -2948,7 +3152,8 @@
             // Close when clicking outside
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) {
-                    closeModal();
+                    document.body.removeChild(modal);
+                    document.body.classList.remove('modal-open');
                 }
             });
         }
