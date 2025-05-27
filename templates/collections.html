@@ -8,10 +8,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         :root {
-            --primary: #e0e0e0;
-            --primary-rgb: 224, 224, 224;
-            --primary-dark: #bbbbbb;
-            --primary-light: #2d2d2d;
+            --primary: #4f46e5;
+            --primary-rgb: 79, 70, 229;
+            --primary-dark: #4338ca;
+            --primary-light: #818cf8;
             --secondary: #444444;
             --secondary-rgb: 68, 68, 68;
             --accent: #ffffff;
@@ -37,6 +37,8 @@
             --radius-lg: 12px;
             --transition-normal: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --transition-bounce: all 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            --card-hover-transform: translateY(-5px);
+            --item-hover-bg: rgba(255, 255, 255, 0.05);
         }
         
         * {
@@ -107,18 +109,16 @@
         
         /* Header */
         .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
-            background-color: rgba(26, 26, 26, 0.95);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            box-shadow: var(--shadow-lg);
+            padding: 0 20px;
+            height: 60px;
+            background-color: var(--bg-card);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: var(--shadow-sm);
+            border-bottom: 1px solid var(--border-color);
         }
         
         .logo {
@@ -128,48 +128,153 @@
             color: var(--text-main);
             font-weight: 600;
             font-size: 1.2rem;
+            margin-right: 24px;
         }
         
         .logo i {
-            margin-right: 10px;
+            color: var(--primary);
             font-size: 1.4rem;
-            color: #ffffff;
+            margin-right: 8px;
         }
         
         /* Search Box */
         .search-container {
             flex: 1;
             max-width: 600px;
-            margin: 0 20px;
+            margin: 0 16px;
         }
         
         .search-box {
             display: flex;
             align-items: center;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 6px 16px;
-            transition: background-color 0.2s ease;
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 8px 16px;
+            transition: var(--transition-normal);
+            border: 1px solid transparent;
         }
         
-        .search-box:hover,
         .search-box:focus-within {
-            background-color: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
         }
         
         .search-box i {
-            color: var(--text-color);
-            margin-right: 12px;
+            color: var(--secondary-text);
+            margin-right: 8px;
         }
         
         .search-box input {
-            background: none;
+            background: transparent;
             border: none;
-            color: var(--text-main);
-            font-size: 0.9rem;
-            padding: 6px 0;
-            width: 100%;
             outline: none;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            width: 100%;
+        }
+        
+        /* Button enhancements */
+        .btn {
+            position: relative;
+            overflow: hidden;
+            padding: 10px 20px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%, -50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .btn:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            20% {
+                transform: scale(25, 25);
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background-color: var(--bg-secondary);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--bg-hover);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: var(--danger-dark);
+        }
+        
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
         }
         
         /* Buttons */
@@ -178,34 +283,69 @@
             color: var(--text-color);
             border: none;
             border-radius: var(--radius-md);
-            padding: 8px 15px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            cursor: pointer;
             display: flex;
             align-items: center;
             gap: 8px;
-            cursor: pointer;
-            text-decoration: none;
+            transition: var(--transition-normal);
             position: relative;
             overflow: hidden;
-            transition: var(--transition-normal);
         }
         
-        .btn i {
-            font-size: 1rem;
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%, -50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .btn:focus::after,
+        .btn:active::after {
+            animation: ripple 0.6s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            20% {
+                transform: scale(25, 25);
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
         }
         
         .btn:hover {
-            background-color: var(--primary-light);
-            color: var(--text-main);
+            background-color: var(--bg-secondary);
             transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
         
-        .btn:active {
-            transform: translateY(0);
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
         }
         
-        .btn.active {
-            background-color: var(--primary-light);
-            color: var(--text-main);
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
         }
         
         .header-actions {
@@ -335,99 +475,102 @@
         .google-style {
             display: flex;
             flex-direction: row;
-            padding-top: 80px;
+            padding-top: 60px;
         }
         
         .google-style .sidebar {
-            width: 240px;
-            background-color: var(--bg-secondary);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            height: calc(100vh - 80px);
-            position: fixed;
-            top: 80px;
-            left: 0;
+            width: 250px;
+            background-color: var(--bg-card);
+            height: calc(100vh - 60px);
             overflow-y: auto;
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            border-right: 1px solid var(--border-color);
+            transition: var(--transition-normal);
+            position: sticky;
+            top: 60px;
+            box-shadow: var(--shadow-md);
         }
         
         .google-style .sidebar-section {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
+            padding: 16px 0;
+        }
+        
+        .google-style .sidebar-title {
+            padding: 0 16px 8px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--secondary-text);
+            font-weight: 500;
         }
         
         .google-style .sidebar-item {
             display: flex;
             align-items: center;
-            text-decoration: none;
+            padding: 10px 16px;
             color: var(--text-color);
-            padding: 8px 12px;
-            border-radius: 18px;
+            text-decoration: none;
             transition: var(--transition-normal);
-            font-size: 0.9rem;
+            border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+            margin-right: 8px;
+            position: relative;
+            overflow: hidden;
         }
         
         .google-style .sidebar-item i {
-            margin-right: 12px;
-            width: 24px;
-            text-align: center;
             font-size: 1.1rem;
+            width: 24px;
+            margin-right: 12px;
+            text-align: center;
+            color: var(--secondary-text);
+            transition: var(--transition-normal);
         }
         
         .google-style .sidebar-item:hover {
-            background-color: rgba(255, 255, 255, 0.08);
+            background-color: var(--item-hover-bg);
+        }
+        
+        .google-style .sidebar-item:hover i {
+            color: var(--primary);
         }
         
         .google-style .sidebar-item.active {
-            background-color: rgba(66, 133, 244, 0.15);
-            color: #4285f4;
+            background-color: rgba(var(--primary-rgb), 0.15);
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .google-style .sidebar-item.active i {
+            color: var(--primary);
+        }
+        
+        .google-style .sidebar-item::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(var(--primary-rgb), 0.3);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%, -50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .google-style .sidebar-item:active::after {
+            animation: ripple 0.6s ease-out;
         }
         
         .google-style .sidebar-divider {
             height: 1px;
             background-color: var(--border-color);
-            margin: 8px 0;
-            opacity: 0.3;
-        }
-        
-        .google-style .sidebar-title {
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: var(--text-main);
-            margin: 8px 12px 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        
-        .google-style .storage-info {
-            padding: 12px;
-        }
-        
-        .google-style .storage-bar {
-            height: 4px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            margin-bottom: 8px;
-        }
-        
-        .google-style .storage-used {
-            height: 100%;
-            background-color: #4285f4;
-            border-radius: 2px;
-        }
-        
-        .google-style .storage-text {
-            font-size: 0.8rem;
-            color: var(--text-color);
+            margin: 8px 16px;
         }
         
         .google-style .main-container {
             flex: 1;
             padding: 20px 20px 20px 260px;
-            min-height: calc(100vh - 80px);
+            min-height: calc(100vh - 60px);
         }
         
         /* Breadcrumb navigation */
@@ -460,144 +603,220 @@
         /* Collections Header */
         .collections-header {
             margin-bottom: 20px;
-        }
-        
-        .collections-header h1 {
-            font-size: 1.5rem;
-            font-weight: 400;
-            color: var(--text-main);
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
         }
         
         .header-container {
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-container h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--heading-color);
+        }
+        
+        .header-tools {
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
         
         .view-options {
             display: flex;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 18px;
-            padding: 3px;
+            gap: 8px;
         }
         
-        .view-options .action-btn {
+        .action-btn {
+            background-color: transparent;
+            color: var(--secondary-text);
+            border: none;
             width: 36px;
             height: 36px;
-            border-radius: 16px;
+            border-radius: 50%;
             display: flex;
-            align-items: center;
             justify-content: center;
-            background: none;
-            color: var(--text-main);
-            border: none;
+            align-items: center;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: var(--transition-normal);
         }
         
-        .view-options .action-btn.active {
-            background: rgba(255, 255, 255, 0.1);
+        .action-btn:hover {
+            background-color: var(--item-hover-bg);
+            color: var(--text-main);
+        }
+        
+        .action-btn.active {
+            background-color: rgba(var(--primary-rgb), 0.15);
+            color: var(--primary);
         }
         
         .sort-select {
-            background-color: rgba(255, 255, 255, 0.08);
-            border: none;
-            color: var(--text-main);
+            background-color: var(--bg-secondary);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 8px 12px;
             font-size: 0.9rem;
-            padding: 6px 12px;
-            border-radius: 18px;
-            cursor: pointer;
             outline: none;
+            cursor: pointer;
+            transition: var(--transition-normal);
+        }
+        
+        .sort-select:hover, .sort-select:focus {
+            border-color: var(--primary);
+        }
+        
+        .sort-select option {
+            background-color: var(--bg-card);
+            color: var(--text-color);
         }
         
         /* Collections Grid */
         .collections-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .collections-grid.list-view {
-            grid-template-columns: 1fr;
-        }
-
-        .collection-item {
-            position: relative;
-            background-color: var(--bg-card);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
+            width: 100%;
+            min-height: 300px;
+            padding: 16px;
+        }
+        
+        .collections-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            width: 100%;
+        }
+        
+        .collections-grid.list-view {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        
+        .collections-grid.list-view .collection-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 12px;
+            height: auto;
+        }
+        
+        .collections-grid.list-view .collection-preview {
+            width: 60px;
+            height: 60px;
+            aspect-ratio: 1/1;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+        
+        .collections-grid.list-view .collection-info {
+            flex: 1;
+            padding: 0;
+        }
+        
+        .collections-grid.list-view .collection-meta {
+            display: flex;
+            gap: 24px;
+        }
+        
+        .collections-grid.list-view .collection-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .collections-grid.grid-view .collection-item {
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .collection-item {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            position: relative;
+            transition: var(--transition-normal);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .collection-item:hover {
+            transform: var(--card-hover-transform);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .collection-item.folder .collection-preview {
+            background-color: rgba(var(--primary-rgb), 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .collection-item.folder .collection-preview i {
+            font-size: 3rem;
+            color: var(--primary);
+        }
+        
+        .collection-preview {
+            aspect-ratio: 16/9;
+            background-color: var(--bg-secondary);
+            position: relative;
             overflow: hidden;
         }
-
-        .collection-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .collection-item.selected {
-            background-color: var(--bg-selected);
-            border: 1px solid var(--primary-color);
-        }
-
-        .collection-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
+        
+        .collection-preview img {
             width: 100%;
             height: 100%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.02), rgba(0,0,0,0.1));
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            pointer-events: none;
+            object-fit: cover;
+            transition: transform 0.3s ease;
         }
-
-        .collection-item:hover::before {
-            opacity: 1;
+        
+        .collection-item:hover .collection-preview img {
+            transform: scale(1.05);
         }
-
-        .collection-icon {
+        
+        .collection-info {
+            padding: 12px;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            color: var(--primary-color);
-            margin-bottom: 12px;
+            flex-direction: column;
+            flex-grow: 1;
         }
-
-        .collection-details {
-            width: 100%;
-            overflow: hidden;
-        }
-
+        
         .collection-name {
             font-weight: 500;
             margin-bottom: 4px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            color: var(--text-main);
         }
-
-        .collection-info {
+        
+        .collection-meta {
+            font-size: 0.8rem;
+            color: var(--secondary-text);
             display: flex;
             justify-content: space-between;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            opacity: 0.7;
         }
-
+        
         .collection-img-container {
             position: relative;
             overflow: hidden;
             padding-top: 75%;
         }
-
+        
         .collection-img {
             position: absolute;
             top: 0;
@@ -607,11 +826,11 @@
             object-fit: cover;
             transition: transform 0.3s ease;
         }
-
+        
         .collection-item:hover .collection-img {
             transform: scale(1.03);
         }
-
+        
         .folder-icon {
             position: absolute;
             top: 0;
@@ -624,7 +843,7 @@
             font-size: 3rem;
             color: #4285f4;
         }
-
+        
         .item-count {
             position: absolute;
             bottom: 8px;
@@ -765,37 +984,229 @@
             background-color: rgba(255, 255, 255, 0.05);
         }
 
+        /* Owner badges and permission indicators */
+        .owner-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            z-index: 2;
+            backdrop-filter: blur(4px);
+        }
+        
+        .owner-badge i {
+            font-size: 0.8rem;
+        }
+        
+        .owner-badge.self {
+            background-color: rgba(var(--primary-rgb), 0.8);
+        }
+        
+        .owner-badge.shared {
+            background-color: rgba(var(--info-rgb), 0.8);
+        }
+        
+        /* Drag and drop indicators */
+        .drag-over {
+            border: 2px dashed var(--primary) !important;
+            background-color: rgba(var(--primary-rgb), 0.05) !important;
+            transform: scale(1.02) !important;
+        }
+        
+        .dragging {
+            opacity: 0.6;
+            transform: scale(0.95);
+        }
+        
+        /* Keyboard shortcuts modal */
+        .shortcuts-modal .modal-content {
+            max-width: 600px;
+        }
+        
+        .shortcuts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 16px;
+        }
+        
+        .shortcut-category {
+            margin-bottom: 20px;
+        }
+        
+        .shortcut-category-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--primary);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+        }
+        
+        .shortcut-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .shortcut-keys {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .key {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 2px 6px;
+            font-size: 0.8rem;
+            font-family: monospace;
+            color: var(--text-main);
+            min-width: 24px;
+            text-align: center;
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-main);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-secondary);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--border-color);
+        }
+
+        /* Upload progress styling */
+        .upload-progress-container {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            width: 350px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+        
+        .upload-progress-container.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .upload-progress-box {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-md);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        
+        .upload-progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .upload-progress-title {
+            font-weight: 500;
+            color: var(--text-main);
+        }
+        
+        .upload-progress-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            opacity: 0.7;
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 0 5px;
+            margin-left: 10px;
+        }
+        
+        .upload-progress-close:hover {
+            opacity: 1;
+        }
+        
+        .upload-progress-bar {
+            height: 6px;
+            background-color: var(--bg-secondary);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        
+        .upload-progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 3px;
+            width: 0;
+            transition: width 0.3s ease;
+        }
+        
+        .upload-progress-status {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: right;
+        }
+
         /* Empty folder state */
         .empty-folder-state {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            padding: 48px 24px;
             text-align: center;
-            padding: 40px 20px;
-            margin-top: 40px;
+            width: 100%;
+            min-height: 400px;
+            background-color: rgba(var(--primary-rgb), 0.03);
+            border-radius: var(--radius-lg);
+            border: 1px dashed rgba(var(--primary-rgb), 0.2);
+            animation: fadeIn 0.5s ease forwards;
         }
-
-        .empty-folder-state img {
-            width: 150px;
-            margin-bottom: 20px;
-            opacity: 0.7;
-        }
-
-        .empty-folder-state h3 {
-            color: var(--text-main);
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-        }
-
+        
         .empty-folder-state p {
-            color: var(--secondary-text);
-            margin-bottom: 25px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            max-width: 400px;
+        }
+        
+        .empty-folder-actions {
+            display: flex;
+            gap: 12px;
         }
 
-        .empty-actions {
-            display: flex;
-            gap: 15px;
+        /* Empty folder styling */
+        .empty-folder-icon {
+            font-size: 3.5rem;
+            color: rgba(var(--primary-rgb), 0.3);
+            margin-bottom: 16px;
+        }
+        
+        .empty-folder-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--text-main);
+            margin-bottom: 8px;
         }
 
         /* Modal */
@@ -898,6 +1309,7 @@
             border-radius: 4px;
             cursor: pointer;
             border: none;
+            transition: var(--transition-normal);
         }
 
         .btn-secondary {
@@ -909,7 +1321,7 @@
             background-color: #ff5252;
             color: white;
         }
-
+        
         /* Toast notifications */
         #toast-container {
             position: fixed;
@@ -1140,7 +1552,6 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            position: relative;
         }
 
         #preview-image {
@@ -1332,6 +1743,486 @@
             display: flex;
             justify-content: flex-end;
             gap: 10px;
+        }
+        
+        /* Image Preview Modal */
+        .image-preview-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1050;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .image-preview-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .image-preview-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        .image-preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            z-index: 2;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .image-preview-title {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 500;
+            max-width: 70%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .image-preview-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
+        }
+        
+        .image-preview-close:hover {
+            opacity: 1;
+        }
+        
+        .image-preview-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding: 60px 0;
+            box-sizing: border-box;
+        }
+        
+        .image-preview-img-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: grab;
+        }
+        
+        .image-preview-img {
+            max-width: 85%;
+            max-height: 85%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .image-preview-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            z-index: 2;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .image-preview-info {
+            display: flex;
+            gap: 16px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .image-preview-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .image-controls {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 12px 20px;
+            border-radius: 50px;
+            z-index: 3;
+        }
+        
+        .image-control-button {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .image-control-button:hover {
+            background-color: rgba(var(--primary-rgb), 0.8);
+        }
+        
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 1000;
+            max-width: 350px;
+        }
+        
+        .toast {
+            display: flex;
+            align-items: flex-start;
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            box-shadow: var(--shadow-lg);
+            animation: slideInRight 0.3s ease forwards;
+            border-left: 4px solid var(--primary);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .toast.closing {
+            animation: slideOutRight 0.3s ease forwards;
+        }
+        
+        .toast.success {
+            border-left-color: var(--success);
+        }
+        
+        .toast.error {
+            border-left-color: var(--error);
+        }
+        
+        .toast.warning {
+            border-left-color: var(--warning);
+        }
+        
+        .toast.info {
+            border-left-color: var(--info);
+        }
+        
+        .toast-icon {
+            margin-right: 12px;
+            font-size: 1.4rem;
+        }
+        
+        .toast.success .toast-icon {
+            color: var(--success);
+        }
+        
+        .toast.error .toast-icon {
+            color: var(--error);
+        }
+        
+        .toast.warning .toast-icon {
+            color: var(--warning);
+        }
+        
+        .toast.info .toast-icon {
+            color: var(--info);
+        }
+        
+        .toast-content {
+            flex: 1;
+        }
+        
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .toast-message {
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+        }
+        
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--secondary-text);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0;
+            margin-left: 12px;
+            transition: color 0.2s ease;
+        }
+        
+        .toast-close:hover {
+            color: var(--text-main);
+        }
+        
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background-color: rgba(255, 255, 255, 0.2);
+            width: 100%;
+        }
+        
+        .toast-progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 100%;
+            animation: progress 5s linear forwards;
+        }
+        
+        .toast.success .toast-progress-bar {
+            background-color: var(--success);
+        }
+        
+        .toast.error .toast-progress-bar {
+            background-color: var(--error);
+        }
+        
+        .toast.warning .toast-progress-bar {
+            background-color: var(--warning);
+        }
+        
+        .toast.info .toast-progress-bar {
+            background-color: var(--info);
+        }
+        
+        @keyframes progress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        /* Loading indicator */
+        .loading-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 200px;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            gap: 12px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .loading-indicator i {
+            font-size: 2rem;
+            color: var(--primary);
+            animation: spin 1.5s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Error state */
+        .error-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+            width: 100%;
+            min-height: 300px;
+            background-color: rgba(var(--danger-rgb), 0.03);
+            border-radius: var(--radius-lg);
+            border: 1px dashed rgba(var(--danger-rgb), 0.2);
+        }
+        
+        .error-state i {
+            font-size: 3rem;
+            color: var(--danger);
+            margin-bottom: 16px;
+        }
+        
+        .error-state p {
+            font-size: 1rem;
+            color: var(--text-main);
+            margin-bottom: 24px;
+        }
+        
+        /* Collection item styling */
+        .collection-item {
+            position: relative;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease forwards;
+            margin-bottom: 16px;
+        }
+        
+        .collection-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-md);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .collection-item:hover .collection-card {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-color: rgba(var(--primary-rgb), 0.3);
+        }
+        
+        .collection-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+            height: 100px;
+        }
+        
+        .collection-icon i.fa-folder {
+            color: #ffc107;
+        }
+        
+        .collection-details {
+            flex: 1;
+        }
+        
+        .collection-name {
+            font-weight: 500;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .collection-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .collection-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 16px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .collection-item:hover .collection-actions {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .action-button {
+            background: none;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .action-button:hover {
+            background-color: var(--bg-hover);
+            color: var(--primary);
+        }
+        
+        .delete-button:hover {
+            color: var(--danger);
+        }
+        
+        /* Owner badge */
+        .owner-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 500;
+            z-index: 1;
+        }
+        
+        /* Drag and drop styles */
+        .collection-item.dragging {
+            opacity: 0.5;
+            z-index: 10;
+        }
+        
+        .collection-item.drag-over .collection-card {
+            background-color: rgba(var(--primary-rgb), 0.05);
+            border: 2px dashed var(--primary);
+        }
+        
+        .collections-grid.drag-over {
+            background-color: rgba(var(--primary-rgb), 0.05);
+            border: 2px dashed var(--primary);
+            border-radius: var(--radius-lg);
         }
     </style>
 </head>
@@ -1549,40 +2440,44 @@
     </div>
 
     <div class="modal" id="image-preview-modal">
-        <div class="modal-content image-preview-content">
-            <div class="modal-header">
-                <h3 id="image-preview-title">Image Preview</h3>
-                <button class="modal-close" id="close-preview-btn">×</button>
+        <div class="image-preview-header">
+            <div class="image-preview-title" id="image-preview-title">Image Preview</div>
+            <button class="image-preview-close" onclick="closeImagePreview()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="image-preview-container">
+            <div class="image-preview-img-container" id="image-preview-wrapper">
+                <img src="" alt="Preview" id="preview-image" class="image-preview-img">
             </div>
-            <div class="modal-body image-preview-body">
-                <div class="image-preview-container">
-                    <div class="image-controls">
-                        <button id="zoom-in-btn" class="image-control-btn" title="Zoom In"><i class="fas fa-search-plus"></i></button>
-                        <button id="zoom-out-btn" class="image-control-btn" title="Zoom Out"><i class="fas fa-search-minus"></i></button>
-                        <button id="rotate-left-btn" class="image-control-btn" title="Rotate Left"><i class="fas fa-undo"></i></button>
-                        <button id="rotate-right-btn" class="image-control-btn" title="Rotate Right"><i class="fas fa-redo"></i></button>
-                        <button id="reset-image-btn" class="image-control-btn" title="Reset Image"><i class="fas fa-sync-alt"></i></button>
-                    </div>
-                    <div class="image-preview-wrapper">
-                        <img id="preview-image" src="" alt="Preview">
-                    </div>
-                </div>
-                <div class="image-preview-info">
-                    <div class="info-item">
-                        <span class="info-label">Size:</span>
-                        <span id="preview-size" class="info-value">-</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Date:</span>
-                        <span id="preview-date" class="info-value">-</span>
-                    </div>
-                </div>
+            <div class="image-controls">
+                <button class="image-control-button" id="zoom-in-btn" title="Zoom In">
+                    <i class="fas fa-search-plus"></i>
+                </button>
+                <button class="image-control-button" id="zoom-out-btn" title="Zoom Out">
+                    <i class="fas fa-search-minus"></i>
+                </button>
+                <button class="image-control-button" id="rotate-left-btn" title="Rotate Left">
+                    <i class="fas fa-undo"></i>
+                </button>
+                <button class="image-control-button" id="rotate-right-btn" title="Rotate Right">
+                    <i class="fas fa-redo"></i>
+                </button>
+                <button class="image-control-button" id="reset-image-btn" title="Reset">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" id="download-btn">
+        </div>
+        <div class="image-preview-footer">
+            <div class="image-preview-info">
+                <span id="preview-size">Unknown size</span>
+                <span id="preview-date">Unknown date</span>
+            </div>
+            <div class="image-preview-actions">
+                <button class="btn btn-secondary" onclick="downloadPreviewImage()">
                     <i class="fas fa-download"></i> Download
                 </button>
-                <button class="btn btn-secondary" id="analyze-btn">
+                <button class="btn btn-primary" onclick="analyzePreviewImage()">
                     <i class="fas fa-magic"></i> Analyze with AI
                 </button>
             </div>
@@ -1622,6 +2517,156 @@
             <div class="modal-footer">
                 <button class="btn" id="close-analysis-btn-footer">Close</button>
                 <button class="btn active" id="apply-tags-btn">Apply Tags</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="shortcuts-modal">
+        <div class="modal-content shortcuts-modal">
+            <div class="modal-header">
+                <h3>Keyboard Shortcuts</h3>
+                <button class="modal-close" id="close-shortcuts-btn">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="shortcuts-grid">
+                    <div class="shortcut-category">
+                        <div class="shortcut-category-title">Navigation</div>
+                        <div class="shortcut-item">
+                            <span>Go up one level</span>
+                            <div class="shortcut-keys">
+                                <span class="key">Backspace</span>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Open selected item</span>
+                            <div class="shortcut-keys">
+                                <span class="key">Enter</span>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Go to home</span>
+                            <div class="shortcut-keys">
+                                <span class="key">H</span>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Go to recent</span>
+                            <div class="shortcut-keys">
+                                <span class="key">R</span>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Go to favorites</span>
+                            <div class="shortcut-keys">
+                                <span class="key">F</span>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Go to permitted</span>
+                            <div class="shortcut-keys">
+                                <span class="key">P</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="shortcut-category">
+                        <div class="shortcut-category-title">Selection</div>
+                        <div class="shortcut-item">
+                            <span>Select all</span>
+                            <div class="shortcut-keys">
+                                <span class="key">Ctrl</span>
+                                <span>+</span>
+                                <span class="key">A</span>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Select multiple</span>
+                            <div class="shortcut-keys">
+                                <span class="key">Ctrl</span>
+                                <span>+</span>
+                                <span>Click</span>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Select range</span>
+                            <div class="shortcut-keys">
+                                <span class="key">Shift</span>
+                                <span>+</span>
+                                <span>Click</span>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Clear selection</span>
+                            <div class="shortcut-keys">
+                                <span class="key">Esc</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="shortcut-category">
+                        <div class="shortcut-category-title">Actions</div>
+                        <div class="shortcut-item">
+                            <span>Upload files</span>
+                            <div class="shortcut-keys">
+                                <span class="key">U</span>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>New folder</span>
+                            <div class="shortcut-keys">
+                                <span class="key">N</span>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Rename selected</span>
+                            <div class="shortcut-keys">
+                                <span class="key">F2</span>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Delete selected</span>
+                            <div class="shortcut-keys">
+                                <span class="key">Delete</span>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Search</span>
+                            <div class="shortcut-keys">
+                                <span class="key">Ctrl</span>
+                                <span>+</span>
+                                <span class="key">F</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="shortcut-category">
+                        <div class="shortcut-category-title">View</div>
+                        <div class="shortcut-item">
+                            <span>Grid view</span>
+                            <div class="shortcut-keys">
+                                <span class="key">G</span>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>List view</span>
+                            <div class="shortcut-keys">
+                                <span class="key">L</span>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Toggle sidebar</span>
+                            <div class="shortcut-keys">
+                                <span class="key">\</span>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Show shortcuts</span>
+                            <div class="shortcut-keys">
+                                <span class="key">?</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1712,9 +2757,12 @@
             });
 
             // File input change
-            fileInput.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) {
-                    uploadFiles(e.target.files);
+            fileInput.addEventListener('change', function(e) {
+                if (this.files.length > 0) {
+                    console.log(`File input change detected: ${this.files.length} files selected`);
+                    uploadFiles(this.files);
+                    // Reset the input so the same file can be uploaded again if needed
+                    this.value = '';
                 }
             });
 
@@ -1812,6 +2860,7 @@
                 const files = dt.files;
 
                 if (files.length > 0) {
+                    console.log(`Drop detected: ${files.length} files dropped`);
                     uploadFiles(files);
                 }
             }
@@ -2123,7 +3172,7 @@
                         <button class="modal-close">×</button>
                     </div>
                     <div class="modal-body">
-                        <p>Are you sure you want to delete ${itemCount} selected item${itemCount > 1 ? 's' : ''}?</p>
+                        <p>Are you sure you want to delete ${itemCount} selected item${itemCount !== 1 ? 's' : ''}?</p>
                         <p class="warning">This action cannot be undone.</p>
                     </div>
                     <div class="modal-footer">
@@ -2221,84 +3270,101 @@
         let currentPreviewItem = null;
 
         // Image preview variables
-        let currentZoom = 1;
-        let currentRotation = 0;
-        let isDragging = false;
-        let dragStartX = 0;
-        let dragStartY = 0;
+        let scale = 1;
+        let rotation = 0;
         let translateX = 0;
         let translateY = 0;
 
-        // Image control functions
+        // Zoom in
         function zoomIn() {
-            if (currentZoom < 3) { // max zoom 3x
-                currentZoom += 0.2;
+            if (scale < 3) { // max zoom 3x
+                scale += 0.2;
                 updateImageTransform();
             }
         }
 
+        // Zoom out
         function zoomOut() {
-            if (currentZoom > 0.5) { // min zoom 0.5x
-                currentZoom -= 0.2;
+            if (scale > 0.5) { // min zoom 0.5x
+                scale -= 0.2;
                 updateImageTransform();
             }
         }
 
+        // Rotate left
         function rotateLeft() {
-            currentRotation -= 90;
+            rotation -= 90;
             updateImageTransform();
         }
 
+        // Rotate right
         function rotateRight() {
-            currentRotation += 90;
+            rotation += 90;
             updateImageTransform();
         }
 
+        // Reset image transformations
         function resetImageTransforms() {
-            currentZoom = 1;
-            currentRotation = 0;
+            scale = 1;
+            rotation = 0;
             translateX = 0;
             translateY = 0;
             updateImageTransform();
         }
 
+        // Update image transform
         function updateImageTransform() {
             const previewImage = document.getElementById('preview-image');
-            previewImage.style.transform = `translate(${translateX}px, ${translateY}px) rotate(${currentRotation}deg) scale(${currentZoom})`;
+            previewImage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale}) rotate(${rotation}deg)`;
         }
 
         // Handle image drag
         function setupImageDrag() {
+            const imageWrapper = document.getElementById('image-preview-wrapper');
             const previewImage = document.getElementById('preview-image');
-            const imageWrapper = document.querySelector('.image-preview-wrapper');
-
+            
+            let isDragging = false;
+            let startX = 0;
+            let startY = 0;
+            let startTranslateX = 0;
+            let startTranslateY = 0;
+            
+            imageWrapper.style.cursor = 'grab';
+            
             imageWrapper.addEventListener('mousedown', (e) => {
-                if (currentZoom > 1) {
-                    isDragging = true;
-                    dragStartX = e.clientX - translateX;
-                    dragStartY = e.clientY - translateY;
-                    imageWrapper.style.cursor = 'grabbing';
-                }
+                if (e.button !== 0) return; // Only left mouse button
+                
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                startTranslateX = translateX;
+                startTranslateY = translateY;
+                
+                imageWrapper.style.cursor = 'grabbing';
+                e.preventDefault();
             });
-
-            imageWrapper.addEventListener('mousemove', (e) => {
-                if (isDragging) {
-                    translateX = e.clientX - dragStartX;
-                    translateY = e.clientY - dragStartY;
-                    updateImageTransform();
-                }
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                translateX = startTranslateX + (e.clientX - startX);
+                translateY = startTranslateY + (e.clientY - startY);
+                
+                updateImageTransform();
             });
-
-            imageWrapper.addEventListener('mouseup', () => {
+            
+            document.addEventListener('mouseup', () => {
                 isDragging = false;
                 imageWrapper.style.cursor = 'grab';
             });
-
+            
             imageWrapper.addEventListener('mouseleave', () => {
-                isDragging = false;
-                imageWrapper.style.cursor = 'grab';
+                if (isDragging) {
+                    isDragging = false;
+                    imageWrapper.style.cursor = 'grab';
+                }
             });
-
+            
             // Handle mouse wheel zoom
             imageWrapper.addEventListener('wheel', (e) => {
                 e.preventDefault();
@@ -2349,13 +3415,16 @@
 
                 // Add keyboard navigation
                 document.addEventListener('keydown', handleImageKeyboardControls);
+                
+                // Setup image drag functionality
+                setupImageDrag();
                 return;
             }
 
             // If file found, set all the details
             previewTitle.textContent = fileName;
             previewSize.textContent = formatSize(file.size);
-            previewDate.textContent = formatDate(file.modified);
+            previewDate.textContent = formatDate(file.modified || new Date());
 
             // Set image source
             previewImage.src = getFileUrl(path);
@@ -2369,6 +3438,9 @@
 
             // Add keyboard navigation
             document.addEventListener('keydown', handleImageKeyboardControls);
+            
+            // Setup image drag functionality
+            setupImageDrag();
         }
 
         // Handle keyboard controls for image preview
@@ -2439,9 +3511,6 @@
         document.getElementById('rotate-left-btn').addEventListener('click', rotateLeft);
         document.getElementById('rotate-right-btn').addEventListener('click', rotateRight);
         document.getElementById('reset-image-btn').addEventListener('click', resetImageTransforms);
-
-        // Set up image drag functionality
-        setupImageDrag();
 
         // AI Analysis functionality
         const aiAnalysisModal = document.getElementById('ai-analysis-modal');
@@ -2537,269 +3606,98 @@
             return `/api/collections/file/${encodedPath}?t=${Date.now()}`; // Add timestamp to prevent caching
         }
 
-        // Load collections from the API
+        // Load collections from the server
         function loadCollections() {
-            fetch(`/api/collections?path=${encodeURIComponent(currentPath)}`)
+            // Show loading indicator
+            const container = document.querySelector('.collections-grid');
+            container.innerHTML = `
+                <div class="loading-indicator">
+                    <i class="fas fa-spinner"></i>
+                    <div>Loading collections...</div>
+                </div>
+            `;
+            
+            // Get the current path
+            const path = currentPath || '';
+            console.log('Loading collections for path:', path);
+            
+            // Fetch collections from server
+            fetch(`/api/collections?path=${encodeURIComponent(path)}`)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Failed to load collections');
+                        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
                     }
                     return response.json();
                 })
                 .then(data => {
-                    collections = data.collections || [];
-                    sortCollections();
-                    displayCollections();
-                    updateBreadcrumb();
+                    console.log('Collections data received:', data);
+                    
+                    // Update breadcrumbs
+                    updateBreadcrumbs(path);
+                    
+                    // Update current path
+                    currentPath = path;
+                    
+                    // Display collections
+                    if (data.collections) {
+                        displayCollections(data.collections);
+                    } else {
+                        console.error('No collections data in response:', data);
+                        showError('Invalid server response');
+                    }
                 })
                 .catch(error => {
                     console.error('Error loading collections:', error);
-                    showToast('error', 'Error', 'Failed to load collections');
+                    showError(`Failed to load collections: ${error.message}`);
                 });
         }
-
-        // Sort collections based on current sort criteria
-        function sortCollections() {
-            collections.sort((a, b) => {
-                // Always put folders first
-                if (a.type === 'folder' && b.type !== 'folder') return -1;
-                if (a.type !== 'folder' && b.type === 'folder') return 1;
-
-                // Then sort by selected criteria
-                switch (sortBy) {
-                    case 'name':
-                        return a.name.localeCompare(b.name);
-                    case 'date':
-                        return new Date(b.modified) - new Date(a.modified);
-                    case 'size':
-                        return b.size - a.size;
-                    default:
-                        return a.name.localeCompare(b.name);
-                }
-            });
-        }
-
-        // Display collections in the grid
-        function displayCollections() {
-            collectionsGrid.innerHTML = '';
-
-            if (collections.length === 0) {
-                collectionsGrid.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i class="fas fa-folder-open"></i>
-                        </div>
-                        <h3>This folder is empty</h3>
-                        <p>Upload files or create a new folder to get started</p>
-                        <div class="empty-actions">
-                            <button class="btn active" onclick="fileInput.click()">
-                                <i class="fas fa-upload"></i> Upload Files
-                            </button>
-                            <button class="btn" onclick="openFolderModal()">
-                                <i class="fas fa-folder-plus"></i> New Folder
-                            </button>
-                        </div>
-                    </div>
-                `;
-                return;
-            }
-
-            collections.forEach(item => {
-                const isFolder = item.type === 'folder';
-                const itemPath = currentPath ? `${currentPath}/${item.name}` : item.name;
-
-                const itemElement = document.createElement('div');
-                itemElement.className = `collection-item ${currentViewMode === 'list' ? 'list-view' : ''}`;
-                itemElement.setAttribute('data-path', itemPath);
-                itemElement.setAttribute('data-type', item.type);
-
-                const icon = isFolder ? 'folder' : getFileIcon(item.name);
-                const size = isFolder ? `${item.items || 0} item${item.items !== 1 ? 's' : ''}` : formatSize(item.size);
-                const date = formatDate(item.modified);
-
-                itemElement.innerHTML = `
-                    <div class="collection-icon">
-                        <i class="fas fa-${icon}"></i>
-                    </div>
-                    <div class="collection-details">
-                        <div class="collection-name">${item.name}</div>
-                        <div class="collection-info">
-                            <span>${date}</span>
-                            <span>${size}</span>
-                        </div>
-                    </div>
-                    <div class="item-menu">
-                        <button class="item-menu-button" data-path="${itemPath}" aria-label="Menu">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                        <div class="item-dropdown">
-                            <div class="dropdown-item rename-item" data-path="${itemPath}">
-                                <i class="fas fa-edit"></i>
-                                <span>Rename</span>
-                            </div>
-                            <div class="dropdown-item delete-item" data-path="${itemPath}">
-                                <i class="fas fa-trash"></i>
-                                <span>Delete</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                // Add click event for opening folders or previewing files
-                itemElement.addEventListener('click', function(e) {
-                    // Don't open folder if clicking on menu or its children
-                    if (e.target.closest('.item-menu')) {
-                        return;
-                    }
-
-                    // Don't trigger if Ctrl or Shift key is pressed (for multi-select)
-                    if (e.ctrlKey || e.shiftKey || e.metaKey) {
-                        return;
-                    }
-
-                    if (isFolder) {
-                        navigateToFolder(itemPath);
-                    } else if (isImageFile(item.name)) {
-                        previewFile(itemPath);
-                    } else {
-                        window.open(getFileUrl(itemPath), '_blank');
-                    }
-                });
-
-                // Add click event for selection
-                itemElement.addEventListener('mousedown', (e) => {
-                    if (e.button === 0) { // Left click only
-                        handleItemSelection(itemElement, e);
-                    }
-                });
-
-                // Add menu button click handler directly to the button
-                const menuButton = itemElement.querySelector('.item-menu-button');
-                menuButton.addEventListener('click', function(e) {
-                    e.stopPropagation(); // Stop event from bubbling up
-
-                    // Close all other open dropdowns first
-                    document.querySelectorAll('.item-dropdown.show').forEach(dropdown => {
-                        if (dropdown !== this.nextElementSibling) {
-                            dropdown.classList.remove('show');
-                        }
-                    });
-
-                    // Toggle this dropdown
-                    const dropdown = this.nextElementSibling;
-                    dropdown.classList.toggle('show');
-
-                    // If dropdown is now shown, focus the first item
-                    if (dropdown.classList.contains('show')) {
-                        setTimeout(() => {
-                            const firstItem = dropdown.querySelector('.dropdown-item');
-                            if (firstItem) firstItem.focus();
-                        }, 100);
-                    }
-                });
-
-                // Add keyboard navigation for the dropdown
-                const dropdownItems = itemElement.querySelectorAll('.dropdown-item');
-                dropdownItems.forEach((item, index) => {
-                    item.setAttribute('tabindex', '0'); // Make focusable
-
-                    item.addEventListener('keydown', function(e) {
-                        // Handle keyboard navigation
-                        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-                            e.preventDefault();
-
-                            const items = Array.from(this.parentNode.querySelectorAll('.dropdown-item'));
-                            const currentIndex = items.indexOf(this);
-                            let nextIndex;
-
-                            if (e.key === 'ArrowDown') {
-                                nextIndex = (currentIndex + 1) % items.length;
-                            } else {
-                                nextIndex = (currentIndex - 1 + items.length) % items.length;
+        
+        // Update storage usage stats
+        function updateStorageUsage() {
+            fetch('/api/storage/usage')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const usageElement = document.querySelector('.storage-usage-bar-fill');
+                        const percentElement = document.querySelector('.storage-usage-percent');
+                        const detailsElement = document.querySelector('.storage-usage-details');
+                        
+                        if (usageElement && percentElement && detailsElement) {
+                            const usedPercent = (data.used / data.total) * 100;
+                            usageElement.style.width = `${usedPercent}%`;
+                            percentElement.textContent = `${Math.round(usedPercent)}%`;
+                            detailsElement.textContent = `${formatSize(data.used)} of ${formatSize(data.total)} used`;
+                            
+                            // Change color based on usage
+                            if (usedPercent > 90) {
+                                usageElement.style.backgroundColor = 'var(--danger)';
+                            } else if (usedPercent > 70) {
+                                usageElement.style.backgroundColor = 'var(--warning)';
                             }
-
-                            items[nextIndex].focus();
-                        } else if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            this.click();
-                        } else if (e.key === 'Escape') {
-                            e.preventDefault();
-                            this.closest('.item-dropdown').classList.remove('show');
-                            this.closest('.item-menu').querySelector('.item-menu-button').focus();
                         }
-                    });
-                });
-
-                // Add click handlers for dropdown items
-                const renameItem = itemElement.querySelector('.rename-item');
-                renameItem.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    // Close dropdown
-                    this.closest('.item-dropdown').classList.remove('show');
-                    // Start rename
-                    startRenameItem(this.getAttribute('data-path'));
-                });
-
-                const deleteItem = itemElement.querySelector('.delete-item');
-                deleteItem.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    // Close dropdown
-                    this.closest('.item-dropdown').classList.remove('show');
-                    // Confirm delete
-                    confirmDeleteItem(this.getAttribute('data-path'));
-                });
-
-                collectionsGrid.appendChild(itemElement);
-            });
-        }
-
-        // Update breadcrumb navigation
-        function updateBreadcrumb() {
-            breadcrumbContainer.innerHTML = '';
-
-            // Home / root item
-            const homeItem = document.createElement('a');
-            homeItem.href = '#';
-            homeItem.className = 'breadcrumb-item';
-            homeItem.innerHTML = '<i class="fas fa-home"></i>';
-            homeItem.addEventListener('click', (e) => {
-                e.preventDefault();
-                navigateToFolder('');
-            });
-
-            breadcrumbContainer.appendChild(homeItem);
-
-            // Path segments
-            if (currentPath) {
-                const segments = currentPath.split('/');
-                let path = '';
-
-                segments.forEach((segment, index) => {
-                    path += path ? `/${segment}` : segment;
-
-                    const item = document.createElement('a');
-                    item.href = '#';
-                    item.className = 'breadcrumb-item';
-                    item.textContent = segment;
-
-                    if (index < segments.length - 1) {
-                        item.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            navigateToFolder(path);
-                        });
                     }
-
-                    breadcrumbContainer.appendChild(item);
+                })
+                .catch(error => {
+                    console.error('Error fetching storage usage:', error);
                 });
-            }
         }
-
+        
         // Navigate to a folder
         function navigateToFolder(path) {
+            console.log('Navigating to folder:', path);
+            
+            // Update current path
             currentPath = path;
+            
+            // Update URL without reloading the page
+            const url = new URL(window.location.href);
+            url.searchParams.set('path', path);
+            window.history.pushState({path: path}, '', url);
+            
+            // Load collections for the new path
             loadCollections();
         }
-
+        
         // Set the view mode (grid or list)
         function setViewMode(mode) {
             currentViewMode = mode;
@@ -2813,7 +3711,7 @@
                 item.classList.toggle('list-view', mode === 'list');
             });
         }
-
+        
         // Open folder modal
         function openFolderModal() {
             folderModal.classList.add('show');
@@ -2821,13 +3719,13 @@
             folderNameInput.focus();
             document.body.classList.add('modal-open');
         }
-
+        
         // Close folder modal
         function closeFolderModal() {
             folderModal.classList.remove('show');
             document.body.classList.remove('modal-open');
         }
-
+        
         // Create a new folder
         function createFolder() {
             const folderName = folderNameInput.value.trim();
@@ -2837,32 +3735,55 @@
                 return;
             }
 
+            // Close the modal
+            document.getElementById('folder-modal').classList.remove('show');
+
+            // Show loading toast
+            const toastId = showToast('info', 'Creating Folder', 'Creating new folder...', 0);
+
+            // Create the folder
             fetch('/api/collections/folder', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    name: folderName,
-                    path: currentPath
+                    path: currentPath,
+                    name: folderName
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+                }
+                return response.json();
+            })
             .then(data => {
+                // Hide loading toast
+                hideToast(toastId);
+
                 if (data.success) {
-                    closeFolderModal();
-                    loadCollections(); // Reload to show new name
-                    showToast('success', 'Folder Created', `Folder "${folderName}" has been created`);
+                    showToast('success', 'Folder Created', `Folder "${folderName}" created successfully`);
+
+                    // Clear the input
+                    folderNameInput.value = '';
+
+                    // Refresh the collections
+                    console.log('Refreshing collections after folder creation');
+                    loadCollections();
                 } else {
                     showToast('error', 'Error', data.error || 'Failed to create folder');
                 }
             })
             .catch(error => {
+                // Hide loading toast
+                hideToast(toastId);
+
                 console.error('Error creating folder:', error);
-                showToast('error', 'Error', 'Failed to create folder');
+                showToast('error', 'Error', 'Failed to create folder: ' + error.message);
             });
         }
-
+        
         // Upload files
         function uploadFiles(files) {
             if (files.length === 0) return;
@@ -2872,7 +3793,10 @@
             progressContainer.className = 'upload-progress-container active';
             progressContainer.innerHTML = `
                 <div class="upload-progress-box">
-                    <div class="upload-progress-title">Uploading ${files.length} file${files.length > 1 ? 's' : ''}</div>
+                    <div class="upload-progress-header">
+                        <div class="upload-progress-title">Uploading ${files.length} file${files.length > 1 ? 's' : ''}</div>
+                        <button class="upload-progress-close"><i class="fas fa-times"></i></button>
+                    </div>
                     <div class="upload-progress-bar">
                         <div class="upload-progress-fill" style="width: 0%"></div>
                     </div>
@@ -2885,6 +3809,15 @@
             // Get progress bar elements
             const progressBar = progressContainer.querySelector('.upload-progress-fill');
             const progressStatus = progressContainer.querySelector('.upload-progress-status');
+            const closeButton = progressContainer.querySelector('.upload-progress-close');
+            
+            // Add close button functionality
+            closeButton.addEventListener('click', function() {
+                progressContainer.classList.remove('active');
+                setTimeout(() => {
+                    progressContainer.remove();
+                }, 300);
+            });
 
             // Create form data
             const formData = new FormData();
@@ -2920,59 +3853,47 @@
                         
                         // Show success message
                         if (response.success) {
-                            showToast('success', 'Upload Complete', `Successfully uploaded ${files.length} file${files.length > 1 ? 's' : ''}`);
+                            showToast('success', 'Upload Complete', `Successfully uploaded ${files.length} file${files.length !== 1 ? 's' : ''}`);
+                            
+                            // Automatically remove progress bar after 2 seconds
+                            setTimeout(() => {
+                                progressContainer.classList.remove('active');
+                                setTimeout(() => {
+                                    progressContainer.remove();
+                                }, 300);
+                            }, 2000);
+                            
+                            // Refresh the collection view
+                            loadCollections();
                         } else {
                             showToast('error', 'Upload Error', response.error || 'Failed to upload files');
+                            progressStatus.textContent = 'Upload failed';
+                            progressBar.style.backgroundColor = 'var(--danger)';
                         }
-                        
-                        // Refresh the current view
-                        loadCollections();
-                    } catch (e) {
-                        console.error('Error parsing upload response:', e);
+                    } catch (error) {
+                        console.error('Error parsing upload response:', error);
                         showToast('error', 'Upload Error', 'Failed to process server response');
+                        progressStatus.textContent = 'Upload failed';
+                        progressBar.style.backgroundColor = 'var(--danger)';
                     }
-
-                    // Clean up UI after a delay
-                    setTimeout(() => {
-                        progressContainer.classList.remove('active');
-                        setTimeout(() => {
-                            progressContainer.remove();
-                        }, 1000);
-                    }, 1000);
                 } else {
-                    progressStatus.textContent = 'Upload failed!';
-                    console.error('Upload failed:', xhr.responseText);
-                    showToast('error', 'Upload Failed', 'Server returned an error');
-
-                    // Clean up UI after a delay
-                    setTimeout(() => {
-                        progressContainer.classList.remove('active');
-                        setTimeout(() => {
-                            progressContainer.remove();
-                        }, 3000);
-                    }, 3000);
+                    progressStatus.textContent = 'Upload failed';
+                    progressBar.style.backgroundColor = 'var(--danger)';
+                    showToast('error', 'Upload Error', `Server returned status ${xhr.status}`);
                 }
             };
 
-            // Handle errors
+            // Handle network errors
             xhr.onerror = function() {
-                progressStatus.textContent = 'Network error!';
-                console.error('Network error during upload');
-                showToast('error', 'Upload Failed', 'Network error occurred');
-
-                // Clean up UI after a delay
-                setTimeout(() => {
-                    progressContainer.classList.remove('active');
-                    setTimeout(() => {
-                        progressContainer.remove();
-                    }, 3000);
-                }, 3000);
+                progressStatus.textContent = 'Network error';
+                progressBar.style.backgroundColor = 'var(--danger)';
+                showToast('error', 'Upload Error', 'Network error occurred');
             };
 
             // Send the data
             xhr.send(formData);
         }
-
+        
         // Get appropriate icon for file type
         function getFileIcon(filename) {
             const extension = filename.split('.').pop().toLowerCase();
@@ -3014,7 +3935,7 @@
 
             return iconMap[extension] || 'file';
         }
-
+        
         // Format file size in human-readable format
         function formatSize(bytes) {
             if (bytes === 0) return '0 B';
@@ -3025,7 +3946,7 @@
 
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
-
+        
         // Format date in human-readable format
         function formatDate(dateString) {
             const date = new Date(dateString);
@@ -3044,15 +3965,15 @@
                 return date.toLocaleDateString();
             }
         }
-
+        
         // Check if a file is an image based on extension
         function isImageFile(filename) {
             const extension = filename.split('.').pop().toLowerCase();
             return ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg'].includes(extension);
         }
-
+        
         // Show toast notification
-        function showToast(type, title, message) {
+        function showToast(type, title, message, duration = 3000) {
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
 
@@ -3104,9 +4025,9 @@
             // Auto close after 5 seconds
             setTimeout(() => {
                 closeToast(toast);
-            }, 5000);
+            }, duration);
         }
-
+        
         // Close toast notification
         function closeToast(toast) {
             toast.classList.remove('show');
@@ -3114,7 +4035,7 @@
                 toast.remove();
             }, 300);
         }
-
+        
         // Rename item function
         function startRenameItem(path) {
             const itemElement = document.querySelector(`.collection-item[data-path="${path}"]`);
@@ -3215,12 +4136,12 @@
             
             input.addEventListener('blur', handleRename);
         }
-
+        
         // Confirm and delete item
         function confirmDeleteItem(path) {
             // Get item name from path
             const name = path.split('/').pop();
-            
+
             // Create modal for confirmation
             const modal = document.createElement('div');
             modal.className = 'modal show';
@@ -3273,7 +4194,7 @@
                     document.body.classList.remove('modal-open');
                     
                     if (data.success) {
-                        showToast('success', 'Success', `Deleted "${name}"`);
+                        showToast('success', 'Deleted', `Item "${name}" has been deleted`);
                         loadCollections(); // Reload the collections
                     } else {
                         showToast('error', 'Error', data.error || 'Failed to delete item');
@@ -3295,6 +4216,349 @@
                 }
             });
         }
+        
+        // Update breadcrumbs based on current path
+        function updateBreadcrumbs(path) {
+            const breadcrumbContainer = document.querySelector('.breadcrumb');
+            breadcrumbContainer.innerHTML = '';
+            
+            // Add home breadcrumb
+            const homeBreadcrumb = document.createElement('li');
+            homeBreadcrumb.className = 'breadcrumb-item';
+            homeBreadcrumb.innerHTML = '<a href="#" data-path=""><i class="fas fa-home"></i> My Collections</a>';
+            homeBreadcrumb.querySelector('a').addEventListener('click', function() {
+                navigateToFolder('');
+            });
+            breadcrumbContainer.appendChild(homeBreadcrumb);
+            
+            // If we're at root, just return
+            if (!path) {
+                homeBreadcrumb.classList.add('active');
+                return;
+            }
+            
+            // Split path and create breadcrumb for each segment
+            const segments = path.split('/');
+            let currentPath = '';
+            
+            segments.forEach((segment, index) => {
+                currentPath += (index === 0 ? '' : '/') + segment;
+                
+                const breadcrumbItem = document.createElement('li');
+                breadcrumbItem.className = 'breadcrumb-item';
+                
+                if (index === segments.length - 1) {
+                    breadcrumbItem.classList.add('active');
+                    breadcrumbItem.textContent = segment;
+                } else {
+                    breadcrumbItem.innerHTML = `<a href="#" data-path="${currentPath}">${segment}</a>`;
+                    breadcrumbItem.querySelector('a').addEventListener('click', function() {
+                        navigateToFolder(this.getAttribute('data-path'));
+                    });
+                }
+                
+                breadcrumbContainer.appendChild(breadcrumbItem);
+            });
+        }
+        
+        // Show error message in the collections grid
+        function showError(message) {
+            const container = document.querySelector('.collections-grid');
+            container.innerHTML = `
+                <div class="error-state">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div class="error-message">${message}</div>
+                    <button class="btn btn-primary" onclick="loadCollections()">
+                        <i class="fas fa-sync-alt"></i> Try Again
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Display collections in the grid
+        function displayCollections(collections) {
+            const container = document.querySelector('.collections-grid');
+            container.innerHTML = '';
+            
+            // Check if collections array is empty
+            if (!collections || collections.length === 0) {
+                const emptyState = document.createElement('div');
+                emptyState.className = 'empty-folder-state';
+                emptyState.innerHTML = `
+                    <div class="empty-folder-icon">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <div class="empty-folder-text">This folder is empty</div>
+                    <p>Upload files or create a new folder to get started</p>
+                    <div class="empty-folder-actions">
+                        <button class="btn btn-primary" id="empty-upload-btn">
+                            <i class="fas fa-upload"></i> Upload Files
+                        </button>
+                        <button class="btn btn-secondary" id="empty-folder-btn">
+                            <i class="fas fa-folder-plus"></i> New Folder
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(emptyState);
+                
+                // Add event listeners to empty state buttons
+                setTimeout(() => {
+                    const uploadBtn = document.getElementById('empty-upload-btn');
+                    if (uploadBtn) {
+                        uploadBtn.addEventListener('click', function() {
+                            document.getElementById('file-input').click();
+                        });
+                    }
+                    
+                    const folderBtn = document.getElementById('empty-folder-btn');
+                    if (folderBtn) {
+                        folderBtn.addEventListener('click', function() {
+                            openFolderModal();
+                        });
+                    }
+                }, 100);
+                
+                return;
+            }
+            
+            // Create a grid container for the collection items
+            const gridContainer = document.createElement('div');
+            gridContainer.className = 'collections-items-grid';
+            container.appendChild(gridContainer);
+            
+            // Display each collection item
+            collections.forEach((item, index) => {
+                const isFolder = item.type === 'folder';
+                const itemPath = currentPath ? `${currentPath}/${item.name}` : item.name;
+                
+                const itemElement = document.createElement('div');
+                itemElement.className = 'collection-item';
+                itemElement.setAttribute('data-path', itemPath);
+                itemElement.setAttribute('data-type', item.type);
+                itemElement.setAttribute('draggable', 'true');
+                
+                // Determine the appropriate icon
+                const icon = isFolder ? 'folder' : getFileIcon(item.name);
+                
+                // Format size and date
+                const size = isFolder ? `${item.items || 0} item${item.items !== 1 ? 's' : ''}` : formatSize(item.size);
+                const date = formatDate(item.modified || new Date());
+                
+                // Create owner badge if available
+                let ownerBadge = '';
+                if (item.owner && item.owner !== currentUser) {
+                    ownerBadge = `<div class="owner-badge" title="Shared by ${item.owner}">${item.owner.charAt(0)}</div>`;
+                }
+                
+                itemElement.innerHTML = `
+                    <div class="collection-card">
+                        ${ownerBadge}
+                        <div class="collection-icon">
+                            <i class="fas fa-${icon}"></i>
+                        </div>
+                        <div class="collection-details">
+                            <div class="collection-name">${item.name}</div>
+                            <div class="collection-info">
+                                <span class="collection-date">${date}</span>
+                                <span class="collection-size">${size}</span>
+                            </div>
+                        </div>
+                        <div class="collection-actions">
+                            <button class="action-button preview-button" data-path="${itemPath}" title="Preview">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-button share-button" data-path="${itemPath}" title="Share">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                            <button class="action-button delete-button" data-path="${itemPath}" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // Add click event for opening folders or previewing files
+                itemElement.querySelector('.collection-card').addEventListener('click', function(e) {
+                    // Don't open if clicking on action buttons
+                    if (e.target.closest('.collection-actions')) {
+                        return;
+                    }
+                    
+                    if (isFolder) {
+                        navigateToFolder(itemPath);
+                    } else if (isImageFile(item.name)) {
+                        previewFile(itemPath);
+                    } else {
+                        window.open(`/api/collections/download?path=${encodeURIComponent(itemPath)}`, '_blank');
+                    }
+                });
+                
+                // Add event listeners for action buttons
+                setTimeout(() => {
+                    const previewBtn = itemElement.querySelector('.preview-button');
+                    if (previewBtn) {
+                        previewBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const path = this.getAttribute('data-path');
+                            if (isFolder) {
+                                navigateToFolder(path);
+                            } else if (isImageFile(item.name)) {
+                                previewFile(path);
+                            } else {
+                                window.open(`/api/collections/download?path=${encodeURIComponent(path)}`, '_blank');
+                            }
+                        });
+                    }
+                    
+                    const shareBtn = itemElement.querySelector('.share-button');
+                    if (shareBtn) {
+                        shareBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const path = this.getAttribute('data-path');
+                            // Implement share functionality
+                            showToast('info', 'Coming Soon', 'Sharing functionality will be available soon');
+                        });
+                    }
+                    
+                    const deleteBtn = itemElement.querySelector('.delete-button');
+                    if (deleteBtn) {
+                        deleteBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const path = this.getAttribute('data-path');
+                            confirmDeleteItem(path);
+                        });
+                    }
+                }, 100);
+                
+                // Add drag and drop event listeners
+                itemElement.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', itemPath);
+                    e.dataTransfer.effectAllowed = 'move';
+                    this.classList.add('dragging');
+                });
+                
+                itemElement.addEventListener('dragend', function() {
+                    this.classList.remove('dragging');
+                });
+                
+                // Add animation delay for staggered appearance
+                itemElement.style.animationDelay = `${index * 0.05}s`;
+                
+                gridContainer.appendChild(itemElement);
+            });
+            
+            // Make folders droppable
+            setTimeout(() => {
+                document.querySelectorAll('.collection-item[data-type="folder"]').forEach(folder => {
+                    folder.addEventListener('dragover', function(e) {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                        this.classList.add('drag-over');
+                    });
+                    
+                    folder.addEventListener('dragleave', function() {
+                        this.classList.remove('drag-over');
+                    });
+                    
+                    folder.addEventListener('drop', function(e) {
+                        e.preventDefault();
+                        this.classList.remove('drag-over');
+                        
+                        const sourcePath = e.dataTransfer.getData('text/plain');
+                        const targetPath = this.getAttribute('data-path');
+                        
+                        // Don't allow dropping on itself
+                        if (sourcePath === targetPath) {
+                            return;
+                        }
+                        
+                        // Move the item
+                        moveItem(sourcePath, targetPath);
+                    });
+                });
+            }, 200);
+            
+            // Make the collections grid itself droppable (for the current folder)
+            container.addEventListener('dragover', function(e) {
+                // Only allow dropping directly on the container, not on items
+                if (e.target === this || e.target.classList.contains('collections-items-grid')) {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    this.classList.add('drag-over');
+                }
+            });
+            
+            container.addEventListener('dragleave', function(e) {
+                // Only handle events directly on the container
+                if (e.target === this || e.target.classList.contains('collections-items-grid')) {
+                    this.classList.remove('drag-over');
+                }
+            });
+            
+            container.addEventListener('drop', function(e) {
+                // Only handle drops directly on the container
+                if (e.target === this || e.target.classList.contains('collections-items-grid')) {
+                    e.preventDefault();
+                    this.classList.remove('drag-over');
+                    
+                    const sourcePath = e.dataTransfer.getData('text/plain');
+                    // If we're dropping on the container, move to the current folder
+                    moveItem(sourcePath, currentPath);
+                }
+            });
+        }
+        
+        // Move an item to a new location
+        function moveItem(sourcePath, targetPath) {
+            // Show loading toast
+            const toastId = showToast('info', 'Moving...', 'Moving item to new location', 0);
+
+            // Call the API to move the item
+            fetch('/api/collections/move', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    source: sourcePath,
+                    target: targetPath
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide the loading toast
+                hideToast(toastId);
+
+                if (data.success) {
+                    showToast('success', 'Moved', 'Item moved successfully');
+                    // Refresh the collection view
+                    loadCollections();
+                } else {
+                    showToast('error', 'Error', data.error || 'Failed to move item');
+                }
+            })
+            .catch(error => {
+                // Hide the loading toast
+                hideToast(toastId);
+
+                console.error('Error moving item:', error);
+                showToast('error', 'Error', 'Failed to move item');
+            });
+        }
+        
+        // Initialize all components
+        function init() {
+            setupEventListeners();
+            setupDragAndDrop();
+            setupKeyboardShortcuts();
+            setupSidebarNavigation();
+            loadCollections();
+        }
+        
+        // Call init when the page is fully loaded
+        window.addEventListener('load', init);
     </script>
-</body>
-</html>
+    <script src="/static/js/image-preview-fix.js"></script>
+    </body>
+    </html>
