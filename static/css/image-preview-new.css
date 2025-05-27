@@ -1,0 +1,190 @@
+/* New Image Preview Modal Styles */
+#image-preview-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: 1050;
+    display: none;
+}
+
+#image-preview-modal.show {
+    display: flex;
+    flex-direction: column;
+}
+
+.image-preview-header {
+    padding: 16px 24px;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 1060;
+}
+
+.image-preview-title {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 500;
+    max-width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.image-preview-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.image-preview-close:hover {
+    opacity: 1;
+}
+
+.image-preview-container {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 20px 0;
+    width: 100%;
+    background-color: transparent;
+}
+
+#image-preview-wrapper {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    overflow: hidden;
+    background-color: transparent;
+}
+
+#preview-image {
+    max-height: 85vh;
+    max-width: 90%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    box-shadow: none;
+    transition: transform 0.2s ease;
+    transform-origin: center center;
+    background-color: transparent;
+}
+
+.image-controls {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 50px;
+    padding: 10px 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+
+.image-control-button {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.image-control-button:hover {
+    background-color: rgba(79, 70, 229, 0.8);
+}
+
+.image-preview-footer {
+    padding: 16px 24px;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 1060;
+}
+
+.image-preview-info {
+    color: white;
+    font-size: 0.9rem;
+    display: flex;
+    gap: 15px;
+}
+
+.image-preview-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.image-preview-action-btn {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.image-preview-action-btn:hover {
+    background-color: rgba(79, 70, 229, 0.8);
+}
+
+/* Fix for mobile devices */
+@media (max-width: 768px) {
+    #preview-image {
+        max-width: 95%;
+        max-height: 70vh;
+    }
+    
+    .image-controls {
+        bottom: 100px;
+        padding: 8px 15px;
+    }
+    
+    .image-control-button {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .image-preview-footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .image-preview-info {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .image-preview-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Viewer</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #000;
+            font-family: Arial, sans-serif;
+        }
+        
+        .viewer-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .viewer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+        }
+        
+        .viewer-title {
+            font-size: 18px;
+            font-weight: 500;
+            max-width: 70%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .viewer-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .viewer-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: transparent;
+        }
+        
+        .viewer-image {
+            max-height: 85vh;
+            max-width: 90%;
+            object-fit: contain;
+        }
+        
+        .viewer-footer {
+            display: flex;
+            justify-content: center;
+            padding: 15px 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            gap: 10px;
+        }
+        
+        .viewer-button {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .viewer-button:hover {
+            background-color: rgba(79, 70, 229, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="viewer-container">
+        <div class="viewer-header">
+            <div class="viewer-title" id="image-title">Image Viewer</div>
+            <button class="viewer-close" id="close-button">&times;</button>
+        </div>
+        <div class="viewer-content">
+            <img src="" alt="Image Preview" class="viewer-image" id="image-display">
+        </div>
+        <div class="viewer-footer">
+            <button class="viewer-button" id="download-button">Download</button>
+            <button class="viewer-button" id="analyze-button">Analyze with AI</button>
+            <button class="viewer-button" id="back-button">Back to Collections</button>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get elements
+            const imageDisplay = document.getElementById('image-display');
+            const imageTitle = document.getElementById('image-title');
+            const closeButton = document.getElementById('close-button');
+            const downloadButton = document.getElementById('download-button');
+            const analyzeButton = document.getElementById('analyze-button');
+            const backButton = document.getElementById('back-button');
+            
+            // Get image path from server or URL parameters
+            let imagePath = "{{ path }}";
+            
+            // If not provided by server, try URL parameters
+            if (!imagePath) {
+                const params = new URLSearchParams(window.location.search);
+                imagePath = params.get('path');
+            }
+            
+            const imageFileName = imagePath ? imagePath.split('/').pop() : 'Image';
+            
+            // Set title
+            document.title = imageFileName;
+            imageTitle.textContent = imageFileName;
+            
+            // Load image if path is provided
+            if (imagePath) {
+                const encodedPath = encodeURIComponent(imagePath);
+                const imageUrl = `/api/collections/file/${encodedPath}?t=${Date.now()}`;
+                imageDisplay.src = imageUrl;
+            }
+            
+            // Close button - go back to collections
+            closeButton.addEventListener('click', function() {
+                window.location.href = '/collections';
+            });
+            
+            // Back button - go back to collections
+            backButton.addEventListener('click', function() {
+                window.location.href = '/collections';
+            });
+            
+            // Download button
+            downloadButton.addEventListener('click', function() {
+                if (imagePath) {
+                    const encodedPath = encodeURIComponent(imagePath);
+                    const imageUrl = `/api/collections/file/${encodedPath}?t=${Date.now()}`;
+                    
+                    const a = document.createElement('a');
+                    a.href = imageUrl;
+                    a.download = imageFileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }
+            });
+            
+            // Analyze button
+            analyzeButton.addEventListener('click', function() {
+                if (imagePath) {
+                    // Redirect to the dedicated analyze route
+                    window.location.href = `/analyze-image?path=${encodeURIComponent(imagePath)}`;
+                }
+            });
+            
+            // Handle keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    window.location.href = '/collections';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
