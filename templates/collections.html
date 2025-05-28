@@ -857,6 +857,34 @@
             z-index: 2;
         }
 
+        /* Shared badge styles */
+        .shared-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: rgba(33, 150, 243, 0.9);
+            color: white;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            z-index: 2;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .shared-badge i {
+            margin-right: 4px;
+            font-size: 10px;
+        }
+        
+        .collections-items-list .shared-badge {
+            position: static;
+            margin-left: 8px;
+            font-size: 10px;
+            padding: 2px 6px;
+        }
+
         /* Item Menu */
         .item-menu {
             position: absolute;
@@ -2357,6 +2385,131 @@
             text-align: center;
             color: var(--text-secondary);
         }
+        
+        /* Three-dot menu */
+        .three-dot-menu {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 20;
+            opacity: 0.7;
+        }
+
+        .collection-item:hover .three-dot-menu {
+            opacity: 1;
+            background-color: var(--primary);
+        }
+
+        .three-dot-menu:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        /* List view menu positioning */
+        .collection-item.list-view .three-dot-menu {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .collection-item.list-view .three-dot-menu:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Dropdown menu styling */
+        .dropdown-menu {
+            position: absolute;
+            top: 45px;
+            right: 10px;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            padding: 8px 0;
+            min-width: 160px;
+            display: none;
+            z-index: 100;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+            animation: fadeInUp 0.2s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dropdown-item i {
+            font-size: 0.9rem;
+            width: 16px;
+            text-align: center;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .dropdown-item::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%, -50%);
+            transform-origin: 50% 50%;
+        }
+
+        .dropdown-item:focus::after,
+        .dropdown-item:active::after {
+            animation: ripple 0.6s ease-out;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            20% {
+                transform: scale(25, 25);
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
+        }
     </style>
 </head>
 <body>
@@ -2842,7 +2995,7 @@
     <script>
         // Global variables
         let currentPath = '';
-        let currentViewMode = 'grid'; // 'grid' or 'list'
+        let viewMode = 'grid'; // 'grid' or 'list'
         let sortBy = 'name'; // 'name', 'date', 'size'
         let collections = []; // Will store folders and files
 
@@ -2944,8 +3097,33 @@
             // Sort select
             sortSelect.addEventListener('change', () => {
                 sortBy = sortSelect.value;
-                sortCollections();
-                displayCollections();
+                if (window.collections) {
+                    // Sort the collections
+                    window.collections.sort((a, b) => {
+                        // Always put folders first
+                        if ((a.isDir || a.type === 'folder') && !(b.isDir || b.type === 'folder')) {
+                            return -1;
+                        }
+                        if (!(a.isDir || a.type === 'folder') && (b.isDir || b.type === 'folder')) {
+                            return 1;
+                        }
+                        
+                        // Sort by the selected criteria
+                        if (sortBy === 'name') {
+                            return a.name.localeCompare(b.name);
+                        } else if (sortBy === 'date') {
+                            return new Date(b.modifiedTime) - new Date(a.modifiedTime);
+                        } else if (sortBy === 'size') {
+                            if (a.isDir || a.type === 'folder') return -1;
+                            if (b.isDir || b.type === 'folder') return 1;
+                            return b.size - a.size;
+                        }
+                        return 0;
+                    });
+                    
+                    // Display the sorted collections
+                    displayCollections(window.collections);
+                }
             });
 
             // Selection panel buttons
@@ -2975,6 +3153,43 @@
                         dropdown.classList.remove('show');
                     });
                 }
+            });
+            
+            // Sidebar navigation
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all sidebar items
+                    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                    
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // Get the text content of the sidebar item
+                    const sectionName = this.textContent.trim();
+                    
+                    // Update the header title
+                    document.querySelector('.collections-header h1').textContent = sectionName;
+                    
+                    // Handle different sections
+                    if (sectionName === 'My Collections') {
+                        currentPath = '';
+                        loadCollections();
+                    } else if (sectionName === 'Recent') {
+                        currentPath = 'recent';
+                        loadCollections();
+                    } else if (sectionName === 'Favorites') {
+                        currentPath = 'favorites';
+                        loadCollections();
+                    } else if (sectionName === 'Permitted') {
+                        currentPath = 'shared';
+                        loadCollections();
+                    } else if (sectionName === 'Trash') {
+                        currentPath = 'trash';
+                        loadCollections();
+                    }
+                });
             });
         }
 
@@ -3192,6 +3407,7 @@
 
                     // Show appropriate menu items based on item type
                     customizeContextMenu(collectionItem);
+                    contextTarget = collectionItem;
                 }
             });
 
@@ -3868,7 +4084,7 @@
         
         // Set the view mode (grid or list)
         function setViewMode(mode) {
-            currentViewMode = mode;
+            viewMode = mode;
 
             // Update active button
             gridViewBtn.classList.toggle('active', mode === 'grid');
@@ -4444,236 +4660,213 @@
         }
         
         // Display collections in the grid
-        function displayCollections(collections) {
+        function displayCollections(collectionsData) {
             const container = document.querySelector('.collections-grid');
+            
+            // Clear previous content
             container.innerHTML = '';
             
-            // Check if collections array is empty
-            if (!collections || collections.length === 0) {
-                const emptyState = document.createElement('div');
-                emptyState.className = 'empty-folder-state';
-                emptyState.innerHTML = `
-                    <div class="empty-folder-icon">
-                        <i class="fas fa-folder-open"></i>
-                    </div>
-                    <div class="empty-folder-text">This folder is empty</div>
-                    <p>Upload files or create a new folder to get started</p>
-                    <div class="empty-folder-actions">
-                        <button class="btn btn-primary" id="empty-upload-btn">
-                            <i class="fas fa-upload"></i> Upload Files
-                        </button>
-                        <button class="btn btn-secondary" id="empty-folder-btn">
-                            <i class="fas fa-folder-plus"></i> New Folder
-                        </button>
+            // Check if collections is empty
+            if (!collectionsData || collectionsData.length === 0) {
+                // Show empty state
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                        <h3>This folder is empty</h3>
+                        <p>Upload files or create a new folder to get started</p>
+                        <div class="empty-actions">
+                            <button class="btn btn-primary" id="upload-empty-btn">
+                                <i class="fas fa-upload"></i> Upload Files
+                            </button>
+                            <button class="btn btn-secondary" id="new-folder-empty-btn">
+                                <i class="fas fa-folder-plus"></i> New Folder
+                            </button>
+                        </div>
                     </div>
                 `;
                 
-                container.appendChild(emptyState);
-                
                 // Add event listeners to empty state buttons
-                setTimeout(() => {
-                    const uploadBtn = document.getElementById('empty-upload-btn');
-                    if (uploadBtn) {
-                        uploadBtn.addEventListener('click', function() {
-                            document.getElementById('file-input').click();
-                        });
-                    }
-                    
-                    const folderBtn = document.getElementById('empty-folder-btn');
-                    if (folderBtn) {
-                        folderBtn.addEventListener('click', function() {
-                            openFolderModal();
-                        });
-                    }
-                }, 100);
+                document.getElementById('upload-empty-btn').addEventListener('click', () => {
+                    fileInput.click();
+                });
+                
+                document.getElementById('new-folder-empty-btn').addEventListener('click', () => {
+                    openFolderModal();
+                });
                 
                 return;
             }
             
-            // Create a grid container for the collection items
-            const gridContainer = document.createElement('div');
-            gridContainer.className = 'collections-items-grid';
-            container.appendChild(gridContainer);
+            // Store the collections for later use
+            window.collections = collectionsData;
             
-            // Display each collection item
-            collections.forEach((item, index) => {
-                const isFolder = item.type === 'folder';
-                const itemPath = currentPath ? `${currentPath}/${item.name}` : item.name;
-                
+            // Create items container based on view mode
+            const itemsContainer = document.createElement('div');
+            itemsContainer.className = viewMode === 'grid' ? 'collections-items-grid' : 'collections-items-list';
+            container.appendChild(itemsContainer);
+            
+            // Add items to the container
+            collectionsData.forEach((item, index) => {
+                // Create item element
                 const itemElement = document.createElement('div');
-                itemElement.className = 'collection-item';
-                itemElement.setAttribute('data-path', itemPath);
-                itemElement.setAttribute('data-type', item.type);
-                itemElement.setAttribute('draggable', 'true');
-                
-                // Determine the appropriate icon
-                const icon = isFolder ? 'folder' : getFileIcon(item.name);
-                
-                // Format size and date
-                const size = isFolder ? `${item.items || 0} item${item.items !== 1 ? 's' : ''}` : formatSize(item.size);
-                const date = formatDate(item.modified || new Date());
-                
-                // Create owner badge if available
-                let ownerBadge = '';
-                if (item.owner && item.owner !== currentUser) {
-                    ownerBadge = `<div class="owner-badge" title="Shared by ${item.owner}">${item.owner.charAt(0)}</div>`;
-                }
-                
-                itemElement.innerHTML = `
-                    <div class="collection-card">
-                        ${ownerBadge}
-                        <div class="collection-icon">
-                            <i class="fas fa-${icon}"></i>
-                        </div>
-                        <div class="collection-details">
-                            <div class="collection-name">${item.name}</div>
-                            <div class="collection-info">
-                                <span class="collection-date">${date}</span>
-                                <span class="collection-size">${size}</span>
-                            </div>
-                        </div>
-                        <div class="collection-actions">
-                            <button class="action-button preview-button" data-path="${itemPath}" title="Preview">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="action-button share-button" data-path="${itemPath}" title="Share">
-                                <i class="fas fa-share-alt"></i>
-                            </button>
-                            <button class="action-button delete-button" data-path="${itemPath}" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-                
-                // Add click event for opening folders or previewing files
-                itemElement.querySelector('.collection-card').addEventListener('click', function(e) {
-                    // Don't open if clicking on action buttons
-                    if (e.target.closest('.collection-actions')) {
-                        return;
-                    }
-                    
-                    if (isFolder) {
-                        navigateToFolder(itemPath);
-                    } else if (isImageFile(item.name)) {
-                        previewFile(itemPath);
-                    } else {
-                        window.open(`/api/collections/download?path=${encodeURIComponent(itemPath)}`, '_blank');
-                    }
-                });
-                
-                // Add event listeners for action buttons
-                setTimeout(() => {
-                    const previewBtn = itemElement.querySelector('.preview-button');
-                    if (previewBtn) {
-                        previewBtn.addEventListener('click', function(e) {
-                            e.stopPropagation();
-                            const path = this.getAttribute('data-path');
-                            if (isFolder) {
-                                navigateToFolder(path);
-                            } else if (isImageFile(item.name)) {
-                                previewFile(path);
-                            } else {
-                                window.open(`/api/collections/download?path=${encodeURIComponent(path)}`, '_blank');
-                            }
-                        });
-                    }
-                    
-                    const shareBtn = itemElement.querySelector('.share-button');
-                    if (shareBtn) {
-                        shareBtn.addEventListener('click', function(e) {
-                            e.stopPropagation();
-                            const path = this.getAttribute('data-path');
-                            openShareModal(path);
-                        });
-                    }
-                    
-                    const deleteBtn = itemElement.querySelector('.delete-button');
-                    if (deleteBtn) {
-                        deleteBtn.addEventListener('click', function(e) {
-                            e.stopPropagation();
-                            const path = this.getAttribute('data-path');
-                            confirmDeleteItem(path);
-                        });
-                    }
-                }, 100);
-                
-                // Add drag and drop event listeners
-                itemElement.addEventListener('dragstart', function(e) {
-                    e.dataTransfer.setData('text/plain', itemPath);
-                    e.dataTransfer.effectAllowed = 'move';
-                    this.classList.add('dragging');
-                });
-                
-                itemElement.addEventListener('dragend', function() {
-                    this.classList.remove('dragging');
-                });
+                itemElement.className = `collection-item ${item.isDir || item.type === 'folder' ? 'folder' : 'file'}`;
+                itemElement.setAttribute('data-path', item.path);
+                itemElement.setAttribute('data-name', item.name);
+                itemElement.setAttribute('data-type', item.isDir || item.type === 'folder' ? 'folder' : 'file');
                 
                 // Add animation delay for staggered appearance
                 itemElement.style.animationDelay = `${index * 0.05}s`;
                 
-                gridContainer.appendChild(itemElement);
-            });
-            
-            // Make folders droppable
-            setTimeout(() => {
-                document.querySelectorAll('.collection-item[data-type="folder"]').forEach(folder => {
-                    folder.addEventListener('dragover', function(e) {
-                        e.preventDefault();
-                        e.dataTransfer.dropEffect = 'move';
-                        this.classList.add('drag-over');
-                    });
+                // Create preview element
+                const previewElement = document.createElement('div');
+                previewElement.className = 'collection-preview';
+                
+                if (item.isDir || item.type === 'folder') {
+                    // Folder icon
+                    previewElement.innerHTML = '<i class="fas fa-folder"></i>';
+                } else if (item.isImage) {
+                    // Image thumbnail
+                    previewElement.innerHTML = `<img src="/api/collections/thumbnail?path=${encodeURIComponent(item.path)}" alt="${item.name}" loading="lazy">`;
+                } else {
+                    // File icon based on type
+                    const icon = getFileIcon(item.name);
+                    previewElement.innerHTML = `<i class="${icon}"></i>`;
+                }
+                
+                // Create info element
+                const infoElement = document.createElement('div');
+                infoElement.className = 'collection-info';
+                
+                // Add shared badge if applicable
+                let sharedBadge = '';
+                if (item.shared_by) {
+                    sharedBadge = `<div class="shared-badge" title="Shared by ${item.shared_by}"><i class="fas fa-user-shield"></i> Shared by ${item.shared_by}</div>`;
+                }
+                
+                // Format item info based on view mode
+                if (viewMode === 'grid') {
+                    infoElement.innerHTML = `
+                        <div class="collection-name">${item.name}</div>
+                        <div class="collection-meta">
+                            <span class="collection-date">${formatDate(item.modifiedTime)}</span>
+                            ${item.size ? `<span class="collection-size">${formatSize(item.size)}</span>` : ''}
+                        </div>
+                        ${sharedBadge}
+                    `;
+                } else {
+                    infoElement.innerHTML = `
+                        <div class="collection-name">${item.name}</div>
+                        <div class="collection-meta">
+                            <span class="collection-date">${formatDate(item.modifiedTime)}</span>
+                            ${item.size ? `<span class="collection-size">${formatSize(item.size)}</span>` : ''}
+                            ${sharedBadge}
+                        </div>
+                    `;
+                }
+                
+                // Create actions element for list view
+                const actionsElement = document.createElement('div');
+                actionsElement.className = 'collection-actions';
+                
+                // Add preview button for files
+                if (!item.isDir && item.type !== 'folder') {
+                    const previewBtn = document.createElement('button');
+                    previewBtn.className = 'action-btn preview-button';
+                    previewBtn.innerHTML = '<i class="fas fa-eye"></i>';
+                    previewBtn.setAttribute('title', 'Preview');
+                    previewBtn.setAttribute('data-path', item.path);
+                    actionsElement.appendChild(previewBtn);
                     
-                    folder.addEventListener('dragleave', function() {
-                        this.classList.remove('drag-over');
+                    // Add preview event listener
+                    previewBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const path = this.getAttribute('data-path');
+                        previewFile(path);
                     });
+                }
+                
+                // Add share button
+                const shareBtn = document.createElement('button');
+                shareBtn.className = 'action-btn share-button';
+                shareBtn.innerHTML = '<i class="fas fa-share-alt"></i>';
+                shareBtn.setAttribute('title', 'Share');
+                shareBtn.setAttribute('data-path', item.path);
+                
+                // Only add share button if not already shared with this user
+                if (!item.shared_by) {
+                    actionsElement.appendChild(shareBtn);
                     
-                    folder.addEventListener('drop', function(e) {
-                        e.preventDefault();
-                        this.classList.remove('drag-over');
-                        
-                        const sourcePath = e.dataTransfer.getData('text/plain');
-                        const targetPath = this.getAttribute('data-path');
-                        
-                        // Don't allow dropping on itself
-                        if (sourcePath === targetPath) {
-                            return;
-                        }
-                        
-                        // Move the item
-                        moveItem(sourcePath, targetPath);
+                    // Add share event listener
+                    shareBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const path = this.getAttribute('data-path');
+                        openShareModal(path);
                     });
+                }
+                
+                // Add delete button
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'action-btn delete-button';
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteBtn.setAttribute('title', 'Delete');
+                deleteBtn.setAttribute('data-path', item.path);
+                actionsElement.appendChild(deleteBtn);
+                
+                // Add delete event listener
+                deleteBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const path = this.getAttribute('data-path');
+                    confirmDeleteItem(path);
                 });
-            }, 200);
-            
-            // Make the collections grid itself droppable (for the current folder)
-            container.addEventListener('dragover', function(e) {
-                // Only allow dropping directly on the container, not on items
-                if (e.target === this || e.target.classList.contains('collections-items-grid')) {
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = 'move';
-                    this.classList.add('drag-over');
+                
+                // Assemble item element
+                itemElement.appendChild(previewElement);
+                itemElement.appendChild(infoElement);
+                
+                if (viewMode === 'list') {
+                    itemElement.appendChild(actionsElement);
                 }
-            });
-            
-            container.addEventListener('dragleave', function(e) {
-                // Only handle events directly on the container
-                if (e.target === this || e.target.classList.contains('collections-items-grid')) {
-                    this.classList.remove('drag-over');
-                }
-            });
-            
-            container.addEventListener('drop', function(e) {
-                // Only handle drops directly on the container
-                if (e.target === this || e.target.classList.contains('collections-items-grid')) {
-                    e.preventDefault();
-                    this.classList.remove('drag-over');
+                
+                // Add click event to navigate to folder or preview file
+                itemElement.addEventListener('click', function() {
+                    const path = this.getAttribute('data-path');
+                    const type = this.getAttribute('data-type');
                     
-                    const sourcePath = e.dataTransfer.getData('text/plain');
-                    // If we're dropping on the container, move to the current folder
-                    moveItem(sourcePath, currentPath);
-                }
+                    if (type === 'folder') {
+                        navigateToFolder(path);
+                    } else {
+                        previewFile(path);
+                    }
+                });
+                
+                // Add context menu
+                itemElement.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    positionContextMenu(e.clientX, e.clientY);
+                    customizeContextMenu(this);
+                    contextTarget = this;
+                });
+                
+                // Add to container
+                itemsContainer.appendChild(itemElement);
             });
+            
+            // Add event listeners for empty state buttons
+            const uploadEmptyBtn = document.getElementById('upload-empty-btn');
+            if (uploadEmptyBtn) {
+                uploadEmptyBtn.addEventListener('click', () => {
+                    fileInput.click();
+                });
+            }
+            
+            const newFolderEmptyBtn = document.getElementById('new-folder-empty-btn');
+            if (newFolderEmptyBtn) {
+                newFolderEmptyBtn.addEventListener('click', () => {
+                    openFolderModal();
+                });
+            }
         }
         
         // Move an item to a new location
@@ -4727,6 +4920,8 @@
         window.addEventListener('load', init);
     </script>
     <script src="/static/js/share-functionality.js"></script>
+    <script src="/static/js/three-dot-menu.js"></script>
     <script src="/static/js/image-preview-fix.js"></script>
+    <script src="/static/js/collections-fixed.js"></script>
     </body>
     </html>

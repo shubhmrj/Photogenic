@@ -1330,7 +1330,8 @@ def ai_image_generation_page():
 @app.route('/collections')
 @login_required
 def collections_page():
-    return render_template('collections.html', user=current_user)
+    # Pass the fixed CSS and JS files to the template
+    return render_template('collections.html', user=current_user, use_fixed_collections=True)
 
 @app.route('/api/collections', methods=['GET'])
 @login_required
@@ -1388,13 +1389,56 @@ def get_collections():
             # Get files shared with this user
             shared_files = SharedFile.query.filter_by(shared_with_id=user_id).all()
             
+            app.logger.info(f"Found {len(shared_files)} shared files for user {user_id}")
+            
             for shared in shared_files:
-                # Get the collection entry
-                collection = Collection.query.filter_by(path=shared.path, owner_id=shared.owner_id).first()
-                if collection:
-                    item_dict = collection.to_dict()
-                    item_dict['shared_by'] = User.query.get(shared.owner_id).username
+                try:
+                    # Get the owner's username
+                    owner = User.query.get(shared.owner_id)
+                    if not owner:
+                        app.logger.warning(f"Owner not found for shared file: {shared.path}, owner_id: {shared.owner_id}")
+                        continue
+                    
+                    # For files, check if they exist in the owner's directory
+                    owner_path = os.path.join(get_user_collections_dir(shared.owner_id), shared.path.lstrip('/'))
+                    
+                    if not os.path.exists(owner_path):
+                        app.logger.warning(f"Shared file not found: {owner_path}")
+                        continue
+                    
+                    # Check if there's a collection entry
+                    collection = Collection.query.filter_by(path=shared.path, owner_id=shared.owner_id).first()
+                    
+                    if collection:
+                        # Use the collection entry
+                        item_dict = collection.to_dict()
+                    else:
+                        # Create a dictionary with file information
+                        is_dir = os.path.isdir(owner_path)
+                        filename = os.path.basename(shared.path)
+                        
+                        item_dict = {
+                            'name': filename,
+                            'path': shared.path,
+                            'type': 'folder' if is_dir else 'file',
+                            'isDir': is_dir,
+                            'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat()
+                        }
+                        
+                        # Add size for files
+                        if not is_dir:
+                            item_dict['size'] = os.path.getsize(owner_path)
+                            
+                            # Mark as image if it's an image file
+                            if is_image_file(filename):
+                                item_dict['isImage'] = True
+                    
+                    # Add owner information
+                    item_dict['shared_by'] = owner.username
                     items.append(item_dict)
+                    
+                except Exception as e:
+                    app.logger.error(f"Error processing shared file {shared.path}: {str(e)}")
         
         # Normal directory listing
         else:
@@ -2242,7 +2286,7 @@ def google_authorized():
 # API endpoint for user search
 @app.route('/api/users/search', methods=['GET'])
 def api_search_users():
-    query = request.args.get('query', '')
+    query = request.args.get('q', '')
     if not query or len(query) < 2:
         return jsonify({
             'success': False,
@@ -2251,8 +2295,7 @@ def api_search_users():
         })
     
     # Search for users (excluding the current user)
-    # In a real app, you'd use the current logged-in user's ID
-    current_user_id = 1  # Assuming user ID 1 is the logged-in user
+    current_user_id = current_user.id if current_user.is_authenticated else 0
     
     users = User.query.filter(
         User.id != current_user_id,
@@ -2263,7 +2306,7 @@ def api_search_users():
         'id': user.id,
         'username': user.username,
         'email': user.email,
-        'profile_image': user.profile_image
+        'profile_image': user.profile_image if hasattr(user, 'profile_image') else None
     } for user in users]
     
     return jsonify({
@@ -2423,6 +2466,96 @@ def delete_collection_item():
     except Exception as e:
         app.logger.error(f"Error in delete operation: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
+
+@app.route('/api/collections/share', methods=['POST'])
+@login_required
+def share_collection_item():
+    data = request.json
+    path = data.get('path')
+    users = data.get('users', [])
+    
+    if not path or not users:
+        return jsonify({
+            'success': False,
+            'message': 'Missing required parameters'
+        }), 400
+    
+    # Verify the path exists and belongs to the current user
+    full_path = os.path.join(get_user_collections_dir(current_user.id), path.lstrip('/'))
+    if not os.path.exists(full_path):
+        return jsonify({
+            'success': False,
+            'message': 'Item not found'
+        }), 404
+    
+    if not verify_collection_ownership(path, current_user.id):
+        return jsonify({
+            'success': False,
+            'message': 'You do not have permission to share this item'
+        }), 403
+    
+    # Check if the path is a file or folder
+    is_folder = os.path.isdir(full_path)
+    
+    # Share with each user
+    shared_with = []
+    failed = []
+    
+    for username in users:
+        # Find the user
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            failed.append({
+                'username': username,
+                'reason': 'User not found'
+            })
+            continue
+        
+        # Don't share with yourself
+        if user.id == current_user.id:
+            failed.append({
+                'username': username,
+                'reason': 'Cannot share with yourself'
+            })
+            continue
+        
+        # Check if already shared
+        existing_share = SharedFile.query.filter_by(
+            path=path,
+            owner_id=current_user.id,
+            shared_with_id=user.id
+        ).first()
+        
+        if existing_share:
+            # Update timestamp if already shared
+            existing_share.created_at = datetime.utcnow()
+            shared_with.append(username)
+        else:
+            # Create new share record
+            share = SharedFile(
+                path=path,
+                is_folder=is_folder,
+                owner_id=current_user.id,
+                shared_with_id=user.id
+            )
+            db.session.add(share)
+            shared_with.append(username)
+    
+    # Commit changes to database
+    try:
+        db.session.commit()
+        return jsonify({
+            'success': True,
+            'message': f'Shared with {len(shared_with)} users',
+            'shared_with': shared_with,
+            'failed': failed
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'message': f'Error sharing item: {str(e)}'
+        }), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

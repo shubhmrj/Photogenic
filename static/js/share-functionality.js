@@ -2,6 +2,9 @@
 let currentSharePath = '';
 let selectedUsers = new Set();
 
+// Get current user from the page
+const currentUser = document.querySelector('.user-name')?.textContent.trim() || '';
+
 // Open share modal
 function openShareModal(path) {
     currentSharePath = path;
@@ -39,31 +42,7 @@ function loadUsers(searchTerm = '') {
     // Show loading state
     shareUsersList.innerHTML = '<div class="loading-indicator"><i class="fas fa-spinner fa-spin"></i> Loading users...</div>';
     
-    // Fetch users from server - using a mock response for now
-    // In production, replace with actual API endpoint
-    setTimeout(() => {
-        // Mock users data - replace with actual API call
-        const mockUsers = [
-            { username: 'user1', email: 'user1@example.com' },
-            { username: 'user2', email: 'user2@example.com' },
-            { username: 'admin', email: 'admin@example.com' },
-            { username: 'john', email: 'john@example.com' },
-            { username: 'jane', email: 'jane@example.com' }
-        ];
-        
-        // Filter by search term if provided
-        const filteredUsers = searchTerm 
-            ? mockUsers.filter(u => 
-                u.username.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                u.email.toLowerCase().includes(searchTerm.toLowerCase())
-              )
-            : mockUsers;
-        
-        displayUsers(filteredUsers);
-    }, 500);
-    
-    // When API is ready, use this instead:
-    /*
+    // Fetch users from server
     fetch(`/api/users/search?q=${encodeURIComponent(searchTerm)}`)
         .then(response => {
             if (!response.ok) {
@@ -71,18 +50,25 @@ function loadUsers(searchTerm = '') {
             }
             return response.json();
         })
-        .then(users => {
-            displayUsers(users);
+        .then(response => {
+            displayUsers(response);
         })
         .catch(error => {
             shareUsersList.innerHTML = `<div class="no-users-message"><i class="fas fa-exclamation-circle"></i> ${error.message}</div>`;
         });
-    */
 }
 
 // Display users in the list
-function displayUsers(users) {
+function displayUsers(response) {
     const shareUsersList = document.getElementById('share-users-list');
+    
+    // Check if the API call was successful
+    if (!response.success) {
+        shareUsersList.innerHTML = `<div class="no-users-message"><i class="fas fa-exclamation-circle"></i> ${response.message || 'Error loading users'}</div>`;
+        return;
+    }
+    
+    const users = response.users;
     
     if (!users || users.length === 0) {
         shareUsersList.innerHTML = '<div class="no-users-message">No users found</div>';
@@ -92,7 +78,7 @@ function displayUsers(users) {
     shareUsersList.innerHTML = '';
     
     users.forEach(user => {
-        // Skip current user
+        // Skip current user if somehow included
         if (user.username === currentUser) {
             return;
         }
