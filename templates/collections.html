@@ -6,6 +6,7 @@
     <title>PhotoGeni | Collections</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/share-modal.css">
     <style>
         :root {
             --primary: #4f46e5;
@@ -425,7 +426,7 @@
         }
         
         .user-dropdown-item:hover {
-            background-color: rgba(255, 255, 255, 0.08);
+            background-color: var(--item-hover-bg);
         }
         
         .user-dropdown-item::after {
@@ -2254,6 +2255,108 @@
             border: 2px dashed var(--primary);
             border-radius: var(--radius-lg);
         }
+        
+        /* Share modal styles */
+        .share-users-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .share-users-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-secondary);
+        }
+        
+        .share-user-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: var(--transition-normal);
+        }
+        
+        .share-user-item:last-child {
+            border-bottom: none;
+        }
+        
+        .share-user-item:hover {
+            background-color: var(--item-hover-bg);
+        }
+        
+        .share-user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            margin-right: 12px;
+        }
+        
+        .share-user-details {
+            flex: 1;
+        }
+        
+        .share-user-name {
+            font-weight: 500;
+            color: var(--text-main);
+        }
+        
+        .share-user-email {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .share-user-action {
+            margin-left: auto;
+        }
+        
+        .share-selected-users {
+            margin-top: 20px;
+        }
+        
+        .selected-users-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .selected-user-tag {
+            display: flex;
+            align-items: center;
+            background-color: var(--primary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .selected-user-tag .remove-user {
+            margin-left: 8px;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        
+        .selected-user-tag .remove-user:hover {
+            opacity: 1;
+        }
+        
+        .no-users-message {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
     </style>
 </head>
 <body>
@@ -3592,7 +3695,9 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ path })
+                body: JSON.stringify({
+                    path: path
+                })
             })
             .then(response => {
                 if (!response.ok) {
@@ -4479,8 +4584,7 @@
                         shareBtn.addEventListener('click', function(e) {
                             e.stopPropagation();
                             const path = this.getAttribute('data-path');
-                            // Implement share functionality
-                            showToast('info', 'Coming Soon', 'Sharing functionality will be available soon');
+                            openShareModal(path);
                         });
                     }
                     
@@ -4622,6 +4726,7 @@
         // Call init when the page is fully loaded
         window.addEventListener('load', init);
     </script>
+    <script src="/static/js/share-functionality.js"></script>
     <script src="/static/js/image-preview-fix.js"></script>
     </body>
     </html>
