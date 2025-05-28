@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhotoGeni Collaboration Invitation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .logo {
+            max-width: 150px;
+            height: auto;
+        }
+        .content {
+            padding: 30px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #4a90e2;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .button:hover {
+            background: #357abd;
+        }
+        .footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .permission-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #e3f2fd;
+            color: #1976d2;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+        .expiry {
+            color: #666;
+            font-style: italic;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="{{ url_for('static', filename='images/logo.png', _external=True) }}" alt="PhotoGeni" class="logo">
+    </div>
+    
+    <div class="content">
+        <h2>You're Invited to Collaborate!</h2>
+        
+        <p>Hi there,</p>
+        
+        <p><strong>{{ owner.name }}</strong> has invited you to collaborate on PhotoGeni. You'll have access to shared files with the following permission:</p>
+        
+        <div class="permission-badge">
+            {{ permission|title }} Access
+        </div>
+        
+        <p>Click the button below to accept the invitation and access the shared items:</p>
+        
+        <a href="{{ invite_url }}" class="button">Accept Invitation</a>
+        
+        <p class="expiry">This invitation expires on {{ expires_at.strftime('%B %d, %Y') }}</p>
+        
+        <p>If you don't have a PhotoGeni account yet, don't worry! You'll be able to create one after clicking the invitation link.</p>
+    </div>
+    
+    <div class="footer">
+        <p>This is an automated message from PhotoGeni. Please do not reply to this email.</p>
+        <p>&copy; {{ expires_at.year }} PhotoGeni. All rights reserved.</p>
+    </div>
+</body>
+</html>
