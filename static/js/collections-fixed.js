@@ -430,9 +430,38 @@ function displayCollections(collectionsData) {
         if (item.isDir || item.type === 'folder') {
             previewElement.innerHTML = '<i class="fas fa-folder"></i>';
         } else if (item.isImage) {
-            // For images, show a thumbnail
-            const thumbnailUrl = getFileUrl(item.path);
-            previewElement.innerHTML = `<img src="${thumbnailUrl}" alt="${item.name}" loading="lazy">`;
+            // For images, show a thumbnail with loading animation
+            previewElement.innerHTML = `
+                <div class="thumbnail-loading">
+                    <div class="spinner"></div>
+                </div>
+                <img 
+                    src="${getFileUrl(item.path)}" 
+                    alt="${item.name}" 
+                    loading="lazy"
+                    onload="this.parentNode.querySelector('.thumbnail-loading')?.remove()"
+                    onerror="this.onerror=null; this.src='/static/images/image-error.png';"
+                >
+                <div class="image-overlay">
+                    <button class="overlay-btn preview-btn" title="Preview"><i class="fas fa-eye"></i></button>
+                    <button class="overlay-btn download-btn" title="Download"><i class="fas fa-download"></i></button>
+                </div>
+            `;
+            
+            // Add event listeners to overlay buttons
+            setTimeout(() => {
+                const overlayBtns = previewElement.querySelectorAll('.overlay-btn');
+                overlayBtns.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (btn.classList.contains('preview-btn')) {
+                            previewImage(item.path, item.name);
+                        } else if (btn.classList.contains('download-btn')) {
+                            downloadItem(item.path, item.name);
+                        }
+                    });
+                });
+            }, 100);
         } else {
             // For other files, show an icon based on extension
             const extension = item.name.split('.').pop().toLowerCase();
@@ -1058,35 +1087,239 @@ function addToFavorites(path) {
 function analyzeImage(path) {
     console.log('Analyzing image:', path);
     
-    // Show loading
-    alert('Analyzing image... This may take a moment.');
+    // Show loading toast
+    const toastId = showToast('info', 'Analyzing Image', 'Processing your image...', 0);
     
-    // Send analysis request
-    fetch('/api/ai/analyze-image', {
+    // Create or get the analysis modal
+    let analysisModal = document.getElementById('analysis-modal');
+    if (!analysisModal) {
+        analysisModal = document.createElement('div');
+        analysisModal.id = 'analysis-modal';
+        analysisModal.className = 'modal';
+        
+        analysisModal.innerHTML = `
+            <div class="modal-content analysis-modal">
+                <div class="modal-header">
+                    <h3>Image Analysis</h3>
+                    <button class="modal-close" id="close-analysis-btn">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="analysis-loading">
+                        <div class="analysis-spinner"></div>
+                        <p>Analyzing your image...</p>
+                    </div>
+                    <div class="analysis-results" style="display: none;">
+                        <div class="analysis-image-container">
+                            <img src="" alt="Analyzed Image" id="analysis-image">
+                        </div>
+                        <div class="analysis-tags-container">
+                            <h4>AI-Generated Tags</h4>
+                            <div class="analysis-tags" id="analysis-tags"></div>
+                            <button class="btn btn-primary" id="apply-tags-btn">Apply Tags</button>
+                        </div>
+                        <div class="analysis-details">
+                            <h4>Image Details</h4>
+                            <div id="analysis-details-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(analysisModal);
+        
+        // Add event listeners
+        document.getElementById('close-analysis-btn').addEventListener('click', closeAnalysisModal);
+        document.getElementById('apply-tags-btn').addEventListener('click', applyAITags);
+    }
+    
+    // Show the modal
+    analysisModal.style.display = 'flex';
+    
+    // Show loading state
+    const loadingElement = document.querySelector('.analysis-loading');
+    const resultsElement = document.querySelector('.analysis-results');
+    if (loadingElement && resultsElement) {
+        loadingElement.style.display = 'flex';
+        resultsElement.style.display = 'none';
+    }
+    
+    // Set the image source
+    const analysisImage = document.getElementById('analysis-image');
+    if (analysisImage) {
+        analysisImage.src = getFileUrl(path);
+    }
+    
+    // Call the API to analyze the image
+    fetch(`/api/analyze?path=${encodeURIComponent(path)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to analyze image');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Close the loading toast
+            closeToast(document.getElementById(toastId));
+            
+            // Display the analysis results
+            displayAnalysisResults(data, path);
+        })
+        .catch(error => {
+            // Close the loading toast
+            closeToast(document.getElementById(toastId));
+            
+            // Show error toast
+            showToast('error', 'Analysis Failed', error.message, 5000);
+            
+            // Close the modal
+            closeAnalysisModal();
+        });
+}
+
+// Function to display analysis results with improved UI
+function displayAnalysisResults(results, path) {
+    // Hide loading, show results
+    const loadingElement = document.querySelector('.analysis-loading');
+    const resultsElement = document.querySelector('.analysis-results');
+    if (loadingElement && resultsElement) {
+        loadingElement.style.display = 'none';
+        resultsElement.style.display = 'block';
+    }
+    
+    // Display tags
+    const tagsContainer = document.getElementById('analysis-tags');
+    if (tagsContainer) {
+        tagsContainer.innerHTML = '';
+        
+        if (results.tags && results.tags.length > 0) {
+            results.tags.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'tag';
+                tagElement.textContent = tag;
+                tagElement.setAttribute('data-tag', tag);
+                tagsContainer.appendChild(tagElement);
+                
+                // Add click event to toggle tag selection
+                tagElement.addEventListener('click', function() {
+                    this.classList.toggle('selected');
+                });
+            });
+        } else {
+            tagsContainer.innerHTML = '<p>No tags found</p>';
+        }
+    }
+    
+    // Display details
+    const detailsContainer = document.getElementById('analysis-details-content');
+    if (detailsContainer) {
+        let detailsHTML = '<table class="analysis-details-table">';
+        
+        // Add file details
+        detailsHTML += `
+            <tr>
+                <td>Filename</td>
+                <td>${path.split('/').pop()}</td>
+            </tr>
+        `;
+        
+        // Add dimensions if available
+        if (results.dimensions) {
+            detailsHTML += `
+                <tr>
+                    <td>Dimensions</td>
+                    <td>${results.dimensions.width} × ${results.dimensions.height}</td>
+                </tr>
+            `;
+        }
+        
+        // Add file size if available
+        if (results.size) {
+            detailsHTML += `
+                <tr>
+                    <td>File Size</td>
+                    <td>${formatSize(results.size)}</td>
+                </tr>
+            `;
+        }
+        
+        // Add other metadata
+        if (results.metadata) {
+            for (const [key, value] of Object.entries(results.metadata)) {
+                detailsHTML += `
+                    <tr>
+                        <td>${key}</td>
+                        <td>${value}</td>
+                    </tr>
+                `;
+            }
+        }
+        
+        detailsHTML += '</table>';
+        detailsContainer.innerHTML = detailsHTML;
+    }
+    
+    // Store the path for apply tags function
+    document.getElementById('apply-tags-btn').setAttribute('data-path', path);
+}
+
+// Function to close analysis modal
+function closeAnalysisModal() {
+    const modal = document.getElementById('analysis-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Function to apply selected AI tags
+function applyAITags() {
+    const path = document.getElementById('apply-tags-btn').getAttribute('data-path');
+    const selectedTags = Array.from(document.querySelectorAll('.tag.selected')).map(tag => tag.getAttribute('data-tag'));
+    
+    if (selectedTags.length === 0) {
+        showToast('warning', 'No Tags Selected', 'Please select at least one tag to apply', 3000);
+        return;
+    }
+    
+    // Show loading toast
+    const toastId = showToast('info', 'Applying Tags', 'Updating file metadata...', 0);
+    
+    // Call API to apply tags
+    fetch('/api/apply-tags', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            path: path
+            path: path,
+            tags: selectedTags
         })
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Failed to analyze image');
+            throw new Error('Failed to apply tags');
         }
         return response.json();
     })
     .then(data => {
-        console.log('Image analysis:', data);
+        // Close the loading toast
+        closeToast(document.getElementById(toastId));
         
-        // Show results
-        // Implementation depends on your UI
-        alert(`Image Analysis Results:\n${JSON.stringify(data, null, 2)}`);
+        // Show success toast
+        showToast('success', 'Tags Applied', 'Successfully applied tags to image', 3000);
+        
+        // Close the modal
+        closeAnalysisModal();
+        
+        // Reload collections to show updated metadata
+        loadCollections();
     })
     .catch(error => {
-        console.error('Error analyzing image:', error);
-        alert('Failed to analyze image: ' + error.message);
+        // Close the loading toast
+        closeToast(document.getElementById(toastId));
+        
+        // Show error toast
+        showToast('error', 'Failed to Apply Tags', error.message, 5000);
     });
 }
 
