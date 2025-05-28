@@ -1509,17 +1509,47 @@
             flex-direction: column;
         }
 
-        .image-controls {
-            display: flex;
-            justify-content: center;
-            padding: 10px;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 2;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-        }
+<!--        .image-controls {-->
+<!--            display: flex;-->
+<!--            justify-content: center;-->
+<!--            padding: 10px;-->
+<!--            background-color: rgba(0, 0, 0, 0.5);-->
+<!--            z-index: 2;-->
+<!--            position: absolute;-->
+<!--            top: 0;-->
+<!--            left: 0;-->
+<!--            right: 0;-->
+<!--        }-->
+
+<!--        .image-controls {-->
+<!--  position: absolute; /* Keep this */-->
+<!--  bottom: 10px; /* Position with a small margin from the bottom edge */-->
+<!--  left: 50%; /* Start the left edge at the horizontal center of the parent */-->
+<!--  transform: translateX(-50%); /* Shift the element left by half of its own width to truly center it */-->
+<!--  top: auto; /* Remove top constraint */-->
+<!--  right: auto; /* Remove right constraint */-->
+
+<!--  display: flex; /* Keep for button layout */-->
+<!--  justify-content: center; /* Keep to center buttons horizontally */-->
+<!--  padding: 10px; /* Keep padding */-->
+<!--  background-color: rgba(0, 0, 0, 0.5); /* Keep background */-->
+<!--  z-index: 2; /* Keep z-index */-->
+
+<!--  /* Size will be determined by content with auto, or you can set specific width/height */-->
+<!--  width: auto;-->
+<!--  height: auto;-->
+<!--}-->
+
+        const imageControlsElement = $0.parentElement;
+        // Select the parent .image-controls element
+        await setElementStyles(imageControlsElement, {
+        bottom: '0',
+        left: '0',
+        right: '0',
+        top: 'auto',
+        height: 'auto' // Ensure height adjusts to content
+        });
+        const data = {};
 
         .image-control-btn {
             background-color: #333;
@@ -1534,7 +1564,7 @@
             align-items: center;
             justify-content: center;
             transition: background-color 0.2s;
-            font-size: 16px;
+            font-size: 26px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
 
@@ -1568,7 +1598,7 @@
 
         .image-preview-info {
             padding: 15px;
-            background-color: #f5f5f5;
+            background-color: #007bff;
             border-top: 1px solid #ddd;
             display: flex;
             flex-wrap: wrap;
@@ -2667,6 +2697,39 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="share-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Share / Authorize Access</h3>
+                <button class="modal-close" id="close-share-btn">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="share-search-input">Search Users</label>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="share-search-input" placeholder="Type username or email">
+                    </div>
+                </div>
+                <div class="share-users-container">
+                    <div class="share-users-list" id="share-users-list">
+                        <!-- Will be populated by JS -->
+                    </div>
+                    <div class="share-selected-users" id="share-selected-users">
+                        <h4>Selected Users</h4>
+                        <div class="selected-users-list" id="selected-users-list">
+                            <!-- Will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-share-btn">Cancel</button>
+                <button class="btn btn-primary" id="confirm-share-btn">Share</button>
             </div>
         </div>
     </div>
