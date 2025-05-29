@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/design-system.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/modern-layout.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/share-modal.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/modal-fix.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>PhotoGeni</h1>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="active">
+                    <a href="{{ url_for('collections_page') }}">
+                        <i class="fas fa-folder"></i>
+                        My Collections
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="recent">
+                        <i class="fas fa-clock"></i>
+                        Recent
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="favorites">
+                        <i class="fas fa-star"></i>
+                        Favorites
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="shared">
+                        <i class="fas fa-share-alt"></i>
+                        Shared
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="trash">
+                        <i class="fas fa-trash"></i>
+                        Trash
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="storage-info">
+            <!-- Storage info will be dynamically updated -->
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="content-header">
+            <div class="breadcrumb">
+                <!-- Breadcrumb will be dynamically updated -->
+            </div>
+            <div class="actions">
+                <button class="btn btn-primary" id="uploadBtn">
+                    <i class="fas fa-upload"></i>
+                    Upload
+                </button>
+                <button class="btn btn-secondary" id="newFolderBtn">
+                    <i class="fas fa-folder-plus"></i>
+                    New Folder
+                </button>
+                <div class="view-options">
+                    <button class="btn btn-icon" id="gridViewBtn" title="Grid View">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="btn btn-icon" id="listViewBtn" title="List View">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="collections-container">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            <div class="loading-text">Loading collections...</div>
+            <div class="collections-content">
+                <div class="collections-grid">
+                    <!-- Collection items will be dynamically loaded -->
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal" id="uploadModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Upload Files</h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="upload-area">
+                <input type="file" id="fileInput" multiple style="display: none">
+                <div class="drop-zone">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Drag & drop files here or click to select</p>
+                </div>
+            </div>
+            <div class="upload-progress" style="display: none">
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+                <p class="progress-text">Uploading...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Folder Modal -->
+<div class="modal" id="newFolderModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>New Folder</h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="newFolderForm">
+                <div class="form-group">
+                    <label for="folderName">Folder Name</label>
+                    <input type="text" id="folderName" name="name" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
+<script src="{{ url_for('static', filename='js/collections-loader.js') }}"></script>
+<script src="{{ url_for('static', filename='js/share-functionality.js') }}"></script>
+<script src="{{ url_for('static', filename='js/drag-drop-handler.js') }}"></script>
+<script src="{{ url_for('static', filename='js/image-preview-fix.js') }}"></script>
+<script src="{{ url_for('static', filename='js/three-dot-menu.js') }}"></script>
+{% endblock %}

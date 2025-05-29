@@ -5,14 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="18caa132-e367-42fb-b2e3-69439bd46031" name="Changes" comment="chore: commit unstaged changes before remote sync&#10;commit">
-      <change afterPath="$PROJECT_DIR$/templates/collections-advance.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/project.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/collections/6/s.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/instance/photogenic.db" beforeDir="false" afterPath="$PROJECT_DIR$/instance/photogenic.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/storage-stats.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/collections-modern.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/collections.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/collections.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
