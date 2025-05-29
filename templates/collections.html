@@ -5240,7 +5240,7 @@
                     previewElement.innerHTML = '<i class="fas fa-folder"></i>';
                 } else if (item.isImage) {
                     // Image thumbnail
-                    previewElement.innerHTML = `<img src="/api/collections/thumbnail?path=${encodeURIComponent(item.path)}" alt="${item.name}" loading="lazy">`;
+                    previewElement.innerHTML = `<img src="/api/collections/thumbnail/${encodeURIComponent(item.path)}" alt="${item.name}" loading="lazy">`;
                 } else {
                     // File icon based on type
                     const icon = getFileIcon(item.name);

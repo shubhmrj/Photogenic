@@ -208,8 +208,10 @@ def load_user(user_id):
 # Configure upload paths
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
 COLLECTIONS_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'collections')
+THUMBNAILS_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'thumbnails')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(COLLECTIONS_ROOT, exist_ok=True)
+os.makedirs(THUMBNAILS_ROOT, exist_ok=True)
 
 
 # Helper function to get user collections directory
@@ -614,7 +616,7 @@ def generate_ai_image():
 		# Debug information
 		print(f"Generating image with style: {style}, model: {model}")
 		print(f"Prompt: {prompt}")
-		print(f"API Key configured: {'Yes' if api_key else 'No'}")
+		print(f"API Key configured: {'Yes' if api_key else 'None'}")
 
 		# If no API key is provided, use placeholder images
 		if not api_key:
@@ -827,7 +829,7 @@ def generate_placeholder_image(title, subtitle, note="", width=800, height=600, 
 	subtitle_position = ((width - subtitle_width) // 2, height // 2)
 
 	note_width = draw.textlength(note, font=note_font)
-	note_position = ((width - note_width) // 2, height // 1.5)
+	note_position = ((width - note_width) // 2, height * 3 // 4)
 
 	# Add text to the image
 	draw.text(title_position, title, fill=(50, 50, 50), font=title_font, anchor="mm")
@@ -1962,17 +1964,9 @@ def is_image_file(filename):
 
 def get_thumbnail_path(file_path):
 	"""Get the path to the thumbnail for a file"""
-	# Create thumbnails directory if it doesn't exist
-	thumbnails_dir = os.path.join(os.path.dirname(COLLECTIONS_ROOT), 'thumbnails')
-	os.makedirs(thumbnails_dir, exist_ok=True)
-
-	# Generate a unique hash for the file path
+	thumbnails_dir = THUMBNAILS_ROOT
 	file_hash = hashlib.md5(file_path.encode()).hexdigest()
-
-	# Get file extension
 	_, ext = os.path.splitext(file_path)
-
-	# Return thumbnail path
 	return os.path.join(thumbnails_dir, f"{file_hash}{ext}")
 
 
