@@ -4,6 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PhotoGeni | Collections</title>
+
+       <!-- Design System & Layout CSS -->
+    <link rel="stylesheet" href="/static/css/design-system.css">
+    <link rel="stylesheet" href="/static/css/modern-layout.css">
+    <link href="/static/css/components.css" rel="stylesheet">
+
+    <!-- Icon Font (Remix Icons) -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!-- Google Fonts (Inter, Poppins) -->
+<!--    <link rel="preconnect" href="https://fonts.googleapis.com">-->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="/static/css/share-modal.css">
@@ -137,7 +151,398 @@
             font-size: 1.4rem;
             margin-right: 8px;
         }
-        
+
+        /* Advanced Search */
+        .search-bar {
+            position: relative;
+            flex: 1;
+            max-width: 600px;
+            margin-right: 16px;
+        }
+
+        .search-input-wrapper {
+            display: flex;
+            align-items: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 8px 12px;
+            transition: all 0.2s ease;
+        }
+
+        .search-input-wrapper:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
+        }
+
+        .search-input-wrapper i {
+            color: var(--text-color);
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+
+        #search-input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 0.95em;
+            padding: 0;
+        }
+
+        #search-input:focus {
+            outline: none;
+        }
+
+        .advanced-search-panel {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            padding: 16px;
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+            transition: all 0.2s ease;
+            z-index: 1000;
+        }
+
+        .advanced-search-panel.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .filter-group {
+            margin-bottom: 16px;
+        }
+
+        .filter-group h4 {
+            color: var(--text-main);
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .checkbox {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .checkbox input {
+            margin-right: 6px;
+        }
+
+        .checkbox span {
+            color: var(--text-color);
+            font-size: 0.9em;
+        }
+
+        select {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-color);
+            padding: 6px 24px 6px 8px;
+            font-size: 0.9em;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 16px;
+        }
+
+        .custom-date-range {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .custom-date-range input {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-color);
+            padding: 6px 8px;
+            font-size: 0.9em;
+        }
+
+        .tag-input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        #tag-input {
+            width: 100%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-color);
+            padding: 6px 8px;
+            font-size: 0.9em;
+        }
+
+        .tag-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-md);
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .tag-suggestion {
+            padding: 6px 12px;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: background-color 0.2s;
+        }
+
+        .tag-suggestion:hover {
+            background: var(--item-hover-bg);
+            color: var(--text-main);
+        }
+
+        .selected-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .tag {
+            background: rgba(var(--primary-rgb), 0.1);
+            color: var(--primary);
+            border-radius: var(--radius-sm);
+            padding: 4px 8px;
+            font-size: 0.85em;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tag i {
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+                .filter-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Sort Options */
+        .sort-options {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sort-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sort-group label {
+            color: var(--text-color);
+            font-size: 0.9em;
+        }
+
+        /* Batch Operations */
+        .batch-operations {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            padding: 12px 16px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .batch-operations.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translate(-50%, 20px);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+        }
+
+        .batch-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .batch-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .selected-count {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .batch-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Share Options */
+        .share-options {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .share-option {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 16px;
+        }
+
+        .share-link-options,
+        .share-email-options {
+            margin-top: 12px;
+            display: none;
+        }
+
+        .share-option input[type="radio"]:checked ~ .share-link-options,
+        .share-option input[type="radio"]:checked ~ .share-email-options {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-main);
+            font-size: 0.9em;
+            margin-bottom: 4px;
+        }
+
+        .form-group select {
+            width: 100%;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 8px;
+            color: var(--text-color);
+            font-size: 0.9em;
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        /* Folder Tree */
+        .folder-tree {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .tree-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: background-color 0.2s;
+        }
+
+        .tree-item:hover {
+            background: var(--item-hover-bg);
+        }
+
+        .tree-item.selected {
+            background: rgba(var(--primary-rgb), 0.1);
+            color: var(--primary);
+        }
+
+        .tree-item i {
+            font-size: 1.2em;
+            color: var(--text-color);
+        }
+
+        .tree-item.selected i {
+            color: var(--primary);
+        }
+
+        .tree-item-children {
+            margin-left: 24px;
+        }
+
+        /* Selection Styles */
+        .collection-item {
+            position: relative;
+        }
+
+        .collection-item.selectable::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--bg-card);
+            opacity: 0;
+            transition: all 0.2s ease;
+            z-index: 1;
+        }
+
+        .collection-item.selectable:hover::before {
+            opacity: 1;
+        }
+
+        .collection-item.selected::before {
+            opacity: 1;
+            border-color: var(--primary);
+            background: var(--primary);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E");
+            background-size: 14px;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
         /* Search Box */
         .search-container {
             flex: 1;
@@ -2521,16 +2926,99 @@
     </div>
 
     <header class="header">
-        <a href="#" class="logo">
+<!--        <a class="logo" href="templates/index.html">-->
+            <a href="/" class="logo">
             <i class="fas fa-camera-retro"></i>
             <span>PhotoGeni</span>
         </a>
-        <div class="search-container">
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search in collections...">
-            </div>
-        </div>
+<!--        <div class="search-container">-->
+<!--            <div class="search-box">-->
+<!--                <i class="fas fa-search"></i>-->
+<!--                <input type="text" placeholder="Search in collections...">-->
+<!--            </div>-->
+<!--        </div>-->
+        <div class="search-bar">
+                    <div class="search-input-wrapper">
+                        <i class="ri-search-line"></i>
+                        <input type="text" id="search-input" placeholder="Search files and folders...">
+                        <button class="btn btn-icon" id="advanced-search-toggle">
+                            <i class="ri-filter-3-line"></i>
+                        </button>
+                    </div>
+
+                    <!-- Advanced Search Panel -->
+                    <div id="advanced-search-panel" class="advanced-search-panel">
+                        <div class="filter-group">
+                            <h4>File Type</h4>
+                            <div class="filter-options">
+                                <label class="checkbox">
+                                    <input type="checkbox" value="image" checked="">
+                                    <span>Images</span>
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" value="document">
+                                    <span>Documents</span>
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" value="video">
+                                    <span>Videos</span>
+                                </label>
+                                <label class="checkbox">
+                                    <input type="checkbox" value="audio">
+                                    <span>Audio</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <h4>Date Modified</h4>
+                            <div class="filter-options">
+                                <select id="date-filter">
+                                    <option value="any">Any time</option>
+                                    <option value="today">Today</option>
+                                    <option value="week">Past week</option>
+                                    <option value="month">Past month</option>
+                                    <option value="year">Past year</option>
+                                    <option value="custom">Custom range</option>
+                                </select>
+                                <div id="custom-date-range" class="custom-date-range" style="display: none;">
+                                    <input type="date" id="date-from">
+                                    <input type="date" id="date-to">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <h4>Size</h4>
+                            <div class="filter-options">
+                                <select id="size-filter">
+                                    <option value="any">Any size</option>
+                                    <option value="tiny">Tiny (&lt; 100 KB)</option>
+                                    <option value="small">Small (&lt; 1 MB)</option>
+                                    <option value="medium">Medium (1-10 MB)</option>
+                                    <option value="large">Large (10-100 MB)</option>
+                                    <option value="huge">Huge (&gt; 100 MB)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <h4>AI Tags</h4>
+                            <div class="filter-options">
+                                <div class="tag-input-wrapper">
+                                    <input type="text" id="tag-input" placeholder="Add tags...">
+                                    <div id="tag-suggestions" class="tag-suggestions"></div>
+                                </div>
+                                <div id="selected-tags" class="selected-tags"></div>
+                            </div>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button class="btn btn-text" onclick="resetFilters()">Reset</button>
+                            <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
+                        </div>
+                    </div>
+                </div>
         <div class="header-actions">
             <input type="file" id="file-input" multiple style="display: none;">
             <button class="btn" id="upload-btn">
@@ -2662,6 +3150,29 @@
                 <!-- Will be populated by JS -->
             </div>
 
+
+            <div class="fab ai-style-change-1" aria-expanded="false" aria-label="Create new item">
+        <i class="ri-add-line fab-icon"></i>
+        <div class="fab-actions">
+            <div class="fab-action" data-action="upload">
+                <i class="ri-upload-line fab-action-icon"></i>
+                <span>Upload Files</span>
+            </div>
+            <div class="fab-action" data-action="new-folder">
+                <i class="ri-folder-add-line fab-action-icon"></i>
+                <span>New Folder</span>
+            </div>
+            <div class="fab-action" data-action="capture">
+                <i class="ri-camera-line fab-action-icon"></i>
+                <span>Capture Photo</span>
+            </div>
+            <div class="fab-action" data-action="scan">
+                <i class="ri-scan-line fab-action-icon"></i>
+                <span>Scan Document</span>
+            </div>
+        </div>
+        </div>
+
             <div class="selection-panel" id="selection-panel">
                 <div class="selection-count">0 items selected</div>
                 <div class="selection-actions">
@@ -2680,6 +3191,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 
 <!--    <div class="context-menu" id="context-menu">-->

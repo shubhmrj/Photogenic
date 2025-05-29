@@ -4,20 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PhotoGeni - Collections</title>
-    
+
     <!-- Design System & Layout CSS -->
     <link rel="stylesheet" href="/static/css/design-system.css">
     <link rel="stylesheet" href="/static/css/modern-layout.css">
     <link rel="stylesheet" href="/static/css/components.css">
-    
+
     <!-- Icon Font (Remix Icons) -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    
+
     <!-- Google Fonts (Inter, Poppins) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
-    
+
     <style>
         /* Context Menu */
         .context-menu {
@@ -33,13 +33,13 @@
             pointer-events: none;
             transition: all 0.2s ease;
         }
-        
+
         .context-menu.show {
             opacity: 1;
             transform: scale(1);
             pointer-events: auto;
         }
-        
+
         .context-menu-item {
             padding: 8px 16px;
             display: flex;
@@ -49,18 +49,18 @@
             color: var(--text-color);
             transition: background-color 0.2s;
         }
-        
+
         .context-menu-item:hover {
             background-color: var(--item-hover-bg);
             color: var(--text-main);
         }
-        
+
         .context-menu-item i {
             font-size: 1.2em;
             width: 20px;
             text-align: center;
         }
-        
+
         /* Action Bar */
         .action-bar {
             position: fixed;
@@ -74,45 +74,45 @@
             z-index: 900;
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         .action-bar.show {
             transform: translateX(-50%) translateY(0);
         }
-        
+
         .action-bar-content {
             display: flex;
             align-items: center;
             gap: 16px;
         }
-        
+
         .action-buttons {
             display: flex;
             gap: 8px;
         }
-        
+
         /* Selection Styles */
         .collection-item.selected {
             background-color: rgba(var(--primary-rgb), 0.1);
             border-color: var(--primary);
         }
-        
+
         .collection-item.selected:hover {
             background-color: rgba(var(--primary-rgb), 0.15);
         }
-        
+
         /* Keyboard Shortcuts Modal */
         .shortcuts-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 24px;
         }
-        
+
         .shortcut-category h4 {
             color: var(--text-main);
             margin-bottom: 12px;
             font-size: 1.1em;
         }
-        
+
         .shortcut-item {
             display: flex;
             justify-content: space-between;
@@ -120,7 +120,7 @@
             margin-bottom: 8px;
             color: var(--text-color);
         }
-        
+
         kbd {
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
@@ -133,7 +133,7 @@
             margin: 0 2px;
             box-shadow: 0 2px 0 var(--border-color);
         }
-        
+
         /* Upload Progress */
         .upload-progress {
             position: fixed;
@@ -150,13 +150,13 @@
             transition: all 0.3s ease;
             z-index: 1000;
         }
-        
+
         .upload-progress.show {
             opacity: 1;
             transform: translateY(0);
             pointer-events: auto;
         }
-        
+
         .progress-bar-container {
             background: var(--bg-secondary);
             border-radius: var(--radius-sm);
@@ -164,20 +164,20 @@
             margin-top: 8px;
             overflow: hidden;
         }
-        
+
         .progress-bar {
             background: var(--primary);
             height: 100%;
             width: 0;
             transition: width 0.3s ease;
         }
-        
+
         .progress-text {
             color: var(--text-color);
             font-size: 0.9em;
             margin-bottom: 4px;
         }
-        
+
         /* Enhanced Folder Design */
         .collection-item.folder {
             background: var(--bg-card);
@@ -190,40 +190,40 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        
+
         .collection-item.folder:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
             border-color: var(--primary-light);
         }
-        
+
         .folder-icon {
             color: var(--primary);
             font-size: 2em;
             transition: transform 0.2s ease;
         }
-        
+
         .collection-item.folder:hover .folder-icon {
             transform: scale(1.1);
         }
-        
+
         .folder-info {
             flex: 1;
         }
-        
+
         .folder-name {
             color: var(--text-main);
             font-weight: 500;
             margin-bottom: 4px;
         }
-        
+
         .folder-meta {
             color: var(--text-color);
             font-size: 0.85em;
             display: flex;
             gap: 12px;
         }
-        
+
         /* User Menu */
         .user-menu {
             position: absolute;
@@ -240,13 +240,13 @@
             transition: all 0.2s ease;
             z-index: 1000;
         }
-        
+
         .user-menu.show {
             opacity: 1;
             transform: translateY(0);
             pointer-events: auto;
         }
-        
+
         .user-menu-header {
             padding: 16px;
             display: flex;
@@ -254,39 +254,39 @@
             gap: 12px;
             border-bottom: 1px solid var(--border-color);
         }
-        
+
         .user-avatar {
             width: 48px;
             height: 48px;
             border-radius: 50%;
             overflow: hidden;
         }
-        
+
         .user-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        
+
         .user-info {
             flex: 1;
         }
-        
+
         .user-name {
             color: var(--text-main);
             font-weight: 500;
             margin-bottom: 2px;
         }
-        
+
         .user-email {
             color: var(--text-color);
             font-size: 0.85em;
         }
-        
+
         .user-menu-body {
             padding: 8px;
         }
-        
+
         .menu-item {
             display: flex;
             align-items: center;
@@ -297,26 +297,26 @@
             border-radius: var(--radius-sm);
             transition: background-color 0.2s;
         }
-        
+
         .menu-item:hover {
             background-color: var(--item-hover-bg);
             color: var(--text-main);
         }
-        
+
         .menu-item i {
             font-size: 1.2em;
         }
-        
+
         .menu-divider {
             height: 1px;
             background: var(--border-color);
             margin: 8px 0;
         }
-        
+
         .text-danger {
             color: var(--error) !important;
         }
-        
+
         /* Image Thumbnails */
         .collection-item.image {
             position: relative;
@@ -324,18 +324,18 @@
             border-radius: var(--radius-md);
             aspect-ratio: 1;
         }
-        
+
         .image-thumbnail {
             width: 100%;
             height: 100%;
             object-fit: cover;
             transition: transform 0.3s ease;
         }
-        
+
         .collection-item.image:hover .image-thumbnail {
             transform: scale(1.05);
         }
-        
+
         .image-overlay {
             position: absolute;
             bottom: 0;
@@ -348,12 +348,12 @@
             transform: translateY(10px);
             transition: all 0.2s ease;
         }
-        
+
         .collection-item.image:hover .image-overlay {
             opacity: 1;
             transform: translateY(0);
         }
-        
+
         .image-name {
             font-weight: 500;
             margin-bottom: 4px;
@@ -361,12 +361,12 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         .image-meta {
             font-size: 0.85em;
             opacity: 0.8;
         }
-        
+
         /* Owner Badge */
         .owner-badge {
             position: absolute;
@@ -385,12 +385,12 @@
             transform: scale(0.8);
             transition: all 0.2s ease;
         }
-        
+
         .collection-item:hover .owner-badge {
             opacity: 1;
             transform: scale(1);
         }
-        
+
         /* Action Buttons */
         .folder-actions,
         .image-actions {
@@ -403,28 +403,28 @@
             transform: translateX(10px);
             transition: all 0.2s ease;
         }
-        
+
         .collection-item:hover .folder-actions,
         .collection-item:hover .image-actions {
             opacity: 1;
             transform: translateX(0);
         }
-        
+
         .btn-light {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(4px);
             color: white;
         }
-        
+
         .btn-light:hover {
             background: rgba(255, 255, 255, 0.2);
         }
-        
+
         /* Loading States */
         .collection-item.loading {
             position: relative;
         }
-        
+
         .collection-item.loading::after {
             content: '';
             position: absolute;
@@ -436,7 +436,7 @@
             border-radius: var(--radius-md);
             animation: pulse 1.5s infinite;
         }
-        
+
         @keyframes pulse {
             0% {
                 opacity: 0.6;
@@ -448,23 +448,23 @@
                 opacity: 0.6;
             }
         }
-        
+
         /* Drag and Drop */
         .collection-item.dragging {
             opacity: 0.5;
             transform: scale(0.95);
         }
-        
+
         .collection-item.drag-over {
             border-color: var(--primary);
             background: rgba(var(--primary-rgb), 0.1);
         }
-        
+
         .collection-item.drag-over .folder-icon {
             color: var(--primary);
             transform: scale(1.1);
         }
-        
+
         /* Advanced Search */
         .search-bar {
             position: relative;
@@ -472,7 +472,7 @@
             max-width: 600px;
             margin-right: 16px;
         }
-        
+
         .search-input-wrapper {
             display: flex;
             align-items: center;
@@ -482,18 +482,18 @@
             padding: 8px 12px;
             transition: all 0.2s ease;
         }
-        
+
         .search-input-wrapper:focus-within {
             border-color: var(--primary);
             box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
         }
-        
+
         .search-input-wrapper i {
             color: var(--text-color);
             font-size: 1.2em;
             margin-right: 8px;
         }
-        
+
         #search-input {
             flex: 1;
             background: none;
@@ -502,11 +502,11 @@
             font-size: 0.95em;
             padding: 0;
         }
-        
+
         #search-input:focus {
             outline: none;
         }
-        
+
         .advanced-search-panel {
             position: absolute;
             top: calc(100% + 8px);
@@ -523,44 +523,44 @@
             transition: all 0.2s ease;
             z-index: 1000;
         }
-        
+
         .advanced-search-panel.show {
             opacity: 1;
             transform: translateY(0);
             pointer-events: auto;
         }
-        
+
         .filter-group {
             margin-bottom: 16px;
         }
-        
+
         .filter-group h4 {
             color: var(--text-main);
             font-size: 0.9em;
             margin-bottom: 8px;
         }
-        
+
         .filter-options {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
         }
-        
+
         .checkbox {
             display: flex;
             align-items: center;
             cursor: pointer;
         }
-        
+
         .checkbox input {
             margin-right: 6px;
         }
-        
+
         .checkbox span {
             color: var(--text-color);
             font-size: 0.9em;
         }
-        
+
         select {
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
@@ -574,13 +574,13 @@
             background-position: right 8px center;
             background-size: 16px;
         }
-        
+
         .custom-date-range {
             display: flex;
             gap: 8px;
             margin-top: 8px;
         }
-        
+
         .custom-date-range input {
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
@@ -589,12 +589,12 @@
             padding: 6px 8px;
             font-size: 0.9em;
         }
-        
+
         .tag-input-wrapper {
             position: relative;
             width: 100%;
         }
-        
+
         #tag-input {
             width: 100%;
             background: var(--bg-secondary);
@@ -604,7 +604,7 @@
             padding: 6px 8px;
             font-size: 0.9em;
         }
-        
+
         .tag-suggestions {
             position: absolute;
             top: 100%;
@@ -618,26 +618,26 @@
             overflow-y: auto;
             display: none;
         }
-        
+
         .tag-suggestion {
             padding: 6px 12px;
             cursor: pointer;
             color: var(--text-color);
             transition: background-color 0.2s;
         }
-        
+
         .tag-suggestion:hover {
             background: var(--item-hover-bg);
             color: var(--text-main);
         }
-        
+
         .selected-tags {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
             margin-top: 8px;
         }
-        
+
         .tag {
             background: rgba(var(--primary-rgb), 0.1);
             color: var(--primary);
@@ -648,12 +648,12 @@
             align-items: center;
             gap: 4px;
         }
-        
+
         .tag i {
             cursor: pointer;
             font-size: 1.1em;
         }
-        
+
         .filter-actions {
             display: flex;
             justify-content: flex-end;
@@ -662,25 +662,25 @@
             padding-top: 16px;
             border-top: 1px solid var(--border-color);
         }
-        
+
         /* Sort Options */
         .sort-options {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        
+
         .sort-group {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        
+
         .sort-group label {
             color: var(--text-color);
             font-size: 0.9em;
         }
-        
+
         /* Batch Operations */
         .batch-operations {
             position: fixed;
@@ -694,12 +694,12 @@
             display: none;
             z-index: 1000;
         }
-        
+
         .batch-operations.show {
             display: block;
             animation: slideUp 0.3s ease;
         }
-        
+
         @keyframes slideUp {
             from {
                 transform: translate(-50%, 20px);
@@ -710,70 +710,70 @@
                 opacity: 1;
             }
         }
-        
+
         .batch-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 24px;
         }
-        
+
         .batch-info {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-        
+
         .selected-count {
             color: var(--text-main);
             font-weight: 500;
         }
-        
+
         .batch-actions {
             display: flex;
             gap: 8px;
         }
-        
+
         /* Share Options */
         .share-options {
             display: flex;
             flex-direction: column;
             gap: 16px;
         }
-        
+
         .share-option {
             background: var(--bg-secondary);
             border-radius: var(--radius-md);
             padding: 16px;
         }
-        
+
         .share-link-options,
         .share-email-options {
             margin-top: 12px;
             display: none;
         }
-        
+
         .share-option input[type="radio"]:checked ~ .share-link-options,
         .share-option input[type="radio"]:checked ~ .share-email-options {
             display: block;
             animation: fadeIn 0.2s ease;
         }
-        
+
         .form-group {
             margin-bottom: 12px;
         }
-        
+
         .form-group label {
             display: block;
             color: var(--text-main);
             font-size: 0.9em;
             margin-bottom: 4px;
         }
-        
+
         .form-group select {
             width: 100%;
         }
-        
+
         .form-group textarea {
             width: 100%;
             background: var(--bg-card);
@@ -785,13 +785,13 @@
             min-height: 80px;
             resize: vertical;
         }
-        
+
         /* Folder Tree */
         .folder-tree {
             max-height: 400px;
             overflow-y: auto;
         }
-        
+
         .tree-item {
             display: flex;
             align-items: center;
@@ -801,34 +801,34 @@
             border-radius: var(--radius-sm);
             transition: background-color 0.2s;
         }
-        
+
         .tree-item:hover {
             background: var(--item-hover-bg);
         }
-        
+
         .tree-item.selected {
             background: rgba(var(--primary-rgb), 0.1);
             color: var(--primary);
         }
-        
+
         .tree-item i {
             font-size: 1.2em;
             color: var(--text-color);
         }
-        
+
         .tree-item.selected i {
             color: var(--primary);
         }
-        
+
         .tree-item-children {
             margin-left: 24px;
         }
-        
+
         /* Selection Styles */
         .collection-item {
             position: relative;
         }
-        
+
         .collection-item.selectable::before {
             content: '';
             position: absolute;
@@ -843,11 +843,11 @@
             transition: all 0.2s ease;
             z-index: 1;
         }
-        
+
         .collection-item.selectable:hover::before {
             opacity: 1;
         }
-        
+
         .collection-item.selected::before {
             opacity: 1;
             border-color: var(--primary);
@@ -857,7 +857,7 @@
             background-position: center;
             background-repeat: no-repeat;
         }
-        
+
         /* Preview Modal */
         .preview-modal .modal-content {
             width: 90%;
@@ -865,21 +865,21 @@
             height: 90vh;
             max-height: 800px;
         }
-        
+
         .preview-modal .modal-body {
             display: flex;
             gap: 24px;
             padding: 24px;
             height: calc(100% - 120px);
         }
-        
+
         .preview-modal img {
             max-width: calc(100% - 300px);
             max-height: 100%;
             object-fit: contain;
             border-radius: var(--radius-md);
         }
-        
+
         .image-info {
             width: 300px;
             padding: 16px;
@@ -887,7 +887,7 @@
             border-radius: var(--radius-md);
             overflow-y: auto;
         }
-        
+
         .info-row {
             display: flex;
             justify-content: space-between;
@@ -895,18 +895,18 @@
             padding-bottom: 12px;
             border-bottom: 1px solid var(--border-color);
         }
-        
+
         .info-row:last-child {
             margin-bottom: 0;
             padding-bottom: 0;
             border-bottom: none;
         }
-        
+
         .info-row .label {
             color: var(--text-color);
             font-size: 0.9em;
         }
-        
+
         /* Context Menu */
         .context-menu {
             position: fixed;
@@ -918,7 +918,7 @@
             z-index: 1000;
             animation: fadeIn 0.2s ease;
         }
-        
+
         .menu-item {
             display: flex;
             align-items: center;
@@ -933,30 +933,30 @@
             text-align: left;
             transition: all 0.2s ease;
         }
-        
+
         .menu-item:hover {
             background: var(--item-hover-bg);
             color: var(--text-main);
         }
-        
+
         .menu-item i {
             font-size: 1.2em;
         }
-        
+
         .menu-item.text-danger {
             color: var(--error);
         }
-        
+
         .menu-item.text-danger:hover {
             background: rgba(var(--error-rgb), 0.1);
         }
-        
+
         .menu-divider {
             height: 1px;
             background: var(--border-color);
             margin: 4px 0;
         }
-        
+
         /* Toast Notifications */
         .toast-container {
             position: fixed;
@@ -967,7 +967,7 @@
             gap: 8px;
             z-index: 1100;
         }
-        
+
         .toast {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -980,27 +980,27 @@
             min-width: 300px;
             animation: slideIn 0.3s ease;
         }
-        
+
         .toast.success {
             border-left: 4px solid var(--success);
         }
-        
+
         .toast.error {
             border-left: 4px solid var(--error);
         }
-        
+
         .toast i {
             font-size: 1.2em;
         }
-        
+
         .toast.success i {
             color: var(--success);
         }
-        
+
         .toast.error i {
             color: var(--error);
         }
-        
+
         @keyframes slideIn {
             from {
                 transform: translateX(100%);
@@ -1011,7 +1011,7 @@
                 opacity: 1;
             }
         }
-        
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -1020,7 +1020,7 @@
                 opacity: 1;
             }
         }
-        
+
         /* Image Tags */
         .image-tags {
             display: flex;
@@ -1028,7 +1028,7 @@
             gap: 4px;
             margin-top: 8px;
         }
-        
+
         .tag {
             background: var(--bg-secondary);
             color: var(--text-color);
@@ -1038,19 +1038,19 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        
+
         .tag:hover {
             background: var(--bg-hover);
             color: var(--text-main);
         }
-        
+
         /* Highlight for tag search */
         .collection-item.highlight {
             outline: 2px solid var(--primary);
             outline-offset: -2px;
             animation: pulse 2s infinite;
         }
-        
+
         @keyframes pulse {
             0% {
                 outline-color: var(--primary);
@@ -1062,19 +1062,19 @@
                 outline-color: var(--primary);
             }
         }
-        
+
         /* Form Styles */
         .form-group {
             margin-bottom: 16px;
         }
-        
+
         .form-group label {
             display: block;
             margin-bottom: 8px;
             color: var(--text-main);
             font-weight: 500;
         }
-        
+
         .form-group textarea {
             width: 100%;
             padding: 8px;
@@ -1085,7 +1085,7 @@
             font-family: inherit;
             resize: vertical;
         }
-        
+
         .form-group select {
             width: 100%;
             padding: 8px;
@@ -1095,7 +1095,7 @@
             color: var(--text-main);
             cursor: pointer;
         }
-        
+
         .form-info {
             display: flex;
             align-items: center;
@@ -1106,12 +1106,12 @@
             color: var(--text-color);
             font-size: 0.9em;
         }
-        
+
         .form-info i {
             color: var(--primary);
             font-size: 1.2em;
         }
-        
+
         /* AI Button */
         .btn-ai {
             background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
@@ -1122,22 +1122,22 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .btn-ai:hover {
             filter: brightness(1.1);
             transform: translateY(-1px);
         }
-        
+
         .btn-ai i {
             margin-right: 8px;
         }
-        
+
         /* Loading States */
         .analyzing {
             position: relative;
             pointer-events: none;
         }
-        
+
         .analyzing::after {
             content: '';
             position: absolute;
@@ -1149,7 +1149,7 @@
             font-size: 1.2em;
             color: var(--primary);
         }
-        
+
         .analyzing::before {
             content: '';
             position: absolute;
@@ -1164,7 +1164,7 @@
             animation: spin 1s linear infinite;
             z-index: 1;
         }
-        
+
         @keyframes spin {
             to {
                 transform: translate(-50%, -50%) rotate(360deg);
@@ -1180,7 +1180,7 @@
                 <img src="/static/images/logo.png" alt="PhotoGeni Logo" class="app-logo">
                 <h1 class="brand-name">PhotoGeni</h1>
             </div>
-            
+
             <div class="header-actions">
                 <!-- Advanced Search Bar -->
                 <div class="search-bar">
@@ -1191,7 +1191,7 @@
                             <i class="ri-filter-3-line"></i>
                         </button>
                     </div>
-                    
+
                     <!-- Advanced Search Panel -->
                     <div id="advanced-search-panel" class="advanced-search-panel">
                         <div class="filter-group">
@@ -1215,7 +1215,7 @@
                                 </label>
                             </div>
                         </div>
-                        
+
                         <div class="filter-group">
                             <h4>Date Modified</h4>
                             <div class="filter-options">
@@ -1233,7 +1233,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="filter-group">
                             <h4>Size</h4>
                             <div class="filter-options">
@@ -1247,7 +1247,7 @@
                                 </select>
                             </div>
                         </div>
-                        
+
                         <div class="filter-group">
                             <h4>AI Tags</h4>
                             <div class="filter-options">
@@ -1258,14 +1258,14 @@
                                 <div id="selected-tags" class="selected-tags"></div>
                             </div>
                         </div>
-                        
+
                         <div class="filter-actions">
                             <button class="btn btn-text" onclick="resetFilters()">Reset</button>
                             <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Sort Options -->
                 <div class="sort-options">
                     <div class="sort-group">
@@ -1281,15 +1281,15 @@
                         <i class="ri-sort-asc"></i>
                     </button>
                 </div>
-                
+
                 <button class="btn btn-icon theme-toggle" aria-label="Toggle theme" data-tooltip="Toggle light/dark mode">
                     <i class="ri-sun-line"></i>
                 </button>
-                
+
                 <div class="user-menu" data-dropdown="user-dropdown">
                     <div class="user-avatar">PG</div>
                 </div>
-                
+
                 <div id="user-dropdown" class="dropdown-menu">
                     <div class="dropdown-header">
                         <div class="dropdown-user-info">
@@ -1311,13 +1311,13 @@
                 </div>
             </div>
         </header>
-        
+
         <!-- Sidebar -->
         <aside class="app-sidebar">
             <div class="sidebar-toggle" aria-label="Toggle sidebar">
                 <i class="ri-arrow-left-s-line"></i>
             </div>
-            
+
             <nav class="sidebar-nav">
                 <div class="nav-section">
                     <h6 class="nav-section-title">Main</h6>
@@ -1354,7 +1354,7 @@
                         </li>
                     </ul>
                 </div>
-                
+
                 <div class="nav-section">
                     <h6 class="nav-section-title">Recent</h6>
                     <ul class="nav-list" id="recent-folders">
@@ -1373,11 +1373,11 @@
                         </li>
                     </ul>
                 </div>
-                
+
                 <div class="sidebar-section" id="storage-stats-container">
                     <!-- Storage stats will be loaded here by storage-stats.js -->
                 </div>
-                
+
                 <div class="sidebar-storage">
                     <div class="storage-progress">
                         <div class="storage-bar" style="width: 35%;"></div>
@@ -1389,7 +1389,7 @@
                 </div>
             </nav>
         </aside>
-        
+
         <!-- Main Content -->
         <main class="app-main">
             <!-- Page Header with Breadcrumbs -->
@@ -1405,7 +1405,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="view-options">
                     <button class="view-option active" id="grid-view-btn" aria-label="Grid view" data-tooltip="Grid view">
                         <i class="ri-grid-line"></i>
@@ -1416,7 +1416,7 @@
                     <button class="btn btn-icon" id="more-options-btn" aria-label="More options" data-tooltip="More options" data-dropdown="view-options-dropdown">
                         <i class="ri-more-2-fill"></i>
                     </button>
-                    
+
                     <div id="view-options-dropdown" class="dropdown-menu">
                         <a href="#" class="dropdown-item" id="select-all-btn">
                             <i class="ri-checkbox-multiple-line"></i> Select All
@@ -1434,12 +1434,12 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Collections Grid -->
             <div class="collections-container">
                 <div class="collections-grid" id="collections-grid">
                     <!-- Will be populated by JavaScript -->
-                    
+
                     <!-- Loading Skeleton (will be replaced by actual content) -->
                     <div class="card skeleton-card">
                         <div class="skeleton skeleton-image"></div>
@@ -1470,7 +1470,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Empty State (hidden by default) -->
                 <div class="empty-state" id="empty-state" style="display: none;">
                     <div class="empty-state-icon">
@@ -1488,7 +1488,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Mobile Navigation (visible only on small screens) -->
             <nav class="mobile-nav">
                 <a href="/dashboard" class="mobile-nav-item">
@@ -1514,7 +1514,7 @@
             </nav>
         </main>
     </div>
-    
+
     <!-- Floating Action Button -->
     <div class="fab" aria-expanded="false" aria-label="Create new item">
         <i class="ri-add-line fab-icon"></i>
@@ -1537,7 +1537,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Upload Modal -->
     <div id="upload-modal" class="modal-overlay">
         <div class="modal-dialog">
@@ -1554,7 +1554,7 @@
                     <p class="dropzone-hint">or click to browse your device</p>
                     <input type="file" id="file-upload" multiple style="display: none;">
                 </div>
-                
+
                 <div id="upload-progress-container" style="display: none;">
                     <h4 class="mt-4 mb-2">Uploading Files</h4>
                     <div id="upload-items"></div>
@@ -1566,7 +1566,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- New Folder Modal -->
     <div id="new-folder-modal" class="modal-overlay">
         <div class="modal-dialog">
@@ -1591,7 +1591,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Upload Progress -->
     <div id="upload-progress" class="upload-progress">
         <div class="upload-progress-content">
@@ -1728,7 +1728,7 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label for="collaborator-emails">Email Addresses</label>
-                    <textarea id="collaborator-emails" 
+                    <textarea id="collaborator-emails"
                               placeholder="Enter email addresses (one per line)"
                               rows="4"></textarea>
                 </div>
@@ -1754,7 +1754,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Action Bar for Multi-select -->
     <div id="action-bar" class="action-bar">
         <div class="action-bar-content">
@@ -1772,7 +1772,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Batch Operations -->
     <div class="batch-operations">
         <div class="batch-header">
@@ -1795,7 +1795,7 @@
                 </button>
             </div>
         </div>
-        
+
         <!-- Move Items Modal -->
         <div id="move-modal" class="modal">
             <div class="modal-content">
@@ -1816,7 +1816,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Share Modal -->
         <div id="share-modal" class="modal">
             <div class="modal-content">
@@ -1879,7 +1879,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Collection Item Template -->
     <template id="collection-item-template">
         <div class="collection-item" draggable="true">
@@ -1905,7 +1905,7 @@
                     </button>
                 </div>
             </div>
-            
+
             <!-- Image Template -->
             <div class="image-content">
                 <img class="image-thumbnail" src="" alt="">
@@ -1926,14 +1926,14 @@
                     </button>
                 </div>
             </div>
-            
+
             <!-- Owner Badge -->
             <div class="owner-badge" title="You are the owner">
                 <i class="ri-user-star-line"></i>
             </div>
         </div>
     </template>
-    
+
     <!-- JavaScript -->
     <script src="/static/js/design-system.js"></script>
     <script src="/static/js/modern-layout.js"></script>
@@ -1941,11 +1941,11 @@
     <script src="/static/js/collections-modern-utils.js"></script>
     <script src="/static/js/drag-drop-handler-modern.js"></script>
     <script src="/static/js/storage-stats.js"></script>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize the page with modern layout functionality
-            
+
             // Close modals when clicking close buttons
             document.querySelectorAll('[data-dismiss="modal"]').forEach(button => {
                 button.addEventListener('click', function() {
@@ -1953,64 +1953,64 @@
                     closeModal(modalId);
                 });
             });
-            
+
             // Open upload modal when clicking upload button
             document.getElementById('empty-upload-btn').addEventListener('click', function() {
                 showModal('upload-modal');
             });
-            
+
             document.getElementById('mobile-upload-btn').addEventListener('click', function(e) {
                 e.preventDefault();
                 showModal('upload-modal');
             });
-            
-            // Open new folder modal when clicking new folder button
+
+            // Open a new folder modal when clicking the new folder button
             document.getElementById('empty-new-folder-btn').addEventListener('click', function() {
                 showModal('new-folder-modal');
             });
-            
+
             // Handle dropzone clicks
             const dropzone = document.getElementById('upload-dropzone');
             const fileInput = document.getElementById('file-upload');
-            
+
             if (dropzone && fileInput) {
                 dropzone.addEventListener('click', function() {
                     fileInput.click();
                 });
-                
+
                 // Handle file selection
                 fileInput.addEventListener('change', function() {
                     handleFileSelection(this.files);
                 });
-                
+
                 // Handle drag and drop
                 dropzone.addEventListener('dragover', function(e) {
                     e.preventDefault();
                     this.classList.add('dragover');
                 });
-                
+
                 dropzone.addEventListener('dragleave', function() {
                     this.classList.remove('dragover');
                 });
-                
+
                 dropzone.addEventListener('drop', function(e) {
                     e.preventDefault();
                     this.classList.remove('dragover');
                     handleFileSelection(e.dataTransfer.files);
                 });
             }
-            
+
             function handleFileSelection(files) {
                 if (!files.length) return;
-                
+
                 // Show selected files
                 const container = document.getElementById('upload-progress-container');
                 const itemsContainer = document.getElementById('upload-items');
-                
+
                 if (container && itemsContainer) {
                     container.style.display = 'block';
                     itemsContainer.innerHTML = '';
-                    
+
                     Array.from(files).forEach(file => {
                         const item = document.createElement('div');
                         item.className = 'upload-item';
@@ -2027,7 +2027,7 @@
                     });
                 }
             }
-            
+
             function formatFileSize(bytes) {
                 if (bytes === 0) return '0 Bytes';
                 const k = 1024;
@@ -2035,12 +2035,12 @@
                 const i = Math.floor(Math.log(bytes) / Math.log(k));
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
             }
-            
+
             // Toggle between grid and list view
             const gridViewBtn = document.getElementById('grid-view-btn');
             const listViewBtn = document.getElementById('list-view-btn');
             const collectionsGrid = document.getElementById('collections-grid');
-            
+
             if (gridViewBtn && listViewBtn && collectionsGrid) {
                 gridViewBtn.addEventListener('click', function() {
                     collectionsGrid.className = 'collections-grid';
@@ -2048,21 +2048,21 @@
                     listViewBtn.classList.remove('active');
                     localStorage.setItem('collections-view', 'grid');
                 });
-                
+
                 listViewBtn.addEventListener('click', function() {
                     collectionsGrid.className = 'collections-list';
                     listViewBtn.classList.add('active');
                     gridViewBtn.classList.remove('active');
                     localStorage.setItem('collections-view', 'list');
                 });
-                
+
                 // Set initial view based on saved preference
                 const savedView = localStorage.getItem('collections-view');
                 if (savedView === 'list') {
                     listViewBtn.click();
                 }
             }
-            
+
             // Example of showing a toast notification
             setTimeout(() => {
                 showToast('success', 'Welcome!', 'Welcome to the new PhotoGeni interface.', 5000);
