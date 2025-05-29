@@ -2195,18 +2195,547 @@
             padding: 20px;
         }
 
-        .modal-body .warning {
-            color: #ff5252;
-            font-size: 0.9rem;
-            margin-top: 10px;
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 15px;
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #4285f4;
+            outline: none;
         }
 
         .modal-footer {
             padding: 15px 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             justify-content: flex-end;
             gap: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition-normal);
+        }
+
+        .btn-secondary {
+            background-color: #4b5563;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #ff5252;
+            color: white;
+        }
+        
+        /* Toast notifications */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            display: flex;
+            align-items: flex-start;
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border-radius: var(--radius-md);
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-lg);
+            width: 300px;
+            max-width: 90vw;
+            animation: slideIn 0.3s ease forwards;
+            position: relative;
+        }
+
+        .toast.toast-hide {
+            animation: slideOut 0.3s ease forwards;
+        }
+
+        .toast-icon {
+            margin-right: 10px;
+            font-size: 1.4rem;
+        }
+
+        .toast-info .toast-icon {
+            color: var(--info);
+        }
+
+        .toast-success .toast-icon {
+            color: var(--success);
+        }
+
+        .toast-warning .toast-icon {
+            color: var(--warning);
+        }
+
+        .toast-error .toast-icon {
+            color: var(--error);
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .toast-message {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            opacity: 0.7;
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 0 5px;
+            margin-left: 10px;
+        }
+
+        .toast-close:hover {
+            opacity: 1;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-transition {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Responsive styles */
+        @media (max-width: 992px) {
+            .google-style .main-container {
+                padding-left: 20px;
+            }
+
+            .google-style .sidebar {
+                transform: translateX(-100%);
+                z-index: 999;
+                transition: transform 0.3s ease;
+            }
+
+            .google-style .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 10px 15px;
+            }
+
+            .search-container {
+                display: none;
+            }
+
+            .collections-grid {
+                grid-template-columns: repeat (auto-fill, minmax(160px, 1fr));
+            }
+
+            .header-actions .btn span {
+                display: none;
+            }
+
+            .header-actions .btn {
+                width: 40px;
+                height: 40px;
+                justify-content: center;
+                padding: 0;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .collections-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            }
+
+            .empty-actions {
+                flex-direction: column;
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+
+        /* Image Preview Styles */
+        .image-preview-content {
+            width: 90%;
+            max-width: 1200px;
+            height: 90%;
+            max-height: 800px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .image-preview-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 0;
+        }
+
+        .image-preview-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background-color: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+        }
+
+<!--        .image-controls {-->
+<!--            display: flex;-->
+<!--            justify-content: center;-->
+<!--            padding: 10px;-->
+<!--            background-color: rgba(0, 0, 0, 0.5);-->
+<!--            z-index: 2;-->
+<!--            position: absolute;-->
+<!--            top: 0;-->
+<!--            left: 0;-->
+<!--            right: 0;-->
+<!--        }-->
+
+<!--        .image-controls {-->
+<!--  position: absolute; /* Keep this */-->
+<!--  bottom: 10px; /* Position with a small margin from the bottom edge */-->
+<!--  left: 50%; /* Start the left edge at the horizontal center of the parent */-->
+<!--  transform: translateX(-50%); /* Shift the element left by half of its own width to truly center it */-->
+<!--  top: auto; /* Remove top constraint */-->
+<!--  right: auto; /* Remove right constraint */-->
+
+<!--  display: flex; /* Keep for button layout */-->
+<!--  justify-content: center; /* Keep to center buttons horizontally */-->
+<!--  padding: 10px; /* Keep padding */-->
+<!--  background-color: rgba(0, 0, 0, 0.5); /* Keep background */-->
+<!--  z-index: 2; /* Keep z-index */-->
+
+<!--  /* Size will be determined by content with auto, or you can set specific width/height */-->
+<!--  width: auto;-->
+<!--  height: auto;-->
+<!--}-->
+
+        const imageControlsElement = $0.parentElement;
+        // Select the parent .image-controls element
+        await setElementStyles(imageControlsElement, {
+        bottom: '0',
+        left: '0',
+        right: '0',
+        top: 'auto',
+        height: 'auto' // Ensure height adjusts to content
+        });
+        const data = {};
+
+        .image-control-btn {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin: 0 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+            font-size: 26px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .image-control-btn:hover {
+            background-color: #555;
+        }
+
+        .image-control-btn:active {
+            background-color: #007bff;
+        }
+
+        .image-preview-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #preview-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+            cursor: grab;
+        }
+
+        #preview-image:active {
+            cursor: grabbing;
+        }
+
+        .image-preview-info {
+            padding: 15px;
+            background-color: #007bff;
+            border-top: 1px solid #ddd;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .info-item {
+            margin-right: 20px;
+            margin-bottom: 5px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        /* Upload Progress Bar */
+        .upload-progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .upload-progress-container.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .upload-progress-box {
+            width: 400px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .upload-progress-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .upload-progress-bar {
+            height: 8px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .upload-progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.2s ease;
+        }
+
+        .upload-progress-status {
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        /* User info styles */
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 12px;
+        }
+
+        .user-avatar i {
+            font-size: 1.4rem;
+            color: var(--text-main);
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .user-email {
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+        }
+
+        /* Modal Dialog */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .modal.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 15px;
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #4285f4;
+            outline: none;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition-normal);
+        }
+
+        .btn-secondary {
+            background-color: #4b5563;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #ff5252;
+            color: white;
         }
         
         /* Image Preview Modal */
@@ -3126,52 +3655,28 @@
             </div>
 
             <div class="collections-header">
-                <div class="header-container">
-                    <h1>My Collections</h1>
-                    <div class="header-tools">
-                        <div class="view-options">
-                            <button class="action-btn active" id="grid-view-btn" title="Grid view">
-                                <i class="fas fa-th"></i>
-                            </button>
-                            <button class="action-btn" id="list-view-btn" title="List view">
-                                <i class="fas fa-list"></i>
-                            </button>
-                        </div>
-                        <select class="sort-select" id="sort-select">
-                            <option value="name">Sort by name</option>
-                            <option value="date">Sort by date</option>
-                            <option value="size">Sort by size</option>
-                        </select>
-                    </div>
+                <div class="category-buttons">
+                    <button class="category-btn active" data-category="all">
+                        <i class="fas fa-images"></i> All Photos
+                    </button>
+                    <button class="category-btn" data-category="recent">
+                        <i class="fas fa-clock"></i> Recent
+                    </button>
+                    <button class="category-btn" data-category="favorites">
+                        <i class="fas fa-heart"></i> Favorites
+                    </button>
+                    <button class="category-btn" data-category="permitted">
+                        <i class="fas fa-share-alt"></i> Shared
+                    </button>
+                    <button class="category-btn" data-category="trash">
+                        <i class="fas fa-trash"></i> Trash
+                    </button>
                 </div>
             </div>
 
             <div class="collections-grid" id="dropzone-container">
                 <!-- Will be populated by JS -->
             </div>
-
-
-            <div class="fab ai-style-change-1" aria-expanded="false" aria-label="Create new item">
-        <i class="ri-add-line fab-icon"></i>
-        <div class="fab-actions">
-            <div class="fab-action" data-action="upload">
-                <i class="ri-upload-line fab-action-icon"></i>
-                <span>Upload Files</span>
-            </div>
-            <div class="fab-action" data-action="new-folder">
-                <i class="ri-folder-add-line fab-action-icon"></i>
-                <span>New Folder</span>
-            </div>
-            <div class="fab-action" data-action="capture">
-                <i class="ri-camera-line fab-action-icon"></i>
-                <span>Capture Photo</span>
-            </div>
-            <div class="fab-action" data-action="scan">
-                <i class="ri-scan-line fab-action-icon"></i>
-                <span>Scan Document</span>
-            </div>
-        </div>
-        </div>
 
             <div class="selection-panel" id="selection-panel">
                 <div class="selection-count">0 items selected</div>

@@ -36,6 +36,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import replicate
 import hashlib
 import mimetypes
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-key-for-sessions')
@@ -44,7 +45,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'dev-key-for-sessions')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///photogenic.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-
+migrate = Migrate(app, db)
 
 # User model
 class User(db.Model, UserMixin):
@@ -138,6 +139,25 @@ class SharedFile(db.Model):
 	owner = db.relationship('User', foreign_keys=[owner_id], backref=db.backref('shared_by_me', lazy='dynamic'))
 	shared_with = db.relationship('User', foreign_keys=[shared_with_id],
 	                              backref=db.backref('shared_with_me', lazy='dynamic'))
+
+
+# User Favorites model
+class UserFavorites(db.Model):
+	__tablename__ = 'user_favorites'
+	id = db.Column(db.Integer, primary_key=True)
+	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+	file_path = db.Column(db.String(500), nullable=False)
+	created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+# User Trash model
+class UserTrash(db.Model):
+	__tablename__ = 'user_trash'
+	id = db.Column(db.Integer, primary_key=True)
+	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+	file_path = db.Column(db.String(500), nullable=False)
+	original_path = db.Column(db.String(500), nullable=False)
+	deleted_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 # Initialize the database if it doesn't exist
@@ -1433,13 +1453,88 @@ def get_collections():
 
 		# Special case for "favorites" virtual folder
 		elif path == 'favorites':
-			# This would be implemented with a favorites table or flag in production
-			# For now, return empty list
-			pass
+			# Get favorited files
+			favorites = UserFavorites.query.filter_by(user_id=user_id).all()
+			for favorite in favorites:
+				try:
+					# Get the file info
+					file_info = get_file_info(favorite.file_path)
+					items.append(file_info)
+				except Exception as e:
+					app.logger.error(f"Error processing favorite file {favorite.file_path}: {str(e)}")
 
 		# Special case for "shared" virtual folder
 		elif path == 'shared':
 			# Get files shared with this user
+			shared_files = SharedFile.query.filter_by(shared_with_id=user_id).all()
+
+			app.logger.info(f"Found {len(shared_files)} shared files for user {user_id}")
+
+			for shared in shared_files:
+				try:
+					# Get the owner's username
+					owner = User.query.get(shared.owner_id)
+					if not owner:
+						app.logger.warning(
+							f"Owner not found for shared file: {shared.path}, owner_id: {shared.owner_id}")
+						continue
+
+					# For files, check if they exist in the owner's directory
+					owner_path = os.path.join(get_user_collections_dir(shared.owner_id), shared.path.lstrip('/'))
+
+					if not os.path.exists(owner_path):
+						app.logger.warning(f"Shared file not found: {owner_path}")
+						continue
+
+					# Check if there's a collection entry
+					collection = Collection.query.filter_by(path=shared.path, owner_id=shared.owner_id).first()
+
+					if collection:
+						# Use the collection entry
+						item_dict = collection.to_dict()
+					else:
+						# Create a dictionary with file information
+						is_dir = os.path.isdir(owner_path)
+						filename = os.path.basename(shared.path)
+
+						item_dict = {
+							'name': filename,
+							'path': shared.path,
+							'type': 'folder' if is_dir else 'file',
+							'isDir': is_dir,
+							'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat()
+						}
+
+						# Add size for files
+						if not is_dir:
+							item_dict['size'] = os.path.getsize(owner_path)
+
+							# Mark as image if it's an image file
+							if is_image_file(filename):
+								item_dict['isImage'] = True
+
+					# Add owner information
+					item_dict['shared_by'] = owner.username
+					items.append(item_dict)
+
+				except Exception as e:
+					app.logger.error(f"Error processing shared file {shared.path}: {str(e)}")
+
+		# Special case for "trash" virtual folder
+		elif path == 'trash':
+			# Get files in trash
+			trash_items = UserTrash.query.filter_by(user_id=user_id).all()
+			for trash in trash_items:
+				try:
+					# Get the file info
+					file_info = get_file_info(trash.file_path)
+					items.append(file_info)
+				except Exception as e:
+					app.logger.error(f"Error processing trash file {trash.file_path}: {str(e)}")
+
+		# Special case for "permitted" virtual folder
+		elif path == 'permitted':
+			# Get files shared with the user
 			shared_files = SharedFile.query.filter_by(shared_with_id=user_id).all()
 
 			app.logger.info(f"Found {len(shared_files)} shared files for user {user_id}")
@@ -2638,6 +2733,212 @@ def share_collection_item():
 			'success': False,
 			'message': f'Error sharing item: {str(e)}'
 		}), 500
+
+
+@app.route('/api/collections/favorite', methods=['POST'])
+@login_required
+def toggle_favorite():
+	data = request.get_json()
+	file_path = data.get('path')
+	
+	if not file_path:
+		return jsonify({'success': False, 'error': 'No path provided'})
+		
+	favorite = UserFavorites.query.filter_by(user_id=current_user.id, file_path=file_path).first()
+	
+	if favorite:
+		db.session.delete(favorite)
+		is_favorite = False
+	else:
+		favorite = UserFavorites(user_id=current_user.id, file_path=file_path)
+		db.session.add(favorite)
+		is_favorite = True
+		
+	db.session.commit()
+	return jsonify({'success': True, 'is_favorite': is_favorite})
+
+
+@app.route('/api/collections/trash', methods=['POST'])
+@login_required
+def move_to_trash():
+	data = request.get_json()
+	file_path = data.get('path')
+	
+	if not file_path:
+		return jsonify({'success': False, 'error': 'No path provided'})
+		
+	# Move file to trash
+	trash_item = UserTrash(
+		user_id=current_user.id,
+		file_path=os.path.join('trash', os.path.basename(file_path)),
+		original_path=file_path
+	)
+	db.session.add(trash_item)
+	db.session.commit()
+	
+	# Move the actual file
+	trash_dir = os.path.join(COLLECTIONS_ROOT, 'trash')
+	os.makedirs(trash_dir, exist_ok=True)
+	shutil.move(
+		os.path.join(COLLECTIONS_ROOT, file_path),
+		os.path.join(trash_dir, os.path.basename(file_path))
+	)
+	
+	return jsonify({'success': True})
+
+
+@app.route('/api/collections/list/<category>')
+@login_required
+def list_collections_by_category(category):
+	if category == 'recent':
+		# Get recently modified files
+		items = get_collection_items(
+			current_user.collections_path,
+			sort_by='modified',
+			limit=50
+		)
+	elif category == 'favorites':
+		# Get favorited files
+		favorites = UserFavorites.query.filter_by(user_id=current_user.id).all()
+		items = [get_file_info(f.file_path) for f in favorites]
+	elif category == 'trash':
+		# Get files in trash
+		trash_items = UserTrash.query.filter_by(user_id=current_user.id).all()
+		items = [get_file_info(f.file_path) for f in trash_items]
+	elif category == 'permitted':
+		# Get files shared with the user
+		items = get_shared_items(current_user.id)
+	else:
+		return jsonify({'success': False, 'error': 'Invalid category'})
+		
+	return jsonify({'success': True, 'items': items})
+
+
+def get_file_info(file_path):
+	"""Get file information"""
+	try:
+		# Get the file info
+		file_info = {
+			'name': os.path.basename(file_path),
+			'path': file_path,
+			'type': 'folder' if os.path.isdir(file_path) else 'file',
+			'isDir': os.path.isdir(file_path),
+			'modifiedTime': datetime.fromtimestamp(os.path.getmtime(file_path)).isoformat()
+		}
+
+		# Add size for files
+		if os.path.isfile(file_path):
+			file_info['size'] = os.path.getsize(file_path)
+
+			# Mark as image if it's an image file
+			if is_image_file(file_path):
+				file_info['isImage'] = True
+
+		return file_info
+	except Exception as e:
+		app.logger.error(f"Error getting file info for {file_path}: {str(e)}")
+		return None
+
+
+def get_collection_items(collection_path, sort_by='name', limit=None):
+	"""Get collection items"""
+	try:
+		# Get the collection items
+		items = []
+		for item_name in os.listdir(collection_path):
+			item_path = os.path.join(collection_path, item_name)
+			item = {
+				'name': item_name,
+				'path': item_path,
+				'type': 'folder' if os.path.isdir(item_path) else 'file',
+				'isDir': os.path.isdir(item_path),
+				'modifiedTime': datetime.fromtimestamp(os.path.getmtime(item_path)).isoformat()
+			}
+
+			# Add size for files
+			if os.path.isfile(item_path):
+				item['size'] = os.path.getsize(item_path)
+
+				# Mark as image if it's an image file
+				if is_image_file(item_name):
+					item['isImage'] = True
+
+			items.append(item)
+
+		# Sort items (folders first, then alphabetically)
+		items.sort(key=lambda x: (0 if x.get('isDir', x.get('type') == 'folder') else 1, x['name'].lower()))
+
+		# Limit items if requested
+		if limit:
+			items = items[:limit]
+
+		return items
+	except Exception as e:
+		app.logger.error(f"Error getting collection items for {collection_path}: {str(e)}")
+		return []
+
+
+def get_shared_items(user_id):
+	"""Get files shared with the user"""
+	try:
+		# Get files shared with the user
+		shared_files = SharedFile.query.filter_by(shared_with_id=user_id).all()
+
+		items = []
+		for shared in shared_files:
+			try:
+				# Get the owner's username
+				owner = User.query.get(shared.owner_id)
+				if not owner:
+					app.logger.warning(
+						f"Owner not found for shared file: {shared.path}, owner_id: {shared.owner_id}")
+					continue
+
+				# For files, check if they exist in the owner's directory
+				owner_path = os.path.join(get_user_collections_dir(shared.owner_id), shared.path.lstrip('/'))
+
+				if not os.path.exists(owner_path):
+					app.logger.warning(f"Shared file not found: {owner_path}")
+					continue
+
+				# Check if there's a collection entry
+				collection = Collection.query.filter_by(path=shared.path, owner_id=shared.owner_id).first()
+
+				if collection:
+					# Use the collection entry
+					item_dict = collection.to_dict()
+				else:
+					# Create a dictionary with file information
+					is_dir = os.path.isdir(owner_path)
+					filename = os.path.basename(shared.path)
+
+					item_dict = {
+						'name': filename,
+						'path': shared.path,
+						'type': 'folder' if is_dir else 'file',
+						'isDir': is_dir,
+						'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat()
+					}
+
+					# Add size for files
+					if not is_dir:
+						item_dict['size'] = os.path.getsize(owner_path)
+
+						# Mark as image if it's an image file
+						if is_image_file(filename):
+							item_dict['isImage'] = True
+
+				# Add owner information
+				item_dict['shared_by'] = owner.username
+				items.append(item_dict)
+
+			except Exception as e:
+				app.logger.error(f"Error processing shared file {shared.path}: {str(e)}")
+
+		return items
+	except Exception as e:
+		app.logger.error(f"Error getting shared items for user {user_id}: {str(e)}")
+		return []
 
 
 if __name__ == '__main__':
