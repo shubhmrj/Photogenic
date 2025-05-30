@@ -2125,25 +2125,32 @@ def login():
 		return redirect(url_for('index'))
 
 	if request.method == 'POST':
-		username = request.form.get('username')
-		password = request.form.get('password')
-		remember = True if request.form.get('remember') else False
+		try:
+			username = request.form.get('username', '').strip()
+			password = request.form.get('password', '').strip()
+			remember = True if request.form.get('remember') else False
 
-		# Simple validation
-		if not username or not password:
-			flash('Please enter both username and password', 'error')
+			# Simple validation
+			if not username or not password:
+				flash('Please enter both username and password', 'error')
+				return render_template('login.html')
+
+			# Query the database
+			user = User.query.filter_by(username=username).first()
+
+			# Check if user exists and password is correct
+			if user and user.check_password(password):
+				login_user(user, remember=remember)
+				next_page = request.args.get('next')
+				return redirect(next_page or url_for('index'))
+			else:
+				flash('Invalid username or password', 'error')
+				return render_template('login.html')
+				
+		except Exception as e:
+			app.logger.error(f"Login error: {str(e)}")
+			flash('An error occurred during login. Please try again.', 'error')
 			return render_template('login.html')
-
-		# Query the database
-		user = User.query.filter_by(username=username).first()
-
-		# Check if user exists and password is correct
-		if user and user.check_password(password):
-			login_user(user, remember=remember)
-			next_page = request.args.get('next')
-			return redirect(next_page or url_for('index'))
-		else:
-			flash('Invalid username or password', 'error')
 
 	return render_template('login.html')
 
