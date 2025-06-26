@@ -178,37 +178,19 @@ function shareWithUsers() {
         showToast('warning', 'No Users Selected', 'Please select at least one user to share with');
         return;
     }
-    
+
     // Show loading state
     const confirmShareBtn = document.getElementById('confirm-share-btn');
     confirmShareBtn.disabled = true;
     confirmShareBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sharing...';
-    
-    // Prepare data
+
+    // Prepare data for backend
     const data = {
         path: currentSharePath,
-        users: Array.from(selectedUsers),
-        timestamp: new Date().toISOString()
+        users: Array.from(selectedUsers)
     };
-    
-    // Simulate API call - replace with actual API in production
-    setTimeout(() => {
-        // Close modal
-        closeShareModal();
-        
-        // Show success message
-        showToast('success', 'Shared Successfully', `Shared with ${selectedUsers.size} user${selectedUsers.size !== 1 ? 's' : ''}`);
-        
-        // Reload collections to show updated ownership badges
-        loadCollections();
-        
-        // Reset button
-        confirmShareBtn.disabled = false;
-        confirmShareBtn.innerHTML = 'Share';
-    }, 1000);
-    
-    // When API is ready, use this instead:
-    /*
+
+    // Call real API
     fetch('/api/collections/share', {
         method: 'POST',
         headers: {
@@ -216,30 +198,36 @@ function shareWithUsers() {
         },
         body: JSON.stringify(data)
     })
-    .then(response => {
+    .then(async response => {
         if (!response.ok) {
-            throw new Error('Failed to share');
+            // Try to extract error message text
+            const text = await response.text();
+            throw new Error(text || `Server error ${response.status}`);
         }
         return response.json();
     })
     .then(result => {
-        // Close modal
+        if (!result.success) {
+            throw new Error(result.message || 'Sharing failed');
+        }
+        // Close modal and notify
         closeShareModal();
-        
-        // Show success message
-        showToast('success', 'Shared Successfully', `Shared with ${selectedUsers.size} user${selectedUsers.size !== 1 ? 's' : ''}`);
-        
-        // Reload collections to show updated ownership badges
-        loadCollections();
+        showToast('success', 'Shared Successfully', `Shared with ${result.shared_with.length} user${result.shared_with.length !== 1 ? 's' : ''}`);
+
+        // Reload collections to update any ownership indicators
+        if (typeof loadCollections === 'function') {
+            loadCollections();
+        }
     })
     .catch(error => {
+        console.error('Share API error:', error);
         showToast('error', 'Sharing Failed', error.message);
     })
     .finally(() => {
+        // Reset button
         confirmShareBtn.disabled = false;
         confirmShareBtn.innerHTML = 'Share';
     });
-    */
 }
 
 // Initialize share modal event listeners

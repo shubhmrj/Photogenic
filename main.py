@@ -42,7 +42,11 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-key-for-sessions')
 
 # Configure SQLAlchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///photogenic.db'
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+# Default: absolute path to photogenic.db in the same folder
+default_db_path = 'sqlite:///' + os.path.join(BASE_DIR, 'photogenic.db')
+# Allow override via environment variable (e.g. on PythonAnywhere)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', default_db_path)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -2946,6 +2950,35 @@ def get_shared_items(user_id):
 	except Exception as e:
 		app.logger.error(f"Error getting shared items for user {user_id}: {str(e)}")
 		return []
+
+
+# --- Shared Items Endpoints ---
+
+def _shared_items_response():
+	"""Return JSON response with items shared with the current user."""
+	items = get_shared_items(current_user.id)
+	return jsonify({
+		"success": True,
+		"items": items
+	})
+
+
+@app.route('/api/collections/shared', methods=['GET'])
+@login_required
+def api_get_shared_items():
+	"""Return files/folders that have been shared with the logged-in user.
+
+	This endpoint powers the "Permitted" section in the collections UI.
+	"""
+	return _shared_items_response()
+
+
+# Backwards-compatibility alias used by older front-end code
+@app.route('/api/collections/list/permitted', methods=['GET'])
+@login_required
+def api_get_shared_items_alias():
+	"""Alias for /api/collections/shared so that multiple front-end scripts work regardless of the URL they call."""
+	return _shared_items_response()
 
 
 if __name__ == '__main__':

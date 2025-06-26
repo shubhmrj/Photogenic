@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shared Files Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-container {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        .result-container {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 500px;
+            overflow: auto;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .success {
+            color: green;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .file-item {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            background: #fff;
+        }
+        .file-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .file-info {
+            font-size: 0.8em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Shared Files Test Page</h1>
+    <p>This page tests the shared files functionality directly.</p>
+    
+    <div class="test-container">
+        <h2>Test API Endpoint</h2>
+        <button id="test-api" class="test-button">Test Shared Files API</button>
+        <div id="api-result" class="result-container">
+            <p>Click the button to test the API.</p>
+        </div>
+    </div>
+    
+    <div class="test-container">
+        <h2>Display Shared Files</h2>
+        <button id="display-files" class="test-button">Display Shared Files</button>
+        <div id="files-container" class="result-container">
+            <p>Click the button to display any shared files.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Test the shared files API endpoint
+        document.getElementById('test-api').addEventListener('click', function() {
+            const resultContainer = document.getElementById('api-result');
+            resultContainer.innerHTML = '<p>Testing API...</p>';
+            
+            fetch('/api/collections/shared')
+                .then(response => {
+                    resultContainer.innerHTML += `<p>Response status: ${response.status}</p>`;
+                    return response.json();
+                })
+                .then(data => {
+                    resultContainer.innerHTML += `<p class="success">API call successful!</p>`;
+                    resultContainer.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                })
+                .catch(error => {
+                    resultContainer.innerHTML += `<p class="error">Error: ${error.message}</p>`;
+                });
+        });
+        
+        // Display shared files
+        document.getElementById('display-files').addEventListener('click', function() {
+            const filesContainer = document.getElementById('files-container');
+            filesContainer.innerHTML = '<p>Loading shared files...</p>';
+            
+            fetch('/api/collections/shared')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        filesContainer.innerHTML = `<p class="error">Error: ${data.error || 'Unknown error'}</p>`;
+                        return;
+                    }
+                    
+                    const items = data.items || [];
+                    
+                    if (items.length === 0) {
+                        filesContainer.innerHTML = '<p>No shared files found.</p>';
+                        return;
+                    }
+                    
+                    filesContainer.innerHTML = `<p class="success">Found ${items.length} shared files:</p>`;
+                    
+                    const fileGrid = document.createElement('div');
+                    fileGrid.className = 'file-grid';
+                    
+                    items.forEach(item => {
+                        const fileItem = document.createElement('div');
+                        fileItem.className = 'file-item';
+                        
+                        fileItem.innerHTML = `
+                            <div class="file-name">${item.name}</div>
+                            <div class="file-info">
+                                <div>Type: ${item.type}</div>
+                                <div>Shared by: ${item.shared_by || 'Unknown'}</div>
+                                ${item.modifiedTime ? `<div>Modified: ${new Date(item.modifiedTime).toLocaleString()}</div>` : ''}
+                                ${item.size ? `<div>Size: ${formatFileSize(item.size)}</div>` : ''}
+                            </div>
+                            ${item.url ? `<a href="${item.url}" target="_blank">View File</a>` : ''}
+                        `;
+                        
+                        fileGrid.appendChild(fileItem);
+                    });
+                    
+                    filesContainer.appendChild(fileGrid);
+                })
+                .catch(error => {
+                    filesContainer.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+                });
+        });
+        
+        // Helper function to format file size
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' bytes';
+            else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            else if (bytes < 1073741824) return (bytes / 1048576).toFixed(1) + ' MB';
+            else return (bytes / 1073741824).toFixed(1) + ' GB';
+        }
+    </script>
+</body>
+</html>

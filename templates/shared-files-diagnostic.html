@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shared Files Diagnostic</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .container {
+            background: #f5f5f5;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        .button.secondary {
+            background: #2196F3;
+        }
+        .button.danger {
+            background: #f44336;
+        }
+        .result {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+            overflow: auto;
+        }
+        pre {
+            background: #f8f8f8;
+            padding: 10px;
+            border-radius: 4px;
+            overflow: auto;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .status.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .status.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .status.warning {
+            background: #fff8e1;
+            color: #ff8f00;
+        }
+        .status.info {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Shared Files Diagnostic Tool</h1>
+    <p>This tool helps diagnose issues with the shared files functionality.</p>
+
+    <div class="container">
+        <h2>Database Check</h2>
+        <p>Verify shared files in the database for the current user.</p>
+        <button id="check-db" class="button">Check Database</button>
+        <div id="db-result" class="result">Results will appear here...</div>
+    </div>
+
+    <div class="container">
+        <h2>Create Test Share</h2>
+        <p>Create a test file and share it with another user for testing.</p>
+        <div>
+            <label for="share-with">Share with username:</label>
+            <input type="text" id="share-with" placeholder="Enter username">
+        </div>
+        <button id="create-test-share" class="button">Create Test Share</button>
+        <div id="share-result" class="result">Results will appear here...</div>
+    </div>
+
+    <div class="container">
+        <h2>Fix Shared Files Display</h2>
+        <p>Apply fixes to ensure shared files are displayed correctly.</p>
+        <button id="fix-shared-display" class="button secondary">Apply Display Fix</button>
+        <div id="fix-result" class="result">Results will appear here...</div>
+    </div>
+
+    <div class="container">
+        <h2>Permissions Check</h2>
+        <p>Verify the permissions of shared files.</p>
+        <button id="check-permissions" class="button secondary">Check Permissions</button>
+        <div id="permissions-result" class="result">Results will appear here...</div>
+    </div>
+
+    <script>
+        // Check database for shared files
+        document.getElementById('check-db').addEventListener('click', function() {
+            const resultDiv = document.getElementById('db-result');
+            resultDiv.innerHTML = '<div class="status info">Checking database...</div>';
+            
+            fetch('/api/debug/shared')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        resultDiv.innerHTML = `<div class="status error">Error: ${data.error}</div>`;
+                        return;
+                    }
+                    
+                    const rawSharedFiles = data.raw_shared_files || [];
+                    const processedItems = data.processed_items || [];
+                    
+                    let html = `
+                        <div class="status info">
+                            User ID: ${data.user_id}, Username: ${data.username}
+                        </div>
+                    `;
+                    
+                    if (rawSharedFiles.length === 0) {
+                        html += `
+                            <div class="status warning">
+                                No shared files found in the database for this user.
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div class="status success">
+                                Found ${rawSharedFiles.length} shared files in the database.
+                            </div>
+                            <h3>Raw Shared Files</h3>
+                            <table>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Path</th>
+                                    <th>Owner ID</th>
+                                    <th>Permissions</th>
+                                    <th>Created At</th>
+                                </tr>
+                        `;
+                        
+                        rawSharedFiles.forEach(file => {
+                            html += `
+                                <tr>
+                                    <td>${file.id}</td>
+                                    <td>${file.path}</td>
+                                    <td>${file.owner_id}</td>
+                                    <td>${file.permissions}</td>
+                                    <td>${file.created_at}</td>
+                                </tr>
+                            `;
+                        });
+                        
+                        html += `</table>`;
+                    }
+                    
+                    if (processedItems.length === 0) {
+                        html += `
+                            <div class="status warning">
+                                No processed items found. This could indicate an issue with the get_shared_items function.
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div class="status success">
+                                ${processedItems.length} processed items found.
+                            </div>
+                            <h3>Processed Items</h3>
+                            <pre>${JSON.stringify(processedItems, null, 2)}</pre>
+                        `;
+                    }
+                    
+                    resultDiv.innerHTML = html;
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = `<div class="status error">Error: ${error.message}</div>`;
+                });
+        });
+        
+        // Create test share
+        document.getElementById('create-test-share').addEventListener('click', function() {
+            const resultDiv = document.getElementById('share-result');
+            const shareWithUsername = document.getElementById('share-with').value.trim();
+            
+            if (!shareWithUsername) {
+                resultDiv.innerHTML = `<div class="status error">Please enter a username to share with.</div>`;
+                return;
+            }
+            
+            resultDiv.innerHTML = `<div class="status info">Creating test share...</div>`;
+            
+            fetch('/api/debug/create-test-share', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    share_with: shareWithUsername
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        resultDiv.innerHTML = `<div class="status error">Error: ${data.error}</div>`;
+                        return;
+                    }
+                    
+                    resultDiv.innerHTML = `
+                        <div class="status success">
+                            Test file created and shared successfully!
+                        </div>
+                        <pre>${JSON.stringify(data.share_info, null, 2)}</pre>
+                    `;
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = `<div class="status error">Error: ${error.message}</div>`;
+                });
+        });
+        
+        // Apply display fix
+        document.getElementById('fix-shared-display').addEventListener('click', function() {
+            const resultDiv = document.getElementById('fix-result');
+            resultDiv.innerHTML = `<div class="status info">Applying display fix...</div>`;
+            
+            fetch('/api/debug/fix-shared-display')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        resultDiv.innerHTML = `<div class="status error">Error: ${data.error}</div>`;
+                        return;
+                    }
+                    
+                    resultDiv.innerHTML = `
+                        <div class="status success">
+                            Display fix applied successfully!
+                        </div>
+                        <pre>${JSON.stringify(data.fix_info, null, 2)}</pre>
+                        <div class="status info">
+                            Please reload the collections page to see the changes.
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = `<div class="status error">Error: ${error.message}</div>`;
+                });
+        });
+        
+        // Check permissions
+        document.getElementById('check-permissions').addEventListener('click', function() {
+            const resultDiv = document.getElementById('permissions-result');
+            resultDiv.innerHTML = `<div class="status info">Checking permissions...</div>`;
+            
+            fetch('/api/debug/check-permissions')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        resultDiv.innerHTML = `<div class="status error">Error: ${data.error}</div>`;
+                        return;
+                    }
+                    
+                    resultDiv.innerHTML = `
+                        <div class="status success">
+                            Permissions check completed.
+                        </div>
+                        <pre>${JSON.stringify(data.permissions_info, null, 2)}</pre>
+                    `;
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = `<div class="status error">Error: ${error.message}</div>`;
+                });
+        });
+    </script>
+</body>
+</html>
