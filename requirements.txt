@@ -6,8 +6,8 @@ python-dotenv~=1.0.0
 numpy~=2.1.3
 openai~=1.76.1
 # ↓ Add this line
-tensorflow-cpu==2.13.0      # ≈120 MB wheel, no GPU code
-deepface==0.0.67            # optional, depends on tensorflow>=1.9
+
+
 #deepface~=0.0.67
 pillow~=11.1.0
 replicate~=0.22.0
