@@ -6,7 +6,7 @@ python-dotenv~=1.0.0
 numpy~=2.1.3
 openai~=1.76.1
 # ↓ Add this line
-deepface~=0.0.67
+#deepface~=0.0.67
 pillow~=11.1.0
 replicate~=0.22.0
 Flask-SQLAlchemy~=3.1.1
