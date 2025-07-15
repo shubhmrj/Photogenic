@@ -1,6 +1,6 @@
 ## 📸 PhotoGraphy
 
-A sleek, responsive photo gallery web app built in Python, ideal for showcasing photography portfolios. Features image upload, EXIF metadata display, lightbox viewing, and easy customization.
+A sleek, responsive photo gallery web app built in Python, ideal for showcasing photography portfolios. Features include image upload, EXIF metadata display, lightbox viewing, and easy customization., users can perform all actions of AI, such as animation design and story generation, and utilize all my features as an API Key.
 
 ---
 
@@ -25,8 +25,7 @@ PhotoGraphy provides:
 | Frontend    | HTML5, CSS3, JavaScript       |
 | Templating  | Jinja2                        |
 | Metadata    | Pillow / exifread             |
-| UI Scripts  | Custom JS (`collections-fixed.js`) |
-| Styling     | Custom CSS (`collections.css`) |
+
 
 ---
 
