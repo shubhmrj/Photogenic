@@ -50,3 +50,4 @@ var/
 .vscode/
 *.swp
 *.swo
+photogenic.db
