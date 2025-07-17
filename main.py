@@ -51,6 +51,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
+
 # User model
 class User(db.Model, UserMixin):
 	__tablename__ = 'user'  # Explicitly set the table name
@@ -242,6 +243,15 @@ def get_user_collections_dir(user_id):
 	user_dir = os.path.join(COLLECTIONS_ROOT, str(user_id))
 	os.makedirs(user_dir, exist_ok=True)
 	return user_dir
+
+
+# Helper to resolve a user-relative path to an absolute file system path
+def _resolve_user_path(rel_path: str, user_id: int) -> str:
+	"""Return absolute path for *rel_path* inside the user's collection tree.
+	If *rel_path* is already absolute, it is returned unchanged."""
+	if os.path.isabs(rel_path):
+		return rel_path
+	return os.path.join(get_user_collections_dir(user_id), rel_path.lstrip('/'))
 
 
 # Helper function to verify directory ownership
@@ -1461,7 +1471,7 @@ def get_collections():
 			for favorite in favorites:
 				try:
 					# Get the file info
-					file_info = get_file_info(favorite.file_path)
+					file_info = get_file_info(favorite.file_path, user_id)
 					items.append(file_info)
 				except Exception as e:
 					app.logger.error(f"Error processing favorite file {favorite.file_path}: {str(e)}")
@@ -1495,7 +1505,6 @@ def get_collections():
 					if collection:
 						# Use the collection entry
 						item_dict = collection.to_dict()
-						item_dict['owner_id'] = shared.owner_id
 					else:
 						# Create a dictionary with file information
 						is_dir = os.path.isdir(owner_path)
@@ -1506,8 +1515,7 @@ def get_collections():
 							'path': shared.path,
 							'type': 'folder' if is_dir else 'file',
 							'isDir': is_dir,
-							'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat(),
-							'owner_id': shared.owner_id
+							'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat()
 						}
 
 						# Add size for files
@@ -1520,6 +1528,7 @@ def get_collections():
 
 					# Add owner information
 					item_dict['shared_by'] = owner.username
+					item_dict['owner_id'] = shared.owner_id
 					items.append(item_dict)
 
 				except Exception as e:
@@ -1532,7 +1541,7 @@ def get_collections():
 			for trash in trash_items:
 				try:
 					# Get the file info
-					file_info = get_file_info(trash.file_path)
+					file_info = get_file_info(trash.file_path, user_id)
 					items.append(file_info)
 				except Exception as e:
 					app.logger.error(f"Error processing trash file {trash.file_path}: {str(e)}")
@@ -1566,7 +1575,6 @@ def get_collections():
 					if collection:
 						# Use the collection entry
 						item_dict = collection.to_dict()
-						item_dict['owner_id'] = shared.owner_id
 					else:
 						# Create a dictionary with file information
 						is_dir = os.path.isdir(owner_path)
@@ -1577,8 +1585,7 @@ def get_collections():
 							'path': shared.path,
 							'type': 'folder' if is_dir else 'file',
 							'isDir': is_dir,
-							'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat(),
-							'owner_id': shared.owner_id
+							'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat()
 						}
 
 						# Add size for files
@@ -1591,6 +1598,7 @@ def get_collections():
 
 					# Add owner information
 					item_dict['shared_by'] = owner.username
+					item_dict['owner_id'] = shared.owner_id
 					items.append(item_dict)
 
 				except Exception as e:
@@ -1828,8 +1836,56 @@ def upload_to_collection():
 @app.route('/api/collections/file/<path:path>', methods=['GET'])
 @login_required
 def get_collection_file(path):
-	"""Serve a file from the collections, with full shared-file support handled by _serve_collection_file."""
-	return _serve_collection_file(path, current_user.id, request.args.get('owner_id'))
+	if not current_user.is_authenticated:
+		return jsonify({'error': 'Authentication required'}), 401
+
+	user_id = current_user.id
+
+	# Check if this is a shared file
+	if 'owner_id' in request.args:
+		try:
+			owner_id = int(request.args.get('owner_id'))
+
+			# Check if this file is shared with the current user
+			shared = SharedFile.query.filter_by(
+				path=path,
+				owner_id=owner_id,
+				shared_with_id=user_id
+			).first()
+
+			if not shared:
+				app.logger.warning(
+					f"Access denied: User {user_id} attempted to access shared file '{path}' not shared with them")
+				return jsonify({'error': 'Access denied: file not shared with you'}), 403
+		except:
+			owner_id = user_id
+	else:
+		# Fallback: attempt to locate the file via shared records (auto owner detection)
+		shared_record = SharedFile.query.filter_by(path=path, shared_with_id=user_id).first()
+		if shared_record:
+			owner_id = shared_record.owner_id
+			file_path = os.path.join(get_user_collections_dir(owner_id), path)
+			if not (os.path.exists(file_path) and os.path.isfile(file_path)):
+				return jsonify({'error': 'File not found'}), 404
+		else:
+			owner_id = user_id
+
+	# Create absolute path using the owner's directory
+	file_path = os.path.join(get_user_collections_dir(owner_id), path)
+
+	# Security check: verify the requested path is within this user's collections directory
+	if not os.path.normpath(file_path).startswith(os.path.normpath(get_user_collections_dir(owner_id))):
+		app.logger.warning(f"Access denied: User {user_id} attempted to access path '{path}' outside their directory")
+		return jsonify({'error': 'Access denied: path is outside of user directory'}), 403
+
+	# Check if file exists
+	if not os.path.exists(file_path) or not os.path.isfile(file_path):
+		return jsonify({'error': 'File not found'}), 404
+
+	# Set the correct mime type for the file
+	mime_type, _ = mimetypes.guess_type(file_path)
+
+	return send_file(file_path, mimetype=mime_type)
 
 
 @app.route('/api/collections/thumbnail/<path:path>', methods=['GET'])
@@ -1859,7 +1915,15 @@ def get_collection_thumbnail(path):
 		except:
 			owner_id = user_id
 	else:
-		owner_id = user_id
+		# Fallback: attempt to locate the file via shared records (auto owner detection)
+		shared_record = SharedFile.query.filter_by(path=path, shared_with_id=user_id).first()
+		if shared_record:
+			owner_id = shared_record.owner_id
+			file_path = os.path.join(get_user_collections_dir(owner_id), path)
+			if not (os.path.exists(file_path) and os.path.isfile(file_path)):
+				return jsonify({'error': 'File not found'}), 404
+		else:
+			owner_id = user_id
 
 	# Create absolute path using the owner's directory
 	file_path = os.path.join(get_user_collections_dir(owner_id), path)
@@ -2113,7 +2177,7 @@ def login():
 			else:
 				flash('Invalid username or password', 'error')
 				return render_template('login.html')
-				
+
 		except Exception as e:
 			app.logger.error(f"Login error: {str(e)}")
 			flash('An error occurred during login. Please try again.', 'error')
@@ -2480,10 +2544,6 @@ def rename_collection_item():
 		if not is_safe_path(old_path):
 			return jsonify({'error': 'Invalid path'}), 400
 
-		# Prevent directory traversal in new name
-		if '/' in new_name or '\\' in new_name or new_name.startswith('.'):
-			return jsonify({'error': 'Invalid new name'}), 400
-
 		# Verify ownership
 		if not verify_collection_ownership(old_path, user_id):
 			return jsonify({'error': 'Access denied'}), 403
@@ -2714,12 +2774,12 @@ def share_collection_item():
 def toggle_favorite():
 	data = request.get_json()
 	file_path = data.get('path')
-	
+
 	if not file_path:
 		return jsonify({'success': False, 'error': 'No path provided'})
-		
+
 	favorite = UserFavorites.query.filter_by(user_id=current_user.id, file_path=file_path).first()
-	
+
 	if favorite:
 		db.session.delete(favorite)
 		is_favorite = False
@@ -2727,7 +2787,7 @@ def toggle_favorite():
 		favorite = UserFavorites(user_id=current_user.id, file_path=file_path)
 		db.session.add(favorite)
 		is_favorite = True
-		
+
 	db.session.commit()
 	return jsonify({'success': True, 'is_favorite': is_favorite})
 
@@ -2737,10 +2797,10 @@ def toggle_favorite():
 def move_to_trash():
 	data = request.get_json()
 	file_path = data.get('path')
-	
+
 	if not file_path:
 		return jsonify({'success': False, 'error': 'No path provided'})
-		
+
 	# Move file to trash
 	trash_item = UserTrash(
 		user_id=current_user.id,
@@ -2749,7 +2809,7 @@ def move_to_trash():
 	)
 	db.session.add(trash_item)
 	db.session.commit()
-	
+
 	# Move the actual file
 	trash_dir = os.path.join(COLLECTIONS_ROOT, 'trash')
 	os.makedirs(trash_dir, exist_ok=True)
@@ -2757,7 +2817,7 @@ def move_to_trash():
 		os.path.join(COLLECTIONS_ROOT, file_path),
 		os.path.join(trash_dir, os.path.basename(file_path))
 	)
-	
+
 	return jsonify({'success': True})
 
 
@@ -2774,41 +2834,48 @@ def list_collections_by_category(category):
 	elif category == 'favorites':
 		# Get favorited files
 		favorites = UserFavorites.query.filter_by(user_id=current_user.id).all()
-		items = [get_file_info(f.file_path) for f in favorites]
+		items = [get_file_info(f.file_path, current_user.id) for f in favorites]
 	elif category == 'trash':
 		# Get files in trash
 		trash_items = UserTrash.query.filter_by(user_id=current_user.id).all()
-		items = [get_file_info(f.file_path) for f in trash_items]
+		items = [get_file_info(f.file_path, current_user.id) for f in trash_items]
 	elif category == 'permitted':
 		# Get files shared with the user
 		items = get_shared_items(current_user.id)
 	else:
 		return jsonify({'success': False, 'error': 'Invalid category'})
-		
+
 	return jsonify({'success': True, 'items': items})
 
 
-def get_file_info(file_path):
+def get_file_info(file_path, user_id=None):
 	"""Get file information"""
 	try:
 		# Get the file info
-		file_info = {
+		if user_id is None:
+			user_id = current_user.id  # type: ignore[attr-defined]
+
+		abs_path = file_path if os.path.isabs(file_path) else _resolve_user_path(file_path, user_id)
+		if not os.path.exists(abs_path):
+			return None
+
+		info = {
 			'name': os.path.basename(file_path),
 			'path': file_path,
-			'type': 'folder' if os.path.isdir(file_path) else 'file',
-			'isDir': os.path.isdir(file_path),
-			'modifiedTime': datetime.fromtimestamp(os.path.getmtime(file_path)).isoformat()
+			'type': 'folder' if os.path.isdir(abs_path) else 'file',
+			'isDir': os.path.isdir(abs_path),
+			'modifiedTime': datetime.fromtimestamp(os.path.getmtime(abs_path)).isoformat()
 		}
 
 		# Add size for files
-		if os.path.isfile(file_path):
-			file_info['size'] = os.path.getsize(file_path)
+		if os.path.isfile(abs_path):
+			info['size'] = os.path.getsize(abs_path)
 
 			# Mark as image if it's an image file
-			if is_image_file(file_path):
-				file_info['isImage'] = True
+			if is_image_file(abs_path):
+				info['isImage'] = True
 
-		return file_info
+		return info
 	except Exception as e:
 		app.logger.error(f"Error getting file info for {file_path}: {str(e)}")
 		return None
@@ -2881,7 +2948,6 @@ def get_shared_items(user_id):
 				if collection:
 					# Use the collection entry
 					item_dict = collection.to_dict()
-					item_dict['owner_id'] = shared.owner_id
 				else:
 					# Create a dictionary with file information
 					is_dir = os.path.isdir(owner_path)
@@ -2892,8 +2958,7 @@ def get_shared_items(user_id):
 						'path': shared.path,
 						'type': 'folder' if is_dir else 'file',
 						'isDir': is_dir,
-						'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat(),
-						'owner_id': shared.owner_id
+						'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat()
 					}
 
 					# Add size for files
@@ -2906,6 +2971,7 @@ def get_shared_items(user_id):
 
 				# Add owner information
 				item_dict['shared_by'] = owner.username
+				item_dict['owner_id'] = shared.owner_id
 				items.append(item_dict)
 
 			except Exception as e:
@@ -2946,59 +3012,28 @@ def api_get_shared_items_alias():
 	return _shared_items_response()
 
 
-# -------------------------------------------------------------------
-# Legacy/utility: serve file via query parameter (?path=) as older JS expects
-# -------------------------------------------------------------------
-
-def _serve_collection_file(rel_path, user_id, owner_id_arg=None):
-	"""Internal helper to serve a collection file, with shared-file checks."""
-	from urllib.parse import unquote
-
-	# Normalize path
-	rel_path = unquote(rel_path or '').lstrip('/')
-	if rel_path == '':
-		return jsonify({'error': 'Missing path'}), 400
-
-	# Determine owner
-	try:
-		owner_id = int(owner_id_arg) if owner_id_arg is not None else user_id
-	except (TypeError, ValueError):
-		owner_id = user_id
-
-	# If owner is same as current but file shared by someone else, resolve
-	if owner_id == user_id:
-		share = SharedFile.query.filter_by(shared_with_id=user_id, path=rel_path).first()
-		if share:
-			owner_id = share.owner_id
-
-	# Validate share permission if owner differs
-	if owner_id != user_id:
-		allowed = SharedFile.query.filter_by(owner_id=owner_id, shared_with_id=user_id, path=rel_path).first()
-		if not allowed:
-			return jsonify({'error': 'Access denied'}), 403
-
-	abs_path = os.path.join(get_user_collections_dir(owner_id), rel_path)
-
-	# Security checks
-	if not os.path.normpath(abs_path).startswith(os.path.normpath(get_user_collections_dir(owner_id))):
-		return jsonify({'error': 'Access denied'}), 403
-
-	if not os.path.exists(abs_path) or not os.path.isfile(abs_path):
-		return jsonify({'error': 'File not found'}), 404
-
-	mime_type, _ = mimetypes.guess_type(abs_path)
-	return send_file(abs_path, mimetype=mime_type)
-
-
+# Alias route: Support legacy query-param style
+# ---------------------------------------------
+# Some front-end code still requests files via
+#   /api/collections/file?path=<relative_path>
+# Add a thin wrapper that forwards the request
+# to the existing get_collection_file handler,
+# preserving the optional owner_id parameter.
 @app.route('/api/collections/file', methods=['GET'])
 @login_required
 def get_collection_file_query():
-	"""Serve collection file using ?path= query style (legacy support)."""
-	if not current_user.is_authenticated:
-		return jsonify({'error': 'Authentication required'}), 401
+	"""Alias endpoint accepting `path` as a query parameter.
 
-	rel_path = request.args.get('path')
-	return _serve_collection_file(rel_path, current_user.id, request.args.get('owner_id'))
+	This exists for backward compatibility with older
+	front-end bundles that build URLs using
+	`/api/collections/file?path=...` instead of the
+	newer RESTful style `/api/collections/file/<path>`.
+	The logic is fully delegated to `get_collection_file`."""
+	path = request.args.get('path', None)
+	if not path:
+		return jsonify({'error': 'Missing "path" parameter'}), 400
+	# Delegate the heavy-lifting to the canonical handler.
+	return get_collection_file(path)
 
 
 if __name__ == '__main__':
