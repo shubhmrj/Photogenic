@@ -265,11 +265,12 @@ function setupImageClickHandlers() {
             // Only handle click if it's not from a context menu or action button
             if (!e.target.closest('.collection-actions') && !e.target.closest('.context-menu')) {
                 const path = this.getAttribute('data-path');
-                const name = this.querySelector('.collection-name').textContent;
+                const name = this.querySelector('.collection-name')?.textContent || '';
+                const ownerId = this.dataset.ownerId || null;
                 
                 if (path && path.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/i)) {
                     e.preventDefault();
-                    openImagePreview(path, name);
+                    openImagePreview(path, name, ownerId);
                 }
             }
         });
@@ -277,7 +278,7 @@ function setupImageClickHandlers() {
 }
 
 // Open the image preview modal
-function openImagePreview(path, name) {
+function openImagePreview(path, name, ownerId = null) {
     const modal = document.getElementById('simple-image-preview-modal');
     const image = document.getElementById('simple-preview-image');
     const title = document.getElementById('simple-preview-title');
@@ -304,7 +305,7 @@ function openImagePreview(path, name) {
     };
     
     // Start loading the image
-    preloader.src = getFileUrl(path);
+    preloader.src = getFileUrl(path, ownerId);
 }
 
 // Close the modal
@@ -321,7 +322,12 @@ function closeModal() {
 }
 
 // Helper to get file URL
-function getFileUrl(path) {
+function getFileUrl(path, ownerId = null) {
     const encodedPath = encodeURIComponent(path);
-    return `/api/collections/file/${encodedPath}?t=${Date.now()}`;
+    let url = `/api/collections/file/${encodedPath}`;
+    const params = [];
+    if (ownerId) params.push(`owner_id=${ownerId}`);
+    params.push(`t=${Date.now()}`);
+    if (params.length) url += `?${params.join('&')}`;
+    return url;
 }

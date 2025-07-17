@@ -63,11 +63,14 @@ class CollectionsManager {
             const trashBtn = clone.querySelector('.trash-btn');
 
             if (item.type === 'file' && item.isImage) {
-                img.src = `/api/collections/thumbnail/${encodeURIComponent(item.path)}`;
+                const thumbParams = [`t=${Date.now()}`];
+                if (item.owner_id) thumbParams.unshift(`owner_id=${item.owner_id}`);
+                img.src = `/api/collections/thumbnail/${encodeURIComponent(item.path)}?${thumbParams.join('&')}`;
                 img.alt = item.name;
                 itemName.textContent = item.name;
                 
                 gridItem.dataset.path = item.path;
+                if (item.owner_id) gridItem.dataset.ownerId = item.owner_id;
                 gridItem.dataset.type = 'file';
 
                 // Setup favorite button

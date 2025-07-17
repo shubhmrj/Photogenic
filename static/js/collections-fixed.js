@@ -21,8 +21,19 @@ const cancelFolderBtn = document.getElementById('cancel-folder-btn');
 const closeFolderModalBtn = document.querySelector('.modal-close');
 
 // Helper functions
-function getFileUrl(path) {
-    return `/api/collections/file?path=${encodeURIComponent(path)}`;
+function getFileUrl(path, ownerId = null) {
+    const encodedPath = encodeURIComponent(path);
+    let url = `/api/collections/file/${encodedPath}`;
+    const params = [];
+    if (ownerId) {
+        params.push(`owner_id=${ownerId}`);
+    }
+    // Add a timestamp to bypass browser cache and ensure latest permission checks
+    params.push(`t=${Date.now()}`);
+    if (params.length) {
+        url += `?${params.join('&')}`;
+    }
+    return url;
 }
 
 function formatSize(bytes) {
@@ -436,7 +447,7 @@ function displayCollections(collectionsData) {
                     <div class="spinner"></div>
                 </div>
                 <img 
-                    src="${getFileUrl(item.path)}" 
+                    src="${getFileUrl(item.path, item.owner_id)}" 
                     alt="${item.name}" 
                     loading="lazy"
                     onload="this.parentNode.querySelector('.thumbnail-loading')?.remove()"
@@ -455,9 +466,9 @@ function displayCollections(collectionsData) {
                     btn.addEventListener('click', (e) => {
                         e.stopPropagation();
                         if (btn.classList.contains('preview-btn')) {
-                            previewImage(item.path, item.name);
+                            previewImage(item.path, item.name, item.owner_id);
                         } else if (btn.classList.contains('download-btn')) {
-                            downloadItem(item.path, item.name);
+                            downloadItem(item.path, item.name, item.owner_id);
                         }
                     });
                 });
@@ -570,7 +581,7 @@ function displayCollections(collectionsData) {
             menuOptions.push({
                 icon: 'fas fa-download',
                 text: 'Download',
-                action: () => downloadItem(item.path, item.name)
+                action: () => downloadItem(item.path, item.name, item.owner_id)
             });
             
             // Add analyze option for images
@@ -627,10 +638,10 @@ function displayCollections(collectionsData) {
             if (item.isDir || item.type === 'folder') {
                 navigateToFolder(item.path);
             } else if (item.isImage) {
-                previewImage(item.path, item.name);
+                previewImage(item.path, item.name, item.owner_id);
             } else {
                 // For other file types, download the file
-                downloadItem(item.path, item.name);
+                downloadItem(item.path, item.name, item.owner_id);
             }
         });
         
@@ -656,10 +667,10 @@ function navigateToFolder(path) {
 }
 
 // Preview image
-function previewImage(path, name) {
+function previewImage(path, name, ownerId = null) {
     console.log('Previewing image:', path);
     // Implementation depends on your image viewer
-    const imageUrl = getFileUrl(path);
+    const imageUrl = getFileUrl(path, ownerId);
     
     // Create image viewer
     const viewer = document.createElement('div');
@@ -750,12 +761,12 @@ function deleteItem(path, name, isFolder) {
 }
 
 // Download item
-function downloadItem(path, name) {
+function downloadItem(path, name, ownerId = null) {
     console.log('Downloading item:', path);
     
     // Create a temporary link
     const link = document.createElement('a');
-    link.href = getFileUrl(path);
+    link.href = getFileUrl(path, ownerId);
     link.download = name;
     link.target = '_blank';
     

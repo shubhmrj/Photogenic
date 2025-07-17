@@ -114,7 +114,6 @@ class Collection(db.Model):
 			'path': self.path,
 			'type': 'folder' if self.is_folder else 'file',
 			'modified': self.modified_at.isoformat(),
-			'created': self.created_at.isoformat(),
 			'owner_id': self.owner_id
 		}
 
@@ -1496,6 +1495,7 @@ def get_collections():
 					if collection:
 						# Use the collection entry
 						item_dict = collection.to_dict()
+						item_dict['owner_id'] = shared.owner_id
 					else:
 						# Create a dictionary with file information
 						is_dir = os.path.isdir(owner_path)
@@ -1506,7 +1506,8 @@ def get_collections():
 							'path': shared.path,
 							'type': 'folder' if is_dir else 'file',
 							'isDir': is_dir,
-							'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat()
+							'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat(),
+							'owner_id': shared.owner_id
 						}
 
 						# Add size for files
@@ -1565,6 +1566,7 @@ def get_collections():
 					if collection:
 						# Use the collection entry
 						item_dict = collection.to_dict()
+						item_dict['owner_id'] = shared.owner_id
 					else:
 						# Create a dictionary with file information
 						is_dir = os.path.isdir(owner_path)
@@ -1575,7 +1577,8 @@ def get_collections():
 							'path': shared.path,
 							'type': 'folder' if is_dir else 'file',
 							'isDir': is_dir,
-							'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat()
+							'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat(),
+							'owner_id': shared.owner_id
 						}
 
 						# Add size for files
@@ -1825,48 +1828,8 @@ def upload_to_collection():
 @app.route('/api/collections/file/<path:path>', methods=['GET'])
 @login_required
 def get_collection_file(path):
-	if not current_user.is_authenticated:
-		return jsonify({'error': 'Authentication required'}), 401
-
-	user_id = current_user.id
-
-	# Check if this is a shared file
-	if 'owner_id' in request.args:
-		try:
-			owner_id = int(request.args.get('owner_id'))
-
-			# Check if this file is shared with the current user
-			shared = SharedFile.query.filter_by(
-				path=path,
-				owner_id=owner_id,
-				shared_with_id=user_id
-			).first()
-
-			if not shared:
-				app.logger.warning(
-					f"Access denied: User {user_id} attempted to access shared file '{path}' not shared with them")
-				return jsonify({'error': 'Access denied: file not shared with you'}), 403
-		except:
-			owner_id = user_id
-	else:
-		owner_id = user_id
-
-	# Create absolute path using the owner's directory
-	file_path = os.path.join(get_user_collections_dir(owner_id), path)
-
-	# Security check: verify the requested path is within this user's collections directory
-	if not os.path.normpath(file_path).startswith(os.path.normpath(get_user_collections_dir(owner_id))):
-		app.logger.warning(f"Access denied: User {user_id} attempted to access path '{path}' outside their directory")
-		return jsonify({'error': 'Access denied: path is outside of user directory'}), 403
-
-	# Check if file exists
-	if not os.path.exists(file_path) or not os.path.isfile(file_path):
-		return jsonify({'error': 'File not found'}), 404
-
-	# Set the correct mime type for the file
-	mime_type, _ = mimetypes.guess_type(file_path)
-
-	return send_file(file_path, mimetype=mime_type)
+	"""Serve a file from the collections, with full shared-file support handled by _serve_collection_file."""
+	return _serve_collection_file(path, current_user.id, request.args.get('owner_id'))
 
 
 @app.route('/api/collections/thumbnail/<path:path>', methods=['GET'])
@@ -2918,6 +2881,7 @@ def get_shared_items(user_id):
 				if collection:
 					# Use the collection entry
 					item_dict = collection.to_dict()
+					item_dict['owner_id'] = shared.owner_id
 				else:
 					# Create a dictionary with file information
 					is_dir = os.path.isdir(owner_path)
@@ -2928,7 +2892,8 @@ def get_shared_items(user_id):
 						'path': shared.path,
 						'type': 'folder' if is_dir else 'file',
 						'isDir': is_dir,
-						'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat()
+						'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat(),
+						'owner_id': shared.owner_id
 					}
 
 					# Add size for files
@@ -2979,6 +2944,61 @@ def api_get_shared_items():
 def api_get_shared_items_alias():
 	"""Alias for /api/collections/shared so that multiple front-end scripts work regardless of the URL they call."""
 	return _shared_items_response()
+
+
+# -------------------------------------------------------------------
+# Legacy/utility: serve file via query parameter (?path=) as older JS expects
+# -------------------------------------------------------------------
+
+def _serve_collection_file(rel_path, user_id, owner_id_arg=None):
+	"""Internal helper to serve a collection file, with shared-file checks."""
+	from urllib.parse import unquote
+
+	# Normalize path
+	rel_path = unquote(rel_path or '').lstrip('/')
+	if rel_path == '':
+		return jsonify({'error': 'Missing path'}), 400
+
+	# Determine owner
+	try:
+		owner_id = int(owner_id_arg) if owner_id_arg is not None else user_id
+	except (TypeError, ValueError):
+		owner_id = user_id
+
+	# If owner is same as current but file shared by someone else, resolve
+	if owner_id == user_id:
+		share = SharedFile.query.filter_by(shared_with_id=user_id, path=rel_path).first()
+		if share:
+			owner_id = share.owner_id
+
+	# Validate share permission if owner differs
+	if owner_id != user_id:
+		allowed = SharedFile.query.filter_by(owner_id=owner_id, shared_with_id=user_id, path=rel_path).first()
+		if not allowed:
+			return jsonify({'error': 'Access denied'}), 403
+
+	abs_path = os.path.join(get_user_collections_dir(owner_id), rel_path)
+
+	# Security checks
+	if not os.path.normpath(abs_path).startswith(os.path.normpath(get_user_collections_dir(owner_id))):
+		return jsonify({'error': 'Access denied'}), 403
+
+	if not os.path.exists(abs_path) or not os.path.isfile(abs_path):
+		return jsonify({'error': 'File not found'}), 404
+
+	mime_type, _ = mimetypes.guess_type(abs_path)
+	return send_file(abs_path, mimetype=mime_type)
+
+
+@app.route('/api/collections/file', methods=['GET'])
+@login_required
+def get_collection_file_query():
+	"""Serve collection file using ?path= query style (legacy support)."""
+	if not current_user.is_authenticated:
+		return jsonify({'error': 'Authentication required'}), 401
+
+	rel_path = request.args.get('path')
+	return _serve_collection_file(rel_path, current_user.id, request.args.get('owner_id'))
 
 
 if __name__ == '__main__':
