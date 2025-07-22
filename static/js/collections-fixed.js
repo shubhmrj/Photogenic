@@ -87,8 +87,8 @@ function setupSidebarNavigation() {
             // Add active class to clicked item
             this.classList.add('active');
             
-            // Get section name
-            const sectionName = this.querySelector('.sidebar-text').textContent.trim();
+            // Get section name - use full text content to avoid missing .sidebar-text span
+            const sectionName = this.textContent.trim();
             console.log('Clicked on sidebar section:', sectionName);
             
             // Update path based on section

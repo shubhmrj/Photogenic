@@ -1,72 +1,55 @@
-## 📸 PhotoGraphy
+![Forks](https://img.shields.io/badge/forks-44-blue)
+![Stars](https://img.shields.io/badge/stars-13-yellow)
+# Photogeni 📸✨
 
-A sleek, responsive photo gallery web app built in Python, ideal for showcasing photography portfolios. Features include image upload, EXIF metadata display, lightbox viewing, and easy customization., users can perform all actions of AI, such as animation design and story generation, and utilize all my features as an API Key.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue)](https://python.org)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/shubhmrj/PhotoGraphy/pulls)
 
----
+**Solve photo storage problems with zero-storage sharing and AI creativity** - Photogeni eliminates redundant photo sharing and cloud storage waste by enabling direct user-to-user transfers. Stop sending multiple copies and hunting for lost links!
 
-## 🔍 Overview
+👉 [Live Demo](https://photogeni.example.com) | 📚 [API Documentation](https://docs.photogeni.example.com) | 🔑 [Get API Key](https://photogeni.example.com/api-keys)
 
-PhotoGraphy provides:
+![Photogeni Interface Demo](https://via.placeholder.com/1200x600?text=Photogeni+Showcase+GIF)
 
-- **Image upload** via drag & drop or file picker  
-- **Gallery display**: grid view, click-to-enlarge with lightbox  
-- **EXIF metadata** (camera model, aperture, ISO, timestamp, etc.)  
-- **Responsive design**: Desktop, tablet & mobile friendly  
-- **Customizable look & feel** via CSS/JS  
-- **Modular & extensible**: clear structure for added features
+## Table of Contents
+1. [The Problem](#the-problem-)
+2. [Our Solution](#our-solution-)
+3. [Key Features](#key-features-)
+4. [Tech Stack](#tech-stack-)
+5. [Installation](#installation-)
+6. [Usage Guide](#usage-guide-)
+7. [API Examples](#api-examples-)
+8. [FAQ](#faq-)
+9. [Contributing](#contributing-)
+10. [License](#license-)
+11. [Contact](#contact-)
 
----
+## The Problem 💡
+Modern photo sharing creates multiple issues:
+- 📦 **Storage bloat** from duplicate photos in chats
+- 🔗 **Lost cloud links** that expire or get forgotten
+- 📱 **Device storage overload** from multiple copies
+- 🔄 **Redundant uploads** to different platforms
+- 🧩 **Fragmented editing** across different apps
 
-## ⚙️ Tech Stack
+## Our Solution 🚀
+Photogeni reimagines photo sharing:
+1. **Search & Send** - Find users and send photos directly (no links needed)
+2. **Zero-Storage Sharing** - 1 copy visible to all recipients
+3. **AI Creativity Suite** - Generate stories, animations & related images
+4. **Unified Platform** - All photo tools in one place
+5. **API Access** - Integrate with any application
 
-| Layer       | Technology                     |
-|-------------|--------------------------------|
-| Backend     | Python 3.x (Flask or Django)  |
-| Frontend    | HTML5, CSS3, JavaScript       |
-| Templating  | Jinja2                        |
-| Metadata    | Pillow / exifread             |
+## Key Features ✨
 
+### Storage-Efficient Sharing
+- 🔍 User search and direct transfer
+- 💾 Single cloud copy with multiple access
+- 📲 No local storage consumption
+- 🚫 No link management needed
 
----
-
-## 🗂️ Project Structure
-
- PhotoGraphy/
-├── main.py # App entrypoint & config
-├── requirements.txt # Dependencies
-├── .gitignore
-├── static/
-│ ├── css/
-│ │ └── collections.css # Gallery styling
-│ └── js/
-│ └── collections-fixed.js # Interactivity logic
-├── templates/
-│ └── *.html # Gallery & layout templates
-├── uploads/ # (Optional) store user uploads
-└── README.md # <- this file
-
-
-## 🚀 Installation & Setup
-
-1. **Clone the repo**
-   git clone https://github.com/shubhmrj/PhotoGraphy.git
-   cd PhotoGraphy
-
-2.Setup a virtual environment
-    python3 -m venv venv
-    source venv/bin/activate   # Windows: venv\Scripts\activate
-
-3.Install prerequisites
-    pip install -r requirements.txt
-
-4.Run the application
-    python main.py
-    Browse locally
-    Visit http://localhost:5000 in your browser.
-
-**To contribute:
-1.Fork the repository
-2.Create a new branch (feature/your-feature)
-3.Make changes and commit logically
-4.Push and open a Pull Request
-5.Maintain code quality, add docstrings & tests
+### AI Photo Tools
+```python
+# Example AI function call
+photogeni.generate_story(image_id, style="fantasy")
