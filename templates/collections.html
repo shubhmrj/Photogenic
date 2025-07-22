@@ -14,7 +14,7 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
     <!-- Google Fonts (Inter, Poppins) -->
-<!--    <link rel="preconnect" href="https://fonts.googleapis.com">-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
 
@@ -848,6 +848,26 @@
             <div class="modal-footer">
                 <button class="btn btn-secondary" id="cancel-share-btn">Cancel</button>
                 <button class="btn btn-primary" id="confirm-share-btn">Share</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Tag Modal for tagging selected items -->
+    <div class="modal" id="bulk-tag-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Tag Selected Items</h3>
+                <button class="modal-close" id="close-tag-modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="bulk-tag-input">Tags (comma separated)</label>
+                    <input type="text" id="bulk-tag-input" placeholder="e.g. vacation, family">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-tag-btn">Cancel</button>
+                <button class="btn btn-primary" id="apply-tags-btn">Apply Tags</button>
             </div>
         </div>
     </div>

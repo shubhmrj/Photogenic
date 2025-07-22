@@ -381,7 +381,6 @@ def resize_image(image_path, max_size=1920, quality=85):
 def index():
 	return render_template('index.html')
 
-
 @app.route('/interactive', methods=['GET', 'POST'])
 def interactive():
 	return render_template('interactive.html')
@@ -1411,7 +1410,8 @@ def ai_image_generation_page():
 
 
 # Collections page
-@app.route('/collections')
+@app.route('/collections', endpoint='collections')
+
 @login_required
 def collections_page():
 	# Pass the fixed CSS and JS files to the template
@@ -2124,7 +2124,7 @@ def create_thumbnail(file_path, size=(240, 180)):
 def person():
 	"""Redirecting to collections page since face recognition is disabled"""
 	flash("Face recognition has been disabled.", "warning")
-	return redirect(url_for('collections_page'))
+	return redirect(url_for('collections'))
 
 
 # --- API Endpoints for Person Page ---

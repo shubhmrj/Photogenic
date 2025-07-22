@@ -14,11 +14,18 @@
     // Real collections data will be loaded from backend
     let realCollections = [];
     
-    document.addEventListener('DOMContentLoaded', () => {
+    // Ensure advanced features initialize even if this script loads after DOMContentLoaded
+    function startAdvancedCollections() {
         initializeAdvancedFeatures();
-        // Hook into existing collections loading
         hookIntoExistingSystem();
-    });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', startAdvancedCollections);
+    } else {
+        // DOM is already ready
+        startAdvancedCollections();
+    }
     
     function initializeAdvancedFeatures() {
         initViewToggle();
@@ -864,29 +871,58 @@
     
     // Hook into existing system
     function hookIntoExistingSystem() {
-        // Override the global collections variable when it's updated
-        const originalLoadCollections = window.loadCollections;
-        if (originalLoadCollections) {
-            window.loadCollections = function() {
-                originalLoadCollections();
-                // Wait for collections to load then update our system
-                setTimeout(() => {
-                    if (window.collections) {
-                        realCollections = window.collections;
-                        displayRealCollections();
-                        updateFolderStats();
-                    }
-                }, 100);
-            };
-        }
-        
-        // Also check if collections are already loaded
-        if (window.collections) {
+    // Integrate with legacy loadCollections so advanced UI shows on first page load
+    const originalLoadCollections = window.loadCollections;
+    if (typeof originalLoadCollections === 'function') {
+        // Wrap the existing function so we can refresh advanced UI each time it runs
+        window.loadCollections = function(...args) {
+            originalLoadCollections.apply(this, args);
+            // Start a short polling loop to detect when window.collections is populated
+            let attempts = 0;
+            const pollInterval = setInterval(() => {
+                if (syncCollectionsState()) {
+                    clearInterval(pollInterval);
+                } else if (++attempts > 20) {
+                    // Stop polling after ~2 s to avoid infinite loop
+                    clearInterval(pollInterval);
+                }
+            }, 100);
+        };
+        // Call it once now (initial page load)
+        originalLoadCollections();
+
+    // Also hook into legacy displayCollections if it exists to ensure sync after render
+    const originalDisplayCollections = window.displayCollections;
+    if (typeof originalDisplayCollections === 'function' && !originalDisplayCollections.__advancedHooked) {
+        window.displayCollections = function(...dArgs) {
+            const result = originalDisplayCollections.apply(this, dArgs);
+            // Ensure we pick up the latest data once legacy view finishes
+            syncCollectionsState();
+            return result;
+        };
+        // Mark to avoid double-wrapping
+        window.displayCollections.__advancedHooked = true;
+    }
+    } else {
+        // If legacy loader not present, try to sync immediately
+        syncCollectionsState();
+    }
+
+    // Fallback: if collections already present before our script, sync now
+    syncCollectionsState();
+
+    function syncCollectionsState() {
+        if (Array.isArray(window.collections) && window.collections.length >= 0) {
             realCollections = window.collections;
             displayRealCollections();
             updateFolderStats();
+            return true; // synced successfully
         }
+        return false;
     }
+}
+        // End hookIntoExistingSystem
+
     
     function createItemElement(item) {
         const div = document.createElement('div');
@@ -952,13 +988,11 @@
         const grid = document.getElementById('collections-grid');
         if (!grid) return;
         
-        // Clear existing items (but keep skeletons during loading)
-        const existingItems = grid.querySelectorAll('.collection-item');
-        existingItems.forEach(item => item.remove());
+        // Clear any previous content rendered by legacy UI (including skeletons)
+        grid.innerHTML = '';
         
-        // Remove skeletons
-        const skeletons = grid.querySelectorAll('.skeleton-item');
-        skeletons.forEach(skeleton => skeleton.remove());
+        // Debug: log collection count
+        console.log('[Advanced] Rendering', realCollections.length, 'items');
         
         // Add real items
         realCollections.forEach(item => {
