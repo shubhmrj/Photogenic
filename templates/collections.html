@@ -6,9 +6,9 @@
     <title>PhotoGeni | Collections</title>
 
        <!-- Design System & Layout CSS -->
-    <link rel="stylesheet" href="/static/css/design-system.css">
-    <link rel="stylesheet" href="/static/css/modern-layout.css">
-    <link href="/static/css/components.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/collection_design-system.css">
+    <link rel="stylesheet" href="/static/css/collection_modern-layout.css">
+    <link href="/static/css/collection_components.css" rel="stylesheet">
 
     <!-- Icon Font (Remix Icons) -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
@@ -20,3430 +20,13 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="/static/css/share-modal.css">
+    <link rel="stylesheet" href="/static/css/collection_share-modal.css">
+    <link rel="stylesheet" href="/static/css/collections.css">
+    <link rel="stylesheet" href="/static/css/collections-advanced.css">
+    <!-- Pro Navigation Enhancements -->
+    <link rel="stylesheet" href="/static/css/nav-enhancements.css">
     <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-rgb: 79, 70, 229;
-            --primary-dark: #4338ca;
-            --primary-light: #818cf8;
-            --secondary: #444444;
-            --secondary-rgb: 68, 68, 68;
-            --accent: #ffffff;
-            --accent-rgb: 255, 255, 255;
-            --text-color: #e0e0e0;
-            --text-main: #ffffff;
-            --secondary-text: #aaaaaa;
-            --bg-main: #121212;
-            --bg-card: #1a1a1a;
-            --bg-secondary: #252525;
-            --border-color: #333333;
-            --error: #ff5555;
-            --success: #4caf50;
-            --warning: #ff9800;
-            --info: #2196f3;
-            --font-main: 'Poppins', sans-serif;
-            --heading-color: #ffffff;
-            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
-            --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15);
-            --radius-sm: 4px;
-            --radius-md: 8px;
-            --radius-lg: 12px;
-            --transition-normal: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-bounce: all 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-            --card-hover-transform: translateY(-5px);
-            --item-hover-bg: rgba(255, 255, 255, 0.05);
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: var(--font-main);
-            color: var(--text-color);
-            line-height: 1.6;
-            background-color: var(--bg-main);
-            overflow-x: hidden;
-        }
-        
-        /* Preloader */
-        .preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
-        
-        .preloader.fade-out {
-            opacity: 0;
-            visibility: hidden;
-        }
-        
-        .preloader__content {
-            text-align: center;
-            color: var(--text-main);
-        }
-        
-        .preloader__spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            border-top-color: var(--text-main);
-            animation: spin 0.8s ease-in-out infinite;
-            margin: 0 auto 20px;
-        }
-        
-        .preloader__text {
-            font-size: 1.1rem;
-            letter-spacing: 1px;
-            animation: pulse 1.5s infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        @keyframes pulse {
-            0% { opacity: 0.5; }
-            50% { opacity: 1; }
-            100% { opacity: 0.5; }
-        }
-        
-        /* Header */
-        .header {
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            height: 60px;
-            background-color: var(--bg-card);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            box-shadow: var(--shadow-sm);
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: var(--text-main);
-            font-weight: 600;
-            font-size: 1.2rem;
-            margin-right: 24px;
-        }
-        
-        .logo i {
-            color: var(--primary);
-            font-size: 1.4rem;
-            margin-right: 8px;
-        }
-
-        /* Advanced Search */
-        .search-bar {
-            position: relative;
-            flex: 1;
-            max-width: 600px;
-            margin-right: 16px;
-        }
-
-        .search-input-wrapper {
-            display: flex;
-            align-items: center;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 8px 12px;
-            transition: all 0.2s ease;
-        }
-
-        .search-input-wrapper:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
-        }
-
-        .search-input-wrapper i {
-            color: var(--text-color);
-            font-size: 1.2em;
-            margin-right: 8px;
-        }
-
-        #search-input {
-            flex: 1;
-            background: none;
-            border: none;
-            color: var(--text-main);
-            font-size: 0.95em;
-            padding: 0;
-        }
-
-        #search-input:focus {
-            outline: none;
-        }
-
-        .advanced-search-panel {
-            position: absolute;
-            top: calc(100% + 8px);
-            left: 0;
-            right: 0;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-lg);
-            padding: 16px;
-            opacity: 0;
-            transform: translateY(-10px);
-            pointer-events: none;
-            transition: all 0.2s ease;
-            z-index: 1000;
-        }
-
-        .advanced-search-panel.show {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-        .filter-group {
-            margin-bottom: 16px;
-        }
-
-        .filter-group h4 {
-            color: var(--text-main);
-            font-size: 0.9em;
-            margin-bottom: 8px;
-        }
-
-        .filter-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .checkbox {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .checkbox input {
-            margin-right: 6px;
-        }
-
-        .checkbox span {
-            color: var(--text-color);
-            font-size: 0.9em;
-        }
-
-        select {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            color: var(--text-color);
-            padding: 6px 24px 6px 8px;
-            font-size: 0.9em;
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 8px center;
-            background-size: 16px;
-        }
-
-        .custom-date-range {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .custom-date-range input {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            color: var(--text-color);
-            padding: 6px 8px;
-            font-size: 0.9em;
-        }
-
-        .tag-input-wrapper {
-            position: relative;
-            width: 100%;
-        }
-
-        #tag-input {
-            width: 100%;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            color: var(--text-color);
-            padding: 6px 8px;
-            font-size: 0.9em;
-        }
-
-        .tag-suggestions {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            box-shadow: var(--shadow-md);
-            max-height: 200px;
-            overflow-y: auto;
-            display: none;
-        }
-
-        .tag-suggestion {
-            padding: 6px 12px;
-            cursor: pointer;
-            color: var(--text-color);
-            transition: background-color 0.2s;
-        }
-
-        .tag-suggestion:hover {
-            background: var(--item-hover-bg);
-            color: var(--text-main);
-        }
-
-        .selected-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 8px;
-        }
-
-        .tag {
-            background: rgba(var(--primary-rgb), 0.1);
-            color: var(--primary);
-            border-radius: var(--radius-sm);
-            padding: 4px 8px;
-            font-size: 0.85em;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .tag i {
-            cursor: pointer;
-            font-size: 1.1em;
-        }
-                .filter-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        /* Sort Options */
-        .sort-options {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .sort-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .sort-group label {
-            color: var(--text-color);
-            font-size: 0.9em;
-        }
-
-        /* Batch Operations */
-        .batch-operations {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--bg-card);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-lg);
-            padding: 12px 16px;
-            display: none;
-            z-index: 1000;
-        }
-
-        .batch-operations.show {
-            display: block;
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translate(-50%, 20px);
-                opacity: 0;
-            }
-            to {
-                transform: translate(-50%, 0);
-                opacity: 1;
-            }
-        }
-
-        .batch-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 24px;
-        }
-
-        .batch-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .selected-count {
-            color: var(--text-main);
-            font-weight: 500;
-        }
-
-        .batch-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        /* Share Options */
-        .share-options {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .share-option {
-            background: var(--bg-secondary);
-            border-radius: var(--radius-md);
-            padding: 16px;
-        }
-
-        .share-link-options,
-        .share-email-options {
-            margin-top: 12px;
-            display: none;
-        }
-
-        .share-option input[type="radio"]:checked ~ .share-link-options,
-        .share-option input[type="radio"]:checked ~ .share-email-options {
-            display: block;
-            animation: fadeIn 0.2s ease;
-        }
-
-        .form-group {
-            margin-bottom: 12px;
-        }
-
-        .form-group label {
-            display: block;
-            color: var(--text-main);
-            font-size: 0.9em;
-            margin-bottom: 4px;
-        }
-
-        .form-group select {
-            width: 100%;
-        }
-
-        .form-group textarea {
-            width: 100%;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            padding: 8px;
-            color: var(--text-color);
-            font-size: 0.9em;
-            min-height: 80px;
-            resize: vertical;
-        }
-
-        /* Folder Tree */
-        .folder-tree {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .tree-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px;
-            cursor: pointer;
-            border-radius: var(--radius-sm);
-            transition: background-color 0.2s;
-        }
-
-        .tree-item:hover {
-            background: var(--item-hover-bg);
-        }
-
-        .tree-item.selected {
-            background: rgba(var(--primary-rgb), 0.1);
-            color: var(--primary);
-        }
-
-        .tree-item i {
-            font-size: 1.2em;
-            color: var(--text-color);
-        }
-
-        .tree-item.selected i {
-            color: var(--primary);
-        }
-
-        .tree-item-children {
-            margin-left: 24px;
-        }
-
-        /* Selection Styles */
-        .collection-item {
-            position: relative;
-        }
-
-        .collection-item.selectable::before {
-            content: '';
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            background: var(--bg-card);
-            opacity: 0;
-            transition: all 0.2s ease;
-            z-index: 1;
-        }
-
-        .collection-item.selectable:hover::before {
-            opacity: 1;
-        }
-
-        .collection-item.selected::before {
-            opacity: 1;
-            border-color: var(--primary);
-            background: var(--primary);
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E");
-            background-size: 14px;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-
-        /* Search Box */
-        .search-container {
-            flex: 1;
-            max-width: 600px;
-            margin: 0 16px;
-        }
-        
-        .search-box {
-            display: flex;
-            align-items: center;
-            background-color: var(--bg-secondary);
-            border-radius: var(--radius-lg);
-            padding: 8px 16px;
-            transition: var(--transition-normal);
-            border: 1px solid transparent;
-        }
-        
-        .search-box:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
-        }
-        
-        .search-box i {
-            color: var(--secondary-text);
-            margin-right: 8px;
-        }
-        
-        .search-box input {
-            background: transparent;
-            border: none;
-            outline: none;
-            color: var(--text-main);
-            font-size: 0.95rem;
-            width: 100%;
-        }
-        
-        /* Button enhancements */
-        .btn {
-            position: relative;
-            overflow: hidden;
-            padding: 10px 20px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-        
-        .btn:active {
-            transform: translateY(0);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-        
-        .btn::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 5px;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.5);
-            opacity: 0;
-            border-radius: 100%;
-            transform: scale(1, 1) translate(-50%, -50%);
-            transform-origin: 50% 50%;
-        }
-        
-        .btn:focus:not(:active)::after {
-            animation: ripple 1s ease-out;
-        }
-        
-        @keyframes ripple {
-            0% {
-                transform: scale(0, 0);
-                opacity: 0.5;
-            }
-            20% {
-                transform: scale(25, 25);
-                opacity: 0.3;
-            }
-            100% {
-                opacity: 0;
-                transform: scale(40, 40);
-            }
-        }
-        
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-        }
-        
-        .btn-secondary {
-            background-color: var(--bg-secondary);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-        }
-        
-        .btn-secondary:hover {
-            background-color: var(--bg-hover);
-        }
-        
-        .btn-danger {
-            background-color: var(--danger);
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background-color: var(--danger-dark);
-        }
-        
-        .btn-icon {
-            width: 36px;
-            height: 36px;
-            padding: 0;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
-            box-shadow: none !important;
-        }
-        
-        /* Buttons */
-        .btn {
-            background-color: var(--bg-card);
-            color: var(--text-color);
-            border: none;
-            border-radius: var(--radius-md);
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: var(--transition-normal);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 5px;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.3);
-            opacity: 0;
-            border-radius: 100%;
-            transform: scale(1, 1) translate(-50%, -50%);
-            transform-origin: 50% 50%;
-        }
-        
-        .btn:focus::after,
-        .btn:active::after {
-            animation: ripple 0.6s ease-out;
-        }
-        
-        @keyframes ripple {
-            0% {
-                transform: scale(0, 0);
-                opacity: 0.5;
-            }
-            20% {
-                transform: scale(25, 25);
-                opacity: 0.3;
-            }
-            100% {
-                opacity: 0;
-                transform: scale(40, 40);
-            }
-        }
-        
-        .btn:hover {
-            background-color: var(--bg-secondary);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-        }
-        
-        .btn-secondary {
-            background-color: var(--secondary);
-            color: white;
-        }
-        
-        .header-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        /* User Nav */
-        .user-nav-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .user-nav-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 8px;
-        }
-        
-        .user-nav-avatar i {
-            font-size: 1.2rem;
-            color: var(--text-main);
-        }
-        
-        .user-nav-details {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .user-nav-name {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text-main);
-        }
-        
-        .user-dropdown {
-            position: absolute;
-            top: 40px;
-            right: 0;
-            background-color: var(--bg-card);
-            border-radius: var(--radius-md);
-            padding: 6px 0;
-            display: none;
-            z-index: 10;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            min-width: 160px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: fadeIn 0.2s ease;
-        }
-        
-        .user-dropdown.show {
-            display: block;
-        }
-        
-        .user-dropdown-item {
-            padding: 10px 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .user-dropdown-item i {
-            font-size: 0.9rem;
-            width: 16px;
-            text-align: center;
-        }
-        
-        .user-dropdown-item:hover {
-            background-color: var(--item-hover-bg);
-        }
-        
-        .user-dropdown-item::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 5px;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.3);
-            opacity: 0;
-            border-radius: 100%;
-            transform: scale(1, 1) translate(-50%, -50%);
-            transform-origin: 50% 50%;
-        }
-        
-        .user-dropdown-item:focus::after,
-        .user-dropdown-item:active::after {
-            animation: ripple 0.6s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes ripple {
-            0% {
-                transform: scale(0, 0);
-                opacity: 0.5;
-            }
-            20% {
-                transform: scale(25, 25);
-                opacity: 0.3;
-            }
-            100% {
-                opacity: 0;
-                transform: scale(40, 40);
-            }
-        }
-        
-        .user-nav-info:hover .user-dropdown {
-            display: block;
-        }
-        
-        /* Main Layout */
-        .google-style {
-            display: flex;
-            flex-direction: row;
-            padding-top: 6px;
-        }
-        
-        .google-style .sidebar {
-            width: 250px;
-            background-color: var(--bg-card);
-            height: calc(100vh - 60px);
-            overflow-y: auto;
-            border-right: 1px solid var(--border-color);
-            transition: var(--transition-normal);
-            position: sticky;
-            top: 60px;
-            box-shadow: var(--shadow-md);
-        }
-        
-        .google-style .sidebar-section {
-            padding: 16px 0;
-        }
-        
-        .google-style .sidebar-title {
-            padding: 0 16px 8px;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--secondary-text);
-            font-weight: 500;
-        }
-        
-        .google-style .sidebar-item {
-            display: flex;
-            align-items: center;
-            padding: 10px 16px;
-            color: var(--text-color);
-            text-decoration: none;
-            transition: var(--transition-normal);
-            border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
-            margin-right: 8px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .google-style .sidebar-item i {
-            font-size: 1.1rem;
-            width: 24px;
-            margin-right: 12px;
-            text-align: center;
-            color: var(--secondary-text);
-            transition: var(--transition-normal);
-        }
-        
-        .google-style .sidebar-item:hover {
-            background-color: var(--item-hover-bg);
-        }
-        
-        .google-style .sidebar-item:hover i {
-            color: var(--primary);
-        }
-        
-        .google-style .sidebar-item.active {
-            background-color: rgba(var(--primary-rgb), 0.15);
-            color: var(--primary);
-            font-weight: 500;
-        }
-        
-        .google-style .sidebar-item.active i {
-            color: var(--primary);
-        }
-        
-        .google-style .sidebar-item::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 5px;
-            height: 5px;
-            background: rgba(var(--primary-rgb), 0.3);
-            opacity: 0;
-            border-radius: 100%;
-            transform: scale(1, 1) translate(-50%, -50%);
-            transform-origin: 50% 50%;
-        }
-        
-        .google-style .sidebar-item:active::after {
-            animation: ripple 0.6s ease-out;
-        }
-        
-        .google-style .sidebar-divider {
-            height: 1px;
-            background-color: var(--border-color);
-            margin: 8px 16px;
-        }
-        
-        .google-style .main-container {
-            flex: 1;
-            padding: 20px 20px 20px 20px;
-            min-height: calc(100vh - 60px);
-        }
-        
-        /* Breadcrumb navigation */
-        .breadcrumb-container {
-            margin-bottom: 20px;
-        }
-        
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            padding: 10px 0;
-        }
-        
-        .breadcrumb-item {
-            color: var(--text-color);
-            text-decoration: none;
-            transition: var(--transition-normal);
-        }
-        
-        .breadcrumb-item:hover {
-            color: var(--text-main);
-        }
-        
-        .breadcrumb-separator {
-            margin: 0 8px;
-            color: var(--secondary-text);
-        }
-        
-        /* Collections Header */
-        .collections-header {
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .header-container h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: var(--heading-color);
-        }
-        
-        .header-tools {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-        
-        .view-options {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .action-btn {
-            background-color: transparent;
-            color: var(--secondary-text);
-            border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: var(--transition-normal);
-        }
-        
-        .action-btn:hover {
-            background-color: var(--item-hover-bg);
-            color: var(--text-main);
-        }
-        
-        .action-btn.active {
-            background-color: rgba(var(--primary-rgb), 0.15);
-            color: var(--primary);
-        }
-        
-        .sort-select {
-            background-color: var(--bg-secondary);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 8px 12px;
-            font-size: 0.9rem;
-            outline: none;
-            cursor: pointer;
-            transition: var(--transition-normal);
-        }
-        
-        .sort-select:hover, .sort-select:focus {
-            border-color: var(--primary);
-        }
-        
-        .sort-select option {
-            background-color: var(--bg-card);
-            color: var(--text-color);
-        }
-        
-        /* Collections Grid */
-        .collections-grid {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            min-height: 300px;
-            padding: 16px;
-        }
-        
-        .collections-items-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            width: 100%;
-        }
-        
-        .collections-grid.list-view {
-            grid-template-columns: 1fr;
-            gap: 10px;
-        }
-        
-        .collections-grid.list-view .collection-item {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            padding: 12px;
-            height: auto;
-        }
-        
-        .collections-grid.list-view .collection-preview {
-            width: 60px;
-            height: 60px;
-            aspect-ratio: 1/1;
-            margin-right: 16px;
-            flex-shrink: 0;
-        }
-        
-        .collections-grid.list-view .collection-info {
-            flex: 1;
-            padding: 0;
-        }
-        
-        .collections-grid.list-view .collection-meta {
-            display: flex;
-            gap: 24px;
-        }
-        
-        .collections-grid.list-view .collection-actions {
-            margin-left: auto;
-            display: flex;
-            gap: 8px;
-        }
-        
-        .collections-grid.grid-view .collection-item {
-            animation: fadeInUp 0.5s ease forwards;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .collection-item {
-            background-color: var(--bg-card);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            position: relative;
-            transition: var(--transition-normal);
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .collection-item:hover {
-            transform: var(--card-hover-transform);
-            box-shadow: var(--shadow-md);
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-        
-        .collection-item.folder .collection-preview {
-            background-color: rgba(var(--primary-rgb), 0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .collection-item.folder .collection-preview i {
-            font-size: 3rem;
-            color: var(--primary);
-        }
-        
-        .collection-preview {
-            aspect-ratio: 16/9;
-            background-color: var(--bg-secondary);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .collection-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-        
-        .collection-item:hover .collection-preview img {
-            transform: scale(1.05);
-        }
-        
-        .collection-info {
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-        
-        .collection-name {
-            font-weight: 500;
-            margin-bottom: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            color: var(--text-main);
-        }
-        
-        .collection-meta {
-            font-size: 0.8rem;
-            color: var(--secondary-text);
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .collection-img-container {
-            position: relative;
-            overflow: hidden;
-            padding-top: 75%;
-        }
-        
-        .collection-img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-        
-        .collection-item:hover .collection-img {
-            transform: scale(1.03);
-        }
-        
-        .folder-icon {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 3rem;
-            color: #4285f4;
-        }
-        
-        .item-count {
-            position: absolute;
-            bottom: 8px;
-            right: 8px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            font-size: 0.7rem;
-            padding: 3px 8px;
-            border-radius: 12px;
-            z-index: 2;
-        }
-
-        /* Shared badge styles */
-        .shared-badge {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background-color: rgba(33, 150, 243, 0.9);
-            color: white;
-            font-size: 11px;
-            padding: 3px 8px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            z-index: 2;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        
-        .shared-badge i {
-            margin-right: 4px;
-            font-size: 10px;
-        }
-        
-        .collections-items-list .shared-badge {
-            position: static;
-            margin-left: 8px;
-            font-size: 10px;
-            padding: 2px 6px;
-        }
-
-        /* Item Menu */
-        .item-menu {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 5;
-        }
-
-        .item-menu-button {
-            background: rgba(0, 0, 0, 0.2);
-            border: none;
-            color: white;
-            opacity: 0;
-            font-size: 1rem;
-            cursor: pointer;
-            padding: 6px;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-
-        .collection-item:hover .item-menu-button {
-            opacity: 0.8;
-        }
-
-        .item-menu-button:hover {
-            opacity: 1 !important;
-            background: rgba(0, 0, 0, 0.4);
-            transform: scale(1.05);
-        }
-
-        .item-dropdown {
-            position: absolute;
-            top: 36px;
-            right: 0;
-            background-color: var(--bg-card);
-            border-radius: 8px;
-            padding: 6px 0;
-            display: none;
-            z-index: 10;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            min-width: 160px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: fadeIn 0.2s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .item-dropdown.show {
-            display: block;
-        }
-
-        .dropdown-item {
-            padding: 10px 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .dropdown-item i {
-            font-size: 0.9rem;
-            width: 16px;
-            text-align: center;
-        }
-
-        .dropdown-item:hover {
-            background-color: rgba(255, 255, 255, 0.08);
-        }
-
-        .dropdown-item::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 5px;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.3);
-            opacity: 0;
-            border-radius: 100%;
-            transform: scale(1, 1) translate(-50%, -50%);
-            transform-origin: 50% 50%;
-        }
-
-        .dropdown-item:focus::after,
-        .dropdown-item:active::after {
-            animation: ripple 0.6s ease-out;
-        }
-
-        @keyframes ripple {
-            0% {
-                transform: scale(0, 0);
-                opacity: 0.5;
-            }
-            20% {
-                transform: scale(25, 25);
-                opacity: 0.3;
-            }
-            100% {
-                opacity: 0;
-                transform: scale(40, 40);
-            }
-        }
-
-        .item-menu-button:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px var(--primary-color);
-            opacity: 1;
-        }
-
-        .dropdown-item:focus {
-            outline: none;
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        /* Owner badges and permission indicators */
-        .owner-badge {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background-color: rgba(0, 0, 0, 0.6);
-            color: white;
-            font-size: 0.7rem;
-            padding: 3px 8px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            z-index: 2;
-            backdrop-filter: blur(4px);
-        }
-        
-        .owner-badge i {
-            font-size: 0.8rem;
-        }
-        
-        .owner-badge.self {
-            background-color: rgba(var(--primary-rgb), 0.8);
-        }
-        
-        .owner-badge.shared {
-            background-color: rgba(var(--info-rgb), 0.8);
-        }
-        
-        /* Drag and drop indicators */
-        .drag-over {
-            border: 2px dashed var(--primary) !important;
-            background-color: rgba(var(--primary-rgb), 0.05) !important;
-            transform: scale(1.02) !important;
-        }
-        
-        .dragging {
-            opacity: 0.6;
-            transform: scale(0.95);
-        }
-        
-        /* Keyboard shortcuts modal */
-        .shortcuts-modal .modal-content {
-            max-width: 600px;
-        }
-        
-        .shortcuts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 16px;
-        }
-        
-        .shortcut-category {
-            margin-bottom: 20px;
-        }
-        
-        .shortcut-category-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--primary);
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 6px;
-        }
-        
-        .shortcut-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        
-        .shortcut-keys {
-            display: flex;
-            gap: 4px;
-        }
-        
-        .key {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            padding: 2px 6px;
-            font-size: 0.8rem;
-            font-family: monospace;
-            color: var(--text-main);
-            min-width: 24px;
-            text-align: center;
-            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: var(--bg-main);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: var(--bg-secondary);
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--border-color);
-        }
-
-        /* Upload progress styling */
-        .upload-progress-container {
-            position: fixed;
-            bottom: 24px;
-            left: 24px;
-            width: 350px;
-            z-index: 1000;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-        }
-        
-        .upload-progress-container.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .upload-progress-box {
-            background-color: var(--bg-card);
-            border-radius: var(--radius-md);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            padding: 16px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-        
-        .upload-progress-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        
-        .upload-progress-title {
-            font-weight: 500;
-            color: var(--text-main);
-        }
-        
-        .upload-progress-close {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            opacity: 0.7;
-            font-size: 0.9rem;
-            cursor: pointer;
-            padding: 0 5px;
-            margin-left: 10px;
-        }
-        
-        .upload-progress-close:hover {
-            opacity: 1;
-        }
-        
-        .upload-progress-bar {
-            height: 6px;
-            background-color: var(--bg-secondary);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-bottom: 8px;
-        }
-        
-        .upload-progress-fill {
-            height: 100%;
-            background-color: var(--primary);
-            border-radius: 3px;
-            width: 0;
-            transition: width 0.3s ease;
-        }
-        
-        .upload-progress-status {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            text-align: right;
-        }
-
-        /* Empty folder state */
-        .empty-folder-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 48px 24px;
-            text-align: center;
-            width: 100%;
-            min-height: 400px;
-            background-color: rgba(var(--primary-rgb), 0.03);
-            border-radius: var(--radius-lg);
-            border: 1px dashed rgba(var(--primary-rgb), 0.2);
-            animation: fadeIn 0.5s ease forwards;
-        }
-        
-        .empty-folder-state p {
-            color: var(--text-secondary);
-            margin-bottom: 24px;
-            max-width: 400px;
-        }
-        
-        .empty-folder-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        /* Empty folder styling */
-        .empty-folder-icon {
-            font-size: 3.5rem;
-            color: rgba(var(--primary-rgb), 0.3);
-            margin-bottom: 16px;
-        }
-        
-        .empty-folder-text {
-            font-size: 1.2rem;
-            font-weight: 500;
-            color: var(--text-main);
-            margin-bottom: 8px;
-        }
-
-        /* Modal */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-        .modal.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            background-color: var(--bg-secondary);
-            border-radius: var(--radius-md);
-            width: 100%;
-            max-width: 400px;
-            overflow: hidden;
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
-
-        .modal.show .modal-content {
-            transform: scale(1);
-        }
-
-        .modal-header {
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .modal-header h3 {
-            margin: 0;
-            font-size: 1.2rem;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--text-color);
-            cursor: pointer;
-        }
-
-        .modal-body {
-            padding: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-main);
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 10px 15px;
-            background-color: var(--bg-main);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            color: var(--text-main);
-            font-family: var(--font-main);
-            transition: border-color 0.2s ease;
-        }
-
-        .form-group input:focus {
-            border-color: #4285f4;
-            outline: none;
-        }
-
-        .modal-footer {
-            padding: 15px 20px;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            border: none;
-            transition: var(--transition-normal);
-        }
-
-        .btn-secondary {
-            background-color: #4b5563;
-            color: white;
-        }
-
-        .btn-danger {
-            background-color: #ff5252;
-            color: white;
-        }
-        
-        /* Toast notifications */
-        #toast-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
-
-        .toast {
-            display: flex;
-            align-items: flex-start;
-            background-color: var(--bg-card);
-            color: var(--text-main);
-            border-radius: var(--radius-md);
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            box-shadow: var(--shadow-lg);
-            width: 300px;
-            max-width: 90vw;
-            animation: slideIn 0.3s ease forwards;
-            position: relative;
-        }
-
-        .toast.toast-hide {
-            animation: slideOut 0.3s ease forwards;
-        }
-
-        .toast-icon {
-            margin-right: 10px;
-            font-size: 1.4rem;
-        }
-
-        .toast-info .toast-icon {
-            color: var(--info);
-        }
-
-        .toast-success .toast-icon {
-            color: var(--success);
-        }
-
-        .toast-warning .toast-icon {
-            color: var(--warning);
-        }
-
-        .toast-error .toast-icon {
-            color: var(--error);
-        }
-
-        .toast-content {
-            flex: 1;
-        }
-
-        .toast-title {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .toast-message {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        .toast-close {
-            background: none;
-            border: none;
-            color: var(--text-main);
-            opacity: 0.7;
-            font-size: 0.9rem;
-            cursor: pointer;
-            padding: 0 5px;
-            margin-left: 10px;
-        }
-
-        .toast-close:hover {
-            opacity: 1;
-        }
-
-        /* Animations */
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .page-transition {
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Responsive styles */
-        @media (max-width: 992px) {
-            .google-style .main-container {
-                padding-left: 20px;
-            }
-
-            .google-style .sidebar {
-                transform: translateX(-100%);
-                z-index: 999;
-                transition: transform 0.3s ease;
-            }
-
-            .google-style .sidebar.active {
-                transform: translateX(0);
-            }
-
-            .sidebar-toggle {
-                display: block;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                padding: 10px 15px;
-            }
-
-            .search-container {
-                display: none;
-            }
-
-            .collections-grid {
-                grid-template-columns: repeat (auto-fill, minmax(160px, 1fr));
-            }
-
-            .header-actions .btn span {
-                display: none;
-            }
-
-            .header-actions .btn {
-                width: 40px;
-                height: 40px;
-                justify-content: center;
-                padding: 0;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .collections-grid {
-                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            }
-
-            .empty-actions {
-                flex-direction: column;
-                width: 100%;
-                max-width: 200px;
-            }
-        }
-
-        /* Image Preview Styles */
-        .image-preview-content {
-            width: 90%;
-            max-width: 1200px;
-            height: 90%;
-            max-height: 800px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .image-preview-body {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            padding: 0;
-        }
-
-        .image-preview-container {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            background-color: #1a1a1a;
-            display: flex;
-            flex-direction: column;
-        }
-
-<!--        .image-controls {-->
-<!--            display: flex;-->
-<!--            justify-content: center;-->
-<!--            padding: 10px;-->
-<!--            background-color: rgba(0, 0, 0, 0.5);-->
-<!--            z-index: 2;-->
-<!--            position: absolute;-->
-<!--            top: 0;-->
-<!--            left: 0;-->
-<!--            right: 0;-->
-<!--        }-->
-
-<!--        .image-controls {-->
-<!--  position: absolute; /* Keep this */-->
-<!--  bottom: 10px; /* Position with a small margin from the bottom edge */-->
-<!--  left: 50%; /* Start the left edge at the horizontal center of the parent */-->
-<!--  transform: translateX(-50%); /* Shift the element left by half of its own width to truly center it */-->
-<!--  top: auto; /* Remove top constraint */-->
-<!--  right: auto; /* Remove right constraint */-->
-
-<!--  display: flex; /* Keep for button layout */-->
-<!--  justify-content: center; /* Keep to center buttons horizontally */-->
-<!--  padding: 10px; /* Keep padding */-->
-<!--  background-color: rgba(0, 0, 0, 0.5); /* Keep background */-->
-<!--  z-index: 2; /* Keep z-index */-->
-
-<!--  /* Size will be determined by content with auto, or you can set specific width/height */-->
-<!--  width: auto;-->
-<!--  height: auto;-->
-<!--}-->
-
-        const imageControlsElement = $0.parentElement;
-        // Select the parent .image-controls element
-        await setElementStyles(imageControlsElement, {
-        bottom: '0',
-        left: '0',
-        right: '0',
-        top: 'auto',
-        height: 'auto' // Ensure height adjusts to content
-        });
-        const data = {};
-
-        .image-control-btn {
-            background-color: #333;
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            margin: 0 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s;
-            font-size: 26px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-        }
-
-        .image-control-btn:hover {
-            background-color: #555;
-        }
-
-        .image-control-btn:active {
-            background-color: #007bff;
-        }
-
-        .image-preview-wrapper {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        #preview-image {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            transition: transform 0.3s ease;
-            cursor: grab;
-        }
-
-        #preview-image:active {
-            cursor: grabbing;
-        }
-
-        .image-preview-info {
-            padding: 15px;
-            background-color: #007bff;
-            border-top: 1px solid #ddd;
-            display: flex;
-            flex-wrap: wrap;
-        }
-
-        .info-item {
-            margin-right: 20px;
-            margin-bottom: 5px;
-        }
-
-        .info-label {
-            font-weight: bold;
-            color: #555;
-        }
-
-        .info-value {
-            color: #333;
-        }
-
-        /* Upload Progress Bar */
-        .upload-progress-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-        .upload-progress-container.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .upload-progress-box {
-            width: 400px;
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .upload-progress-title {
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-bottom: 15px;
-        }
-
-        .upload-progress-bar {
-            height: 8px;
-            background-color: #f0f0f0;
-            border-radius: 4px;
-            margin-bottom: 10px;
-            overflow: hidden;
-        }
-
-        .upload-progress-fill {
-            height: 100%;
-            background-color: var(--primary);
-            width: 0%;
-            transition: width 0.2s ease;
-        }
-
-        .upload-progress-status {
-            font-size: 0.9rem;
-            color: var(--text-main);
-        }
-
-        /* User info styles */
-        .user-info {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 12px;
-        }
-
-        .user-avatar i {
-            font-size: 1.4rem;
-            color: var(--text-main);
-        }
-
-        .user-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .user-name {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text-main);
-        }
-
-        .user-email {
-            font-size: 0.8rem;
-            color: var(--secondary-text);
-        }
-
-        /* Modal Dialog */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-
-        .modal.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-content {
-            background-color: var(--bg-card);
-            border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
-
-        .modal.show .modal-content {
-            transform: scale(1);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .modal-body {
-            padding: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-main);
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 10px 15px;
-            background-color: var(--bg-main);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            color: var(--text-main);
-            font-family: var(--font-main);
-            transition: border-color 0.2s ease;
-        }
-
-        .form-group input:focus {
-            border-color: #4285f4;
-            outline: none;
-        }
-
-        .modal-footer {
-            padding: 15px 20px;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            border: none;
-            transition: var(--transition-normal);
-        }
-
-        .btn-secondary {
-            background-color: #4b5563;
-            color: white;
-        }
-
-        .btn-danger {
-            background-color: #ff5252;
-            color: white;
-        }
-        
-        /* Toast notifications */
-        #toast-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
-
-        .toast {
-            display: flex;
-            align-items: flex-start;
-            background-color: var(--bg-card);
-            color: var(--text-main);
-            border-radius: var(--radius-md);
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            box-shadow: var(--shadow-lg);
-            width: 300px;
-            max-width: 90vw;
-            animation: slideIn 0.3s ease forwards;
-            position: relative;
-        }
-
-        .toast.toast-hide {
-            animation: slideOut 0.3s ease forwards;
-        }
-
-        .toast-icon {
-            margin-right: 10px;
-            font-size: 1.4rem;
-        }
-
-        .toast-info .toast-icon {
-            color: var(--info);
-        }
-
-        .toast-success .toast-icon {
-            color: var(--success);
-        }
-
-        .toast-warning .toast-icon {
-            color: var(--warning);
-        }
-
-        .toast-error .toast-icon {
-            color: var(--error);
-        }
-
-        .toast-content {
-            flex: 1;
-        }
-
-        .toast-title {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .toast-message {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        .toast-close {
-            background: none;
-            border: none;
-            color: var(--text-main);
-            opacity: 0.7;
-            font-size: 0.9rem;
-            cursor: pointer;
-            padding: 0 5px;
-            margin-left: 10px;
-        }
-
-        .toast-close:hover {
-            opacity: 1;
-        }
-
-        /* Animations */
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .page-transition {
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Responsive styles */
-        @media (max-width: 992px) {
-            .google-style .main-container {
-                padding-left: 20px;
-            }
-
-            .google-style .sidebar {
-                transform: translateX(-100%);
-                z-index: 999;
-                transition: transform 0.3s ease;
-            }
-
-            .google-style .sidebar.active {
-                transform: translateX(0);
-            }
-
-            .sidebar-toggle {
-                display: block;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                padding: 10px 15px;
-            }
-
-            .search-container {
-                display: none;
-            }
-
-            .collections-grid {
-                grid-template-columns: repeat (auto-fill, minmax(160px, 1fr));
-            }
-
-            .header-actions .btn span {
-                display: none;
-            }
-
-            .header-actions .btn {
-                width: 40px;
-                height: 40px;
-                justify-content: center;
-                padding: 0;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .collections-grid {
-                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            }
-
-            .empty-actions {
-                flex-direction: column;
-                width: 100%;
-                max-width: 200px;
-            }
-        }
-
-        /* Image Preview Styles */
-        .image-preview-content {
-            width: 90%;
-            max-width: 1200px;
-            height: 90%;
-            max-height: 800px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .image-preview-body {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            padding: 0;
-        }
-
-        .image-preview-container {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            background-color: #1a1a1a;
-            display: flex;
-            flex-direction: column;
-        }
-
-<!--        .image-controls {-->
-<!--            display: flex;-->
-<!--            justify-content: center;-->
-<!--            padding: 10px;-->
-<!--            background-color: rgba(0, 0, 0, 0.5);-->
-<!--            z-index: 2;-->
-<!--            position: absolute;-->
-<!--            top: 0;-->
-<!--            left: 0;-->
-<!--            right: 0;-->
-<!--        }-->
-
-<!--        .image-controls {-->
-<!--  position: absolute; /* Keep this */-->
-<!--  bottom: 10px; /* Position with a small margin from the bottom edge */-->
-<!--  left: 50%; /* Start the left edge at the horizontal center of the parent */-->
-<!--  transform: translateX(-50%); /* Shift the element left by half of its own width to truly center it */-->
-<!--  top: auto; /* Remove top constraint */-->
-<!--  right: auto; /* Remove right constraint */-->
-
-<!--  display: flex; /* Keep for button layout */-->
-<!--  justify-content: center; /* Keep to center buttons horizontally */-->
-<!--  padding: 10px; /* Keep padding */-->
-<!--  background-color: rgba(0, 0, 0, 0.5); /* Keep background */-->
-<!--  z-index: 2; /* Keep z-index */-->
-
-<!--  /* Size will be determined by content with auto, or you can set specific width/height */-->
-<!--  width: auto;-->
-<!--  height: auto;-->
-<!--}-->
-
-        const imageControlsElement = $0.parentElement;
-        // Select the parent .image-controls element
-        await setElementStyles(imageControlsElement, {
-        bottom: '0',
-        left: '0',
-        right: '0',
-        top: 'auto',
-        height: 'auto' // Ensure height adjusts to content
-        });
-        const data = {};
-
-        .image-control-btn {
-            background-color: #333;
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            margin: 0 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s;
-            font-size: 26px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-        }
-
-        .image-control-btn:hover {
-            background-color: #555;
-        }
-
-        .image-control-btn:active {
-            background-color: #007bff;
-        }
-
-        .image-preview-wrapper {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        #preview-image {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            transition: transform 0.3s ease;
-            cursor: grab;
-        }
-
-        #preview-image:active {
-            cursor: grabbing;
-        }
-
-        .image-preview-info {
-            padding: 15px;
-            background-color: #007bff;
-            border-top: 1px solid #ddd;
-            display: flex;
-            flex-wrap: wrap;
-        }
-
-        .info-item {
-            margin-right: 20px;
-            margin-bottom: 5px;
-        }
-
-        .info-label {
-            font-weight: bold;
-            color: #555;
-        }
-
-        .info-value {
-            color: #333;
-        }
-
-        /* Upload Progress Bar */
-        .upload-progress-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-        .upload-progress-container.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .upload-progress-box {
-            width: 400px;
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .upload-progress-title {
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-bottom: 15px;
-        }
-
-        .upload-progress-bar {
-            height: 8px;
-            background-color: #f0f0f0;
-            border-radius: 4px;
-            margin-bottom: 10px;
-            overflow: hidden;
-        }
-
-        .upload-progress-fill {
-            height: 100%;
-            background-color: var(--primary);
-            width: 0%;
-            transition: width 0.2s ease;
-        }
-
-        .upload-progress-status {
-            font-size: 0.9rem;
-            color: var(--text-main);
-        }
-
-        /* User info styles */
-        .user-info {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 12px;
-        }
-
-        .user-avatar i {
-            font-size: 1.4rem;
-            color: var(--text-main);
-        }
-
-        .user-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .user-name {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text-main);
-        }
-
-        .user-email {
-            font-size: 0.8rem;
-            color: var(--secondary-text);
-        }
-
-        /* Modal Dialog */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-
-        .modal.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-content {
-            background-color: var(--bg-card);
-            border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
-
-        .modal.show .modal-content {
-            transform: scale(1);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .modal-body {
-            padding: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-main);
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 10px 15px;
-            background-color: var(--bg-main);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            color: var(--text-main);
-            font-family: var(--font-main);
-            transition: border-color 0.2s ease;
-        }
-
-        .form-group input:focus {
-            border-color: #4285f4;
-            outline: none;
-        }
-
-        .modal-footer {
-            padding: 15px 20px;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            border: none;
-            transition: var(--transition-normal);
-        }
-
-        .btn-secondary {
-            background-color: #4b5563;
-            color: white;
-        }
-
-        .btn-danger {
-            background-color: #ff5252;
-            color: white;
-        }
-        
-        /* Image Preview Modal */
-        .image-preview-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 1050;
-            display: flex;
-            flex-direction: column;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-        
-        .image-preview-modal.show {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .image-preview-content {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-        
-        .image-preview-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 24px;
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
-            z-index: 2;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        
-        .image-preview-title {
-            color: white;
-            font-size: 1.1rem;
-            font-weight: 500;
-            max-width: 70%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        
-        .image-preview-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            opacity: 0.8;
-            transition: opacity 0.2s ease;
-        }
-        
-        .image-preview-close:hover {
-            opacity: 1;
-        }
-        
-        .image-preview-container {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-            padding: 60px 0;
-            box-sizing: border-box;
-        }
-        
-        .image-preview-img-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            cursor: grab;
-        }
-        
-        .image-preview-img {
-            max-width: 85%;
-            max-height: 85%;
-            object-fit: contain;
-            transition: transform 0.3s ease;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-        }
-        
-        .image-preview-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 24px;
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
-            z-index: 2;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        
-        .image-preview-info {
-            display: flex;
-            gap: 16px;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
-        }
-        
-        .image-preview-actions {
-            display: flex;
-            gap: 12px;
-        }
-        
-        .image-controls {
-            position: absolute;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 12px;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 12px 20px;
-            border-radius: 50px;
-            z-index: 3;
-        }
-        
-        .image-control-button {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .image-control-button:hover {
-            background-color: rgba(var(--primary-rgb), 0.8);
-        }
-        
-        /* Toast Notifications */
-        .toast-container {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            z-index: 1000;
-            max-width: 350px;
-        }
-        
-        .toast {
-            display: flex;
-            align-items: flex-start;
-            background-color: var(--bg-card);
-            color: var(--text-main);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            box-shadow: var(--shadow-lg);
-            animation: slideInRight 0.3s ease forwards;
-            border-left: 4px solid var(--primary);
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .toast.closing {
-            animation: slideOutRight 0.3s ease forwards;
-        }
-        
-        .toast.success {
-            border-left-color: var(--success);
-        }
-        
-        .toast.error {
-            border-left-color: var(--error);
-        }
-        
-        .toast.warning {
-            border-left-color: var(--warning);
-        }
-        
-        .toast.info {
-            border-left-color: var(--info);
-        }
-        
-        .toast-icon {
-            margin-right: 12px;
-            font-size: 1.4rem;
-        }
-        
-        .toast.success .toast-icon {
-            color: var(--success);
-        }
-        
-        .toast.error .toast-icon {
-            color: var(--error);
-        }
-        
-        .toast.warning .toast-icon {
-            color: var(--warning);
-        }
-        
-        .toast.info .toast-icon {
-            color: var(--info);
-        }
-        
-        .toast-content {
-            flex: 1;
-        }
-        
-        .toast-title {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .toast-message {
-            font-size: 0.9rem;
-            color: var(--secondary-text);
-        }
-        
-        .toast-close {
-            background: none;
-            border: none;
-            color: var(--secondary-text);
-            cursor: pointer;
-            font-size: 1.2rem;
-            padding: 0;
-            margin-left: 12px;
-            transition: color 0.2s ease;
-        }
-        
-        .toast-close:hover {
-            color: var(--text-main);
-        }
-        
-        .toast-progress {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 3px;
-            background-color: rgba(255, 255, 255, 0.2);
-            width: 100%;
-        }
-        
-        .toast-progress-bar {
-            height: 100%;
-            background-color: var(--primary);
-            width: 100%;
-            animation: progress 5s linear forwards;
-        }
-        
-        .toast.success .toast-progress-bar {
-            background-color: var(--success);
-        }
-        
-        .toast.error .toast-progress-bar {
-            background-color: var(--error);
-        }
-        
-        .toast.warning .toast-progress-bar {
-            background-color: var(--warning);
-        }
-        
-        .toast.info .toast-progress-bar {
-            background-color: var(--info);
-        }
-        
-        @keyframes progress {
-            from { width: 100%; }
-            to { width: 0%; }
-        }
-        
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        @keyframes slideOutRight {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-        
-        /* Loading indicator */
-        .loading-indicator {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            min-height: 200px;
-            font-size: 1rem;
-            color: var(--text-secondary);
-            gap: 12px;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        .loading-indicator i {
-            font-size: 2rem;
-            color: var(--primary);
-            animation: spin 1.5s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Error state */
-        .error-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-            text-align: center;
-            width: 100%;
-            min-height: 300px;
-            background-color: rgba(var(--danger-rgb), 0.03);
-            border-radius: var(--radius-lg);
-            border: 1px dashed rgba(var(--danger-rgb), 0.2);
-        }
-        
-        .error-state i {
-            font-size: 3rem;
-            color: var(--danger);
-            margin-bottom: 16px;
-        }
-        
-        .error-state p {
-            font-size: 1rem;
-            color: var(--text-main);
-            margin-bottom: 24px;
-        }
-        
-        /* Collection item styling */
-        .collection-item {
-            position: relative;
-            transition: all 0.3s ease;
-            animation: fadeIn 0.5s ease forwards;
-            margin-bottom: 16px;
-        }
-        
-        .collection-card {
-            background-color: var(--bg-card);
-            border-radius: var(--radius-md);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-            height: 100%;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .collection-item:hover .collection-card {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-            border-color: rgba(var(--primary-rgb), 0.3);
-        }
-        
-        .collection-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 16px;
-            height: 100px;
-        }
-        
-        .collection-icon i.fa-folder {
-            color: #ffc107;
-        }
-        
-        .collection-details {
-            flex: 1;
-        }
-        
-        .collection-name {
-            font-weight: 500;
-            font-size: 1rem;
-            margin-bottom: 8px;
-            color: var(--text-main);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .collection-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-        
-        .collection-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 16px;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.3s ease;
-        }
-        
-        .collection-item:hover .collection-actions {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .action-button {
-            background: none;
-            border: none;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .action-button:hover {
-            background-color: var(--bg-hover);
-            color: var(--primary);
-        }
-        
-        .delete-button:hover {
-            color: var(--danger);
-        }
-        
-        /* Owner badge */
-        .owner-badge {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: 500;
-            z-index: 1;
-        }
-        
-        /* Drag and drop styles */
-        .collection-item.dragging {
-            opacity: 0.5;
-            z-index: 10;
-        }
-        
-        .collection-item.drag-over .collection-card {
-            background-color: rgba(var(--primary-rgb), 0.05);
-            border: 2px dashed var(--primary);
-        }
-        
-        .collections-grid.drag-over {
-            background-color: rgba(var(--primary-rgb), 0.05);
-            border: 2px dashed var(--primary);
-            border-radius: var(--radius-lg);
-        }
-        
-        /* Share modal styles */
-        .share-users-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-        .share-users-list {
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            background-color: var(--bg-secondary);
-        }
-        
-        .share-user-item {
-            display: flex;
-            align-items: center;
-            padding: 10px 15px;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: var(--transition-normal);
-        }
-        
-        .share-user-item:last-child {
-            border-bottom: none;
-        }
-        
-        .share-user-item:hover {
-            background-color: var(--item-hover-bg);
-        }
-        
-        .share-user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 500;
-            margin-right: 12px;
-        }
-        
-        .share-user-details {
-            flex: 1;
-        }
-        
-        .share-user-name {
-            font-weight: 500;
-            color: var(--text-main);
-        }
-        
-        .share-user-email {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-        
-        .share-user-action {
-            margin-left: auto;
-        }
-        
-        .share-selected-users {
-            margin-top: 20px;
-        }
-        
-        .selected-users-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .selected-user-tag {
-            display: flex;
-            align-items: center;
-            background-color: var(--primary);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-        }
-        
-        .selected-user-tag .remove-user {
-            margin-left: 8px;
-            cursor: pointer;
-            opacity: 0.8;
-            transition: opacity 0.2s;
-        }
-        
-        .selected-user-tag .remove-user:hover {
-            opacity: 1;
-        }
-        
-        .no-users-message {
-            padding: 20px;
-            text-align: center;
-            color: var(--text-secondary);
-        }
-        
-        /* Three-dot menu */
-        .three-dot-menu {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background-color: rgba(0, 0, 0, 0.6);
-            color: white;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            z-index: 20;
-            opacity: 0.7;
-        }
-
-        .collection-item:hover .three-dot-menu {
-            opacity: 1;
-            background-color: var(--primary);
-        }
-
-        .three-dot-menu:hover {
-            background-color: var(--primary-dark);
-            transform: scale(1.1);
-        }
-
-        /* List view menu positioning */
-        .collection-item.list-view .three-dot-menu {
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .collection-item.list-view .three-dot-menu:hover {
-            transform: translateY(-50%) scale(1.1);
-        }
-
-        /* Dropdown menu styling */
-        .dropdown-menu {
-            position: absolute;
-            top: 45px;
-            right: 10px;
-            background-color: var(--bg-secondary);
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            padding: 8px 0;
-            min-width: 160px;
-            display: none;
-            z-index: 100;
-        }
-
-        .dropdown-menu.show {
-            display: block;
-            animation: fadeInUp 0.2s ease forwards;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .dropdown-item {
-            padding: 10px 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .dropdown-item i {
-            font-size: 0.9rem;
-            width: 16px;
-            text-align: center;
-        }
-
-        .dropdown-item:hover {
-            background-color: rgba(255, 255, 255, 0.08);
-        }
-
-        .dropdown-item::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 5px;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.3);
-            opacity: 0;
-            border-radius: 100%;
-            transform: scale(1, 1) translate(-50%, -50%);
-            transform-origin: 50% 50%;
-        }
-
-        .dropdown-item:focus::after,
-        .dropdown-item:active::after {
-            animation: ripple 0.6s ease-out;
-        }
-
-        @keyframes ripple {
-            0% {
-                transform: scale(0, 0);
-                opacity: 0.5;
-            }
-            20% {
-                transform: scale(25, 25);
-                opacity: 0.3;
-            }
-            100% {
-                opacity: 0;
-                transform: scale(40, 40);
-            }
-        }
+    
     </style>
 </head>
 <body>
@@ -3466,10 +49,19 @@
 <!--                <input type="text" placeholder="Search in collections...">-->
 <!--            </div>-->
 <!--        </div>-->
+        <!-- Breadcrumb Navigation -->
+        <nav class="breadcrumb-nav" id="breadcrumb-nav">
+            <div class="breadcrumb-item active">
+                <i class="fas fa-home"></i>
+                <span>Collections</span>
+            </div>
+        </nav>
+        
         <div class="search-bar">
                     <div class="search-input-wrapper">
                         <i class="ri-search-line"></i>
-                        <input type="text" id="search-input" placeholder="Search files and folders...">
+                        <input type="text" id="search-input" placeholder="Search files and folders..." autocomplete="off">
+                        <div class="search-suggestions" id="search-suggestions"></div>
                         <button class="btn btn-icon" id="advanced-search-toggle">
                             <i class="ri-filter-3-line"></i>
                         </button>
@@ -3558,6 +150,16 @@
                 <i class="fas fa-folder-plus"></i>
                 <span>New Folder</span>
             </button>
+            <!-- Notifications -->
+            <button class="btn-icon" id="notifications-toggle" aria-label="Notifications">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge" id="notification-count">3</span>
+            </button>
+            
+            <!-- Theme toggle -->
+            <button class="btn-icon" id="theme-toggle" aria-label="Toggle theme">
+                <i class="fas fa-moon"></i>
+            </button>
             <div class="user-nav-info">
                 <div class="user-nav-avatar">
                     <i class="fas fa-user-circle"></i>
@@ -3567,6 +169,29 @@
                 </div>
                 <i class="fas fa-chevron-down"></i>
                 <div class="user-dropdown">
+                    <div class="dropdown-user-card">
+                        <div class="avatar-lg">
+                            {%- if user.avatar_url %}
+                            <img src="{{ user.avatar_url }}" alt="Avatar" class="avatar-img">
+                            {%- else %}
+                            <span class="avatar-initials">{{ user.username[:1]|upper }}</span>
+                            {%- endif %}
+                        </div>
+                        <div class="details">
+                            <span class="name">{{ user.username }}</span>
+                            <span class="email">{{ user.email }}</span>
+                        </div>
+                        <div class="stats">
+                            <div class="storage-wrapper">
+                                <span id="storage-text">{{ user.storage_used or '3.5 GB' }} of 10 GB used</span>
+                                <div class="storage-bar">
+                                    <div class="storage-progress" id="storage-progress" style="width:35%"></div>
+                                </div>
+                            </div>
+                            <span class="plan" id="plan-text">{{ user.account_type or 'Free Plan' }}</span>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
                     <a href="#" class="user-dropdown-item">
                         <i class="fas fa-user"></i> Profile
                     </a>
@@ -3577,6 +202,46 @@
                     <a href="/logout" class="user-dropdown-item">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </a>
+                </div>
+            </div>
+            
+            <!-- Notifications Dropdown -->
+            <div class="notifications-dropdown" id="notifications-dropdown">
+                <div class="notifications-header">
+                    <h3>Notifications</h3>
+                    <button class="btn-text" id="mark-all-read">Mark all as read</button>
+                </div>
+                <div class="notifications-list">
+                    <div class="notification-item unread">
+                        <div class="notification-icon">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <div class="notification-content">
+                            <p>Upload completed: 5 photos added to "Vacation 2024"</p>
+                            <span class="notification-time">2 minutes ago</span>
+                        </div>
+                    </div>
+                    <div class="notification-item unread">
+                        <div class="notification-icon">
+                            <i class="fas fa-share"></i>
+                        </div>
+                        <div class="notification-content">
+                            <p>Collection "Family Photos" shared with john@example.com</p>
+                            <span class="notification-time">1 hour ago</span>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <div class="notification-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="notification-content">
+                            <p>AI generated tags for 12 new photos</p>
+                            <span class="notification-time">3 hours ago</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="notifications-footer">
+                    <a href="#" class="btn-text">View all notifications</a>
                 </div>
             </div>
         </div>
@@ -3648,80 +313,260 @@
         </div>
 
         <div class="main-container">
+            <!-- Enhanced Breadcrumb with Quick Filters -->
             <div class="breadcrumb-container">
-                <div class="breadcrumb">
-                    <!-- Will be populated by JS -->
+                <div class="breadcrumb-nav" id="breadcrumb-nav">
+                    <div class="breadcrumb-item active">
+                        <i class="fas fa-home"></i>
+                        <span>Collections</span>
+                    </div>
                 </div>
-            </div>
-
-            <div class="collections-header">
-                <div class="category-buttons">
-                    <button class="category-btn active" data-category="all">
-                        <i class="fas fa-images"></i> All Photos
+                <div class="quick-filters">
+                    <button class="quick-filter-btn" data-filter="favorites">
+                        <i class="fas fa-star"></i> Favorites
                     </button>
-                    <button class="category-btn" data-category="recent">
+                    <button class="quick-filter-btn" data-filter="recent">
                         <i class="fas fa-clock"></i> Recent
                     </button>
-                    <button class="category-btn" data-category="favorites">
-                        <i class="fas fa-heart"></i> Favorites
-                    </button>
-                    <button class="category-btn" data-category="permitted">
-                        <i class="fas fa-share-alt"></i> Shared
-                    </button>
-                    <button class="category-btn" data-category="trash">
-                        <i class="fas fa-trash"></i> Trash
+                    <button class="quick-filter-btn" data-filter="shared">
+                        <i class="fas fa-share"></i> Shared
                     </button>
                 </div>
             </div>
 
-            <div class="collections-grid" id="dropzone-container">
-                <!-- Will be populated by JS -->
+            <!-- Advanced Toolbar -->
+            <div class="collections-toolbar">
+                <div class="toolbar-left">
+                    <!-- View Mode Toggle -->
+                    <div class="view-toggle-group">
+                        <button class="view-toggle-btn active" data-view="grid" title="Grid View">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="view-toggle-btn" data-view="list" title="List View">
+                            <i class="fas fa-list"></i>
+                        </button>
+                        <button class="view-toggle-btn" data-view="compact" title="Compact View">
+                            <i class="fas fa-th-large"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Sort Dropdown -->
+                    <div class="sort-dropdown">
+                        <button class="sort-btn" id="sort-toggle">
+                            <i class="fas fa-sort"></i>
+                            <span>Sort by Date</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="sort-menu" id="sort-menu">
+                            <div class="sort-option active" data-sort="date-desc">
+                                <i class="fas fa-calendar"></i> Date (Newest)
+                            </div>
+                            <div class="sort-option" data-sort="date-asc">
+                                <i class="fas fa-calendar"></i> Date (Oldest)
+                            </div>
+                            <div class="sort-option" data-sort="name-asc">
+                                <i class="fas fa-font"></i> Name (A-Z)
+                            </div>
+                            <div class="sort-option" data-sort="name-desc">
+                                <i class="fas fa-font"></i> Name (Z-A)
+                            </div>
+                            <div class="sort-option" data-sort="size-desc">
+                                <i class="fas fa-weight-hanging"></i> Size (Largest)
+                            </div>
+                            <div class="sort-option" data-sort="size-asc">
+                                <i class="fas fa-weight-hanging"></i> Size (Smallest)
+                            </div>
+                            <div class="sort-option" data-sort="custom">
+                                <i class="fas fa-hand-paper"></i> Custom Order
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Filter Chips -->
+                    <div class="filter-chips" id="filter-chips">
+                        <!-- Dynamic filter chips will be added here -->
+                    </div>
+                </div>
+                
+                <div class="toolbar-right">
+                    <!-- Folder Stats -->
+                    <div class="folder-stats" id="folder-stats">
+                        <span class="stats-count">0 items</span>
+                        <span class="stats-size">0 MB</span>
+                    </div>
+                    
+                    <!-- Selection Info -->
+                    <div class="selection-info" id="selection-info" style="display: none;">
+                        <span class="selection-count">0 selected</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="selection-panel" id="selection-panel">
-                <div class="selection-count">0 items selected</div>
-                <div class="selection-actions">
-                    <button class="btn selection-btn" id="download-selected-btn">
-                        <i class="fas fa-download"></i> Download
+            <!-- Advanced Filter Bar -->
+            <div class="filter-bar" id="filter-bar">
+                <div class="filter-section">
+                    <label>Tags:</label>
+                    <div class="tag-filter-container">
+                        <input type="text" class="tag-filter-input" placeholder="Add tag filter..." id="tag-filter-input">
+                        <div class="tag-suggestions" id="tag-suggestions"></div>
+                    </div>
+                </div>
+                <div class="filter-section">
+                    <label>Date Range:</label>
+                    <div class="date-range-container">
+                        <input type="date" class="date-filter" id="date-from" placeholder="From">
+                        <span>to</span>
+                        <input type="date" class="date-filter" id="date-to" placeholder="To">
+                    </div>
+                </div>
+                <div class="filter-section">
+                    <label>File Type:</label>
+                    <select class="file-type-filter" id="file-type-filter">
+                        <option value="all">All Types</option>
+                        <option value="image">Images</option>
+                        <option value="video">Videos</option>
+                        <option value="document">Documents</option>
+                    </select>
+                </div>
+                <button class="filter-clear-btn" id="filter-clear-btn">
+                    <i class="fas fa-times"></i> Clear Filters
+                </button>
+            </div>
+
+            <!-- Main Content Area with Drop Zone -->
+            <div class="content-area" id="content-area">
+                <!-- Drop Zone Overlay -->
+                <div class="drop-zone-overlay" id="drop-zone-overlay">
+                    <div class="drop-zone-content">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h3>Drop files here to upload</h3>
+                        <p>Supports images, videos, and documents</p>
+                    </div>
+                </div>
+                
+                <!-- Collections Grid with Masonry Layout -->
+                <div class="collections-grid masonry-grid" id="collections-grid" data-view="grid">
+                    <!-- Skeleton loaders for initial load -->
+                    <div class="skeleton-item"></div>
+                    <div class="skeleton-item"></div>
+                    <div class="skeleton-item"></div>
+                    <div class="skeleton-item"></div>
+                    <div class="skeleton-item"></div>
+                    <div class="skeleton-item"></div>
+                    <!-- Items will be populated by JS -->
+                </div>
+                
+                <!-- Infinite Scroll Loading -->
+                <div class="loading-more" id="loading-more" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <span>Loading more items...</span>
+                </div>
+                
+                <!-- Empty State -->
+                <div class="empty-state" id="empty-state" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <h3>No items found</h3>
+                    <p>This folder is empty or no items match your filters.</p>
+                    <button class="btn btn-primary" id="upload-empty-btn">
+                        <i class="fas fa-upload"></i> Upload Files
                     </button>
-                    <button class="btn selection-btn" id="analyze-selected-btn">
-                        <i class="fas fa-magic"></i> Analyze
+                </div>
+            </div>
+
+            <!-- Floating Bulk Actions Toolbar -->
+            <div class="bulk-actions-toolbar" id="bulk-actions-toolbar">
+                <div class="bulk-actions-left">
+                    <div class="selection-count" id="bulk-selection-count">0 items selected</div>
+                    <button class="bulk-action-btn" id="select-all-btn" title="Select All (Ctrl+A)">
+                        <i class="fas fa-check-square"></i>
                     </button>
-                    <button class="btn selection-btn" id="delete-selected-btn">
-                        <i class="fas fa-trash"></i> Delete
+                </div>
+                <div class="bulk-actions-right">
+                    <button class="bulk-action-btn" id="bulk-download-btn" title="Download Selected">
+                        <i class="fas fa-download"></i>
                     </button>
-                    <button class="btn selection-btn" id="clear-selection-btn">
-                        <i class="fas fa-times"></i> Clear selection
+                    <button class="bulk-action-btn" id="bulk-share-btn" title="Share Selected">
+                        <i class="fas fa-share"></i>
                     </button>
+                    <button class="bulk-action-btn" id="bulk-move-btn" title="Move Selected">
+                        <i class="fas fa-folder"></i>
+                    </button>
+                    <button class="bulk-action-btn" id="bulk-tag-btn" title="Tag Selected">
+                        <i class="fas fa-tags"></i>
+                    </button>
+                    <button class="bulk-action-btn danger" id="bulk-delete-btn" title="Delete Selected (Del)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="bulk-action-btn" id="bulk-clear-btn" title="Clear Selection (Esc)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Right Side Info Panel -->
+            <div class="info-panel" id="info-panel">
+                <div class="info-panel-header">
+                    <h3 id="info-panel-title">Item Details</h3>
+                    <button class="info-panel-close" id="info-panel-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="info-panel-content" id="info-panel-content">
+                    <!-- Content will be populated by JS -->
                 </div>
             </div>
         </div>
 
     </div>
 
-<!--    <div class="context-menu" id="context-menu">-->
-<!--        <ul class="context-menu-list">-->
-<!--            <li class="context-menu-item" id="context-open">-->
-<!--                <i class="fas fa-folder-open"></i> Open-->
-<!--            </li>-->
-<!--            <li class="context-menu-item" id="context-download">-->
-<!--                <i class="fas fa-download"></i> Download-->
-<!--            </li>-->
-<!--            <li class="context-menu-item" id="context-analyze">-->
-<!--                <i class="fas fa-magic"></i> Analyze with AI-->
-<!--            </li>-->
-<!--            <li class="context-menu-divider"></li>-->
-<!--            <li class="context-menu-item" id="context-select">-->
-<!--                <i class="fas fa-check-square"></i> Select-->
-<!--            </li>-->
-<!--            <li class="context-menu-item" id="context-rename">-->
-<!--                <i class="fas fa-edit"></i> Rename-->
-<!--            </li>-->
-<!--            <li class="context-menu-item danger" id="context-delete">-->
-<!--                <i class="fas fa-trash"></i> Delete-->
-<!--            </li>-->
-<!--        </ul>-->
-<!--    </div>-->
+    <!-- Enhanced Context Menu -->
+    <div class="context-menu" id="context-menu">
+        <div class="context-menu-item" data-action="open">
+            <i class="fas fa-folder-open"></i>
+            <span>Open</span>
+        </div>
+        <div class="context-menu-item" data-action="preview">
+            <i class="fas fa-eye"></i>
+            <span>Preview</span>
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" data-action="download">
+            <i class="fas fa-download"></i>
+            <span>Download</span>
+            <kbd>Ctrl+D</kbd>
+        </div>
+        <div class="context-menu-item" data-action="share">
+            <i class="fas fa-share"></i>
+            <span>Share</span>
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" data-action="select">
+            <i class="fas fa-check-square"></i>
+            <span>Select</span>
+        </div>
+        <div class="context-menu-item" data-action="rename">
+            <i class="fas fa-edit"></i>
+            <span>Rename</span>
+            <kbd>F2</kbd>
+        </div>
+        <div class="context-menu-item" data-action="move">
+            <i class="fas fa-folder"></i>
+            <span>Move to...</span>
+        </div>
+        <div class="context-menu-item" data-action="copy">
+            <i class="fas fa-copy"></i>
+            <span>Copy</span>
+            <kbd>Ctrl+C</kbd>
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item danger" data-action="delete">
+            <i class="fas fa-trash"></i>
+            <span>Delete</span>
+            <kbd>Del</kbd>
+        </div>
+    </div>
 
     <div class="modal" id="folder-modal">
         <div class="modal-content">
@@ -4823,7 +1668,8 @@
             // If file found, set all the details
             previewTitle.textContent = fileName;
             previewSize.textContent = formatSize(file.size);
-            previewDate.textContent = formatDate(file.modified || new Date());
+            // Use modifiedTime if available, otherwise fallback to modified or current date
+            previewDate.textContent = formatDate(file.modifiedTime || file.modified || new Date());
 
             // Set image source
             previewImage.src = getFileUrl(path);
@@ -4878,10 +1724,155 @@
             }
         }
 
+        // Image transform state
+        let imageZoom = 1;
+        let imageRotation = 0;
+        let imageTranslateX = 0;
+        let imageTranslateY = 0;
+        
         // Close image preview
         function closeImagePreview() {
             document.getElementById('image-preview-modal').classList.remove('show');
+            document.body.classList.remove('modal-open');
             document.removeEventListener('keydown', handleImageKeyboardControls);
+            
+            // Reset image transforms
+            resetImageTransforms();
+        }
+        
+        // Zoom functions
+        function zoomIn() {
+            imageZoom += 0.2;
+            if (imageZoom > 5) imageZoom = 5; // Max zoom limit
+            updateImageTransform();
+        }
+        
+        function zoomOut() {
+            imageZoom -= 0.2;
+            if (imageZoom < 0.1) imageZoom = 0.1; // Min zoom limit
+            updateImageTransform();
+        }
+        
+        // Rotation functions
+        function rotateLeft() {
+            imageRotation -= 90;
+            updateImageTransform();
+        }
+        
+        function rotateRight() {
+            imageRotation += 90;
+            updateImageTransform();
+        }
+        
+        // Reset image transforms
+        function resetImageTransforms() {
+            imageZoom = 1;
+            imageRotation = 0;
+            imageTranslateX = 0;
+            imageTranslateY = 0;
+            updateImageTransform();
+        }
+        
+        // Update image transform
+        function updateImageTransform() {
+            const previewImage = document.getElementById('preview-image');
+            if (previewImage) {
+                previewImage.style.transform = `translate(${imageTranslateX}px, ${imageTranslateY}px) scale(${imageZoom}) rotate(${imageRotation}deg)`;
+                previewImage.style.transition = 'transform 0.3s ease';
+            }
+        }
+        
+        // Setup image drag functionality
+        function setupImageDrag() {
+            const imageContainer = document.getElementById('image-preview-wrapper');
+            const previewImage = document.getElementById('preview-image');
+            
+            if (!imageContainer || !previewImage) return;
+            
+            let isDragging = false;
+            let startX, startY;
+            let initialTranslateX = imageTranslateX;
+            let initialTranslateY = imageTranslateY;
+            
+            // Mouse events
+            imageContainer.addEventListener('mousedown', function(e) {
+                if (e.target === previewImage) {
+                    isDragging = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    initialTranslateX = imageTranslateX;
+                    initialTranslateY = imageTranslateY;
+                    imageContainer.style.cursor = 'grabbing';
+                    previewImage.style.transition = 'none';
+                    e.preventDefault();
+                }
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (isDragging) {
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
+                    
+                    imageTranslateX = initialTranslateX + deltaX;
+                    imageTranslateY = initialTranslateY + deltaY;
+                    
+                    updateImageTransform();
+                }
+            });
+            
+            document.addEventListener('mouseup', function() {
+                if (isDragging) {
+                    isDragging = false;
+                    imageContainer.style.cursor = 'grab';
+                    previewImage.style.transition = 'transform 0.3s ease';
+                }
+            });
+            
+            // Touch events for mobile
+            imageContainer.addEventListener('touchstart', function(e) {
+                if (e.target === previewImage && e.touches.length === 1) {
+                    isDragging = true;
+                    const touch = e.touches[0];
+                    startX = touch.clientX;
+                    startY = touch.clientY;
+                    initialTranslateX = imageTranslateX;
+                    initialTranslateY = imageTranslateY;
+                    previewImage.style.transition = 'none';
+                    e.preventDefault();
+                }
+            });
+            
+            imageContainer.addEventListener('touchmove', function(e) {
+                if (isDragging && e.touches.length === 1) {
+                    const touch = e.touches[0];
+                    const deltaX = touch.clientX - startX;
+                    const deltaY = touch.clientY - startY;
+                    
+                    imageTranslateX = initialTranslateX + deltaX;
+                    imageTranslateY = initialTranslateY + deltaY;
+                    
+                    updateImageTransform();
+                    e.preventDefault();
+                }
+            });
+            
+            imageContainer.addEventListener('touchend', function() {
+                if (isDragging) {
+                    isDragging = false;
+                    previewImage.style.transition = 'transform 0.3s ease';
+                }
+            });
+            
+            // Mouse wheel zoom
+            imageContainer.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                
+                if (e.deltaY < 0) {
+                    zoomIn();
+                } else {
+                    zoomOut();
+                }
+            });
         }
 
         // Download preview image
@@ -5940,7 +2931,61 @@
     <script src="/static/js/three-dot-menu.js"></script>
     <script src="/static/js/drag-drop-handler.js"></script>
     <script src="/static/js/image-preview-fix.js"></script>
-    <script src="/static/js/collections-fixed.js"></script>
+    <!-- <script src="/static/js/collections-fixed.js"></script> -->
     <script src="/static/js/permitted-super-fix.js"></script>
+    <!-- Pro Navigation Enhancements -->
+    <script src="/static/js/nav-enhancements.js"></script>
+    <script src="/static/js/collections-advanced.js"></script>
+    
+    <!-- Command Palette -->
+    <div class="command-palette" id="command-palette">
+        <div class="command-palette-content">
+            <div class="command-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="command-input" placeholder="Type a command or search..." autocomplete="off">
+            </div>
+            <div class="command-results" id="command-results">
+                <div class="command-group">
+                    <div class="command-group-title">Quick Actions</div>
+                    <div class="command-item" data-action="upload">
+                        <i class="fas fa-upload"></i>
+                        <span>Upload Files</span>
+                        <kbd>Ctrl+U</kbd>
+                    </div>
+                    <div class="command-item" data-action="new-folder">
+                        <i class="fas fa-folder-plus"></i>
+                        <span>New Folder</span>
+                        <kbd>Ctrl+Shift+N</kbd>
+                    </div>
+                    <div class="command-item" data-action="search">
+                        <i class="fas fa-search"></i>
+                        <span>Search</span>
+                        <kbd>Ctrl+F</kbd>
+                    </div>
+                </div>
+                <div class="command-group">
+                    <div class="command-group-title">Navigation</div>
+                    <div class="command-item" data-action="goto-collections">
+                        <i class="fas fa-images"></i>
+                        <span>Go to Collections</span>
+                    </div>
+                    <div class="command-item" data-action="goto-recent">
+                        <i class="fas fa-clock"></i>
+                        <span>Go to Recent</span>
+                    </div>
+                    <div class="command-item" data-action="goto-favorites">
+                        <i class="fas fa-star"></i>
+                        <span>Go to Favorites</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading Bar -->
+    <div class="loading-bar" id="loading-bar">
+        <div class="loading-progress"></div>
+    </div>
+    
     </body>
     </html>
