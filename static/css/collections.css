@@ -1217,18 +1217,12 @@
         
         /* Collections Grid */
         .collections-grid {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            min-height: 300px;
-            padding: 16px;
-        }
-        
-        .collections-items-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
             width: 100%;
+            min-height: 300px;
+            padding: 16px;
         }
         
         .collections-grid.list-view {
@@ -1273,7 +1267,7 @@
             opacity: 0;
             transform: translateY(20px);
         }
-        
+         */
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -2051,7 +2045,7 @@
         }
 
         /* Image Preview Styles */
-        .image-preview-content {
+        /* .image-preview-content {
             width: 90%;
             max-width: 1200px;
             height: 90%;
@@ -2076,19 +2070,6 @@
             display: flex;
             flex-direction: column;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         .image-controls {
             position: absolute;
@@ -2169,7 +2150,7 @@
 
         .info-value {
             color: #333;
-        }
+        } */
 
         /* Upload Progress Bar */
         .upload-progress-container {
@@ -2527,7 +2508,7 @@
         }
 
         /* Image Preview Styles */
-        .image-preview-content {
+        /* .image-preview-content {
             width: 90%;
             max-width: 1200px;
             height: 90%;
@@ -2551,22 +2532,9 @@
             background-color: #1a1a1a;
             display: flex;
             flex-direction: column;
-        }
+        } */
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-        .image-controls {
+        /* .image-controls {
             position: absolute;
             bottom: 10px;
             left: 50%;
@@ -2645,7 +2613,7 @@
 
         .info-value {
             color: #333;
-        }
+        } */
 
         /* Upload Progress Bar */
         .upload-progress-container {

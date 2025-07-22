@@ -1541,7 +1541,7 @@
             <div class="hero__content">
                 <div class="hero__welcome">WELCOME TO</div>
                 <h1 class="hero__title">The Photogenic</h1>
-                <div class="hero__subtitle" id="typing-text">Celebrate & Store Image</div>
+                <div class="hero__subtitle" id="typing-text">Generate & Store Image</div>
                 <a href="{{ url_for('interactive') }}" class="btn hero__btn">EXPLORE OUR ACCOMMODATIONS</a>
             </div>
         </section>
@@ -1601,7 +1601,7 @@
             </div>
         </section>
         
-        <!-- Testimonials Section -->
+        <!-- Testimonials Section
         <section class="testimonials section" id="testimonials">
             <div class="container">
                 <h2 class="section-title" data-aos="fade-up">What Our Users Say</h2>
@@ -1616,7 +1616,7 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section> -->
         
         <!-- Features Section -->
         <section class="features section" id="features">
@@ -1638,9 +1638,9 @@
                         <div class="feature-card__icon">
                             <i class="fas fa-palette"></i>
                         </div>
-                        <h3 class="feature-card__title">Color Correction</h3>
-                        <p class="feature-card__text">Correct the colors of your photos to make them look natural and vibrant.</p>
-                        <a href="#" class="feature-card__btn">Learn More</a>
+                        <h3 class="feature-card__title">Files Collections</h3>
+                        <p class="feature-card__text">Organize and showcase your photos in beautiful, interactive albums.</p>
+                        <a href="{{ url_for('collections') }}" class="feature-card__btn">View Collections</a>
                     </div>
                     
                     <div class="feature-card" data-aos="fade-up" data-aos-duration="800" data-aos-delay="200">
@@ -1771,7 +1771,7 @@
             <div class="parallax-content">
                 <h2 class="parallax-title">Transform Your Memories</h2>
                 <p class="parallax-text">Our AI-powered platform turns your photos into captivating stories that you'll cherish forever.</p>
-                <a href="{{ url_for('ai_story') }}" class="btn">Start Creating Now</a>
+                <a href="{{ url_for('collections') }}" class="btn">Start Creating Now</a>
             </div>
         </section>
         

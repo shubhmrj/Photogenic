@@ -1,7 +1,3 @@
-/* Advanced Collections UI/UX Enhancements - PhotoGeni */
-/* Author: Cascade AI */
-
-/* ===== ENHANCED BREADCRUMB & QUICK FILTERS ===== */
 .breadcrumb-container {
     display: flex;
     justify-content: space-between;
@@ -407,14 +403,16 @@
 /* ===== MASONRY GRID LAYOUT ===== */
 .masonry-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1rem;
-    padding: 1rem 0;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 16px;
+    width: 100%;
+    min-height: 300px;
 }
 
 .masonry-grid[data-view="list"] {
     grid-template-columns: 1fr;
-    gap: 0.5rem;
+    gap: 10px;
 }
 
 .masonry-grid[data-view="compact"] {
@@ -762,7 +760,7 @@
 }
 
 /* ===== TOAST NOTIFICATIONS ===== */
-.toast-container {
+/* .toast-container {
     position: fixed;
     top: 2rem;
     right: 2rem;
@@ -853,7 +851,7 @@
 
 @keyframes slideInToast {
     to { transform: translateX(0); }
-}
+} */
 
 /* ===== PRESENCE AVATARS ===== */
 .presence-avatars {

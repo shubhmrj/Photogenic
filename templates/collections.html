@@ -339,10 +339,10 @@
                 <div class="toolbar-left">
                     <!-- View Mode Toggle -->
                     <div class="view-toggle-group">
-                        <button class="view-toggle-btn active" data-view="grid" title="Grid View">
+                        <button class="view-toggle-btn active" id="grid-view-btn" data-view="grid" title="Grid View">
                             <i class="fas fa-th"></i>
                         </button>
-                        <button class="view-toggle-btn" data-view="list" title="List View">
+                        <button class="view-toggle-btn" id="list-view-btn" data-view="list" title="List View">
                             <i class="fas fa-list"></i>
                         </button>
                         <button class="view-toggle-btn" data-view="compact" title="Compact View">
@@ -2098,7 +2098,13 @@
             gridViewBtn.classList.toggle('active', mode === 'grid');
             listViewBtn.classList.toggle('active', mode === 'list');
 
-            // Update collection items
+            // Update grid container class for CSS layout changes
+            const collectionsGrid = document.getElementById('collections-grid');
+            if (collectionsGrid) {
+                collectionsGrid.classList.toggle('list-view', mode === 'list');
+            }
+
+            // Optionally toggle item-specific class if additional styling needed
             document.querySelectorAll('.collection-item').forEach(item => {
                 item.classList.toggle('list-view', mode === 'list');
             });
