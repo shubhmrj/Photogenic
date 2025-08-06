@@ -14,8 +14,11 @@ database.json
 db.json
 
 # Specific folders to ignore completely
-collection/
+collections/
 instance/
+uploads/
+thumbnails/
+static/generated/
 
 # Alternatively, if you want to ignore only certain file types in these folders:
 # collection/**/*.jpg

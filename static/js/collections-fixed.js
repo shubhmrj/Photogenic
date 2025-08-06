@@ -22,7 +22,8 @@ const closeFolderModalBtn = document.querySelector('.modal-close');
 
 // Helper functions
 function getFileUrl(path, ownerId = null) {
-    const encodedPath = encodeURIComponent(path);
+    // Use encodeURI so slashes remain intact for backend path routing
+    const encodedPath = encodeURI(path);
     let url = `/api/collections/file/${encodedPath}`;
     const params = [];
     if (ownerId) {
@@ -46,8 +47,24 @@ function formatSize(bytes) {
 
 function formatDate(timestamp) {
     if (!timestamp) return 'Unknown';
-    const date = new Date(timestamp * 1000);
-    return date.toLocaleDateString();
+    // Support ISO 8601 strings as well as Unix epoch seconds / milliseconds
+    let dateObj;
+    if (typeof timestamp === 'string') {
+        // Attempt ISO parse; if fails treat as numeric string
+        const parsed = Date.parse(timestamp);
+        if (!isNaN(parsed)) {
+            dateObj = new Date(parsed);
+        } else {
+            const num = Number(timestamp);
+            dateObj = new Date(num * 1000);
+        }
+    } else if (typeof timestamp === 'number') {
+        // Detect if already milliseconds
+        dateObj = timestamp > 1e12 ? new Date(timestamp) : new Date(timestamp * 1000);
+    } else {
+        return 'Unknown';
+    }
+    return dateObj.toLocaleDateString();
 }
 
 // Initialize the page
@@ -99,7 +116,7 @@ function setupSidebarNavigation() {
             } else if (sectionName === 'Favorites') {
                 currentPath = 'favorites';
             } else if (sectionName === 'Permitted') {
-                currentPath = 'shared';
+                currentPath = 'permitted';
             } else if (sectionName === 'Trash') {
                 currentPath = 'trash';
             }
@@ -178,7 +195,12 @@ function setViewMode(mode) {
     // Save to localStorage
     localStorage.setItem('viewMode', viewMode);
     
-    // Update UI
+    // Update container class
+    if (collectionsGrid) {
+        collectionsGrid.classList.remove('grid-view', 'list-view');
+        collectionsGrid.classList.add(viewMode + '-view');
+    }
+    // Update UI buttons
     if (gridViewBtn && listViewBtn) {
         if (viewMode === 'grid') {
             gridViewBtn.classList.add('active');
@@ -197,6 +219,14 @@ function setViewMode(mode) {
 
 // Load collections from API
 function loadCollections() {
+    // Always respect the path set by advanced UI (window.currentPath) if present
+    if (typeof window.currentPath !== 'undefined' && window.currentPath !== undefined) {
+        // Keep legacy variable in sync so the rest of this script works untouched
+        if (typeof currentPath !== 'undefined') {
+            currentPath = window.currentPath;
+        }
+    }
+
     console.log('Loading collections for path:', currentPath);
     
     // Show preloader
@@ -208,8 +238,14 @@ function loadCollections() {
     // Update breadcrumb
     updateBreadcrumb();
     
+        // Build API URL with optional owner_id (for shared folders)
+    let apiUrl = `/api/collections?path=${encodeURIComponent(currentPath)}`;
+    if (typeof window.currentOwnerId !== 'undefined') {
+        apiUrl += `&owner_id=${window.currentOwnerId}`;
+    }
+    
     // Fetch collections from API
-    fetch(`/api/collections?path=${encodeURIComponent(currentPath)}`)
+    fetch(apiUrl)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -272,7 +308,9 @@ function sortCollections() {
         if (sortBy === 'name') {
             return a.name.localeCompare(b.name);
         } else if (sortBy === 'date') {
-            return b.modifiedTime - a.modifiedTime;
+            const aTime = Date.parse(a.modifiedTime || a.modified || a.createdTime || 0);
+            const bTime = Date.parse(b.modifiedTime || b.modified || b.createdTime || 0);
+            return bTime - aTime;
         } else if (sortBy === 'size') {
             return b.size - a.size;
         }
@@ -299,7 +337,7 @@ function updateBreadcrumb() {
     breadcrumbContainer.appendChild(homeItem);
     
     // If we're in a special folder, add it
-    if (['recent', 'favorites', 'shared', 'trash'].includes(currentPath)) {
+    if (['recent', 'favorites', 'permitted', 'trash'].includes(currentPath)) {
         const specialItem = document.createElement('li');
         specialItem.className = 'breadcrumb-item';
         
@@ -312,8 +350,8 @@ function updateBreadcrumb() {
         } else if (currentPath === 'favorites') {
             icon = 'star';
             text = 'Favorites';
-        } else if (currentPath === 'shared') {
-            icon = 'share-alt';
+        } else if (currentPath === 'permitted') {
+            icon = 'user-friends';
             text = 'Permitted';
         } else if (currentPath === 'trash') {
             icon = 'trash';
@@ -636,7 +674,7 @@ function displayCollections(collectionsData) {
             }
             
             if (item.isDir || item.type === 'folder') {
-                navigateToFolder(item.path);
+                navigateToFolder(item.path, item.owner_id);
             } else if (item.isImage) {
                 previewImage(item.path, item.name, item.owner_id);
             } else {
@@ -660,9 +698,14 @@ function displayCollections(collectionsData) {
 }
 
 // Navigate to folder
-function navigateToFolder(path) {
+function navigateToFolder(path, ownerId = null) {
     console.log('Navigating to folder:', path);
     currentPath = path;
+    if (ownerId) {
+        window.currentOwnerId = ownerId;
+    } else {
+        delete window.currentOwnerId;
+    }
     loadCollections();
 }
 
@@ -841,8 +884,14 @@ function createFolder() {
         // Close modal
         closeFolderModal();
         
-        // Reload collections
-        loadCollections();
+        // Automatically navigate into the newly created folder so the user sees it immediately
+        if (typeof navigateToFolder === 'function') {
+            navigateToFolder(folderPath);
+        } else {
+            // Fallback: update path manually then reload
+            currentPath = folderPath;
+            loadCollections();
+        }
     })
     .catch(error => {
         console.error('Error creating folder:', error);
