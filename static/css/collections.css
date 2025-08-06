@@ -1048,17 +1048,31 @@
             color: var(--text-color);
         }
         
-        /* Collections Grid */
+        /* Collections Grid - responsive gallery */
         .collections-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            width: 100%;
-            min-height: 300px;
-            padding: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        
+        .collections-grid.grid-view {
+            display: flex;
+        }
+        
+        .collection-item {
+            flex: 0 0 220px;
+            max-width: 100%;
+        }
+        
+        @media (max-width: 600px) {
+            .collection-item {
+                flex-basis: 45%;
+            }
+
         }
         
         .collections-grid.list-view {
+    flex-direction: column;
             grid-template-columns: 1fr;
             gap: 10px;
         }

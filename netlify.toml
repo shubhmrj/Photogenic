@@ -1,0 +1,21 @@
+[build]
+  publish = "."
+  command = "echo 'Flask app - no build step required'"
+
+[build.environment]
+  PYTHON_VERSION = "3.9"
+
+[[redirects]]
+  from = "/*"
+  to = "/main.py"
+  status = 200
+  force = true
+
+[functions]
+  directory = "."
+  included_files = ["**/*"]
+  external_node_modules = []
+
+[dev]
+  command = "python main.py"
+  port = 5000

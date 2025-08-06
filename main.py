@@ -114,6 +114,9 @@ class Collection(db.Model):
 			'name': self.name,
 			'path': self.path,
 			'type': 'folder' if self.is_folder else 'file',
+			# Provide both creation and modification timestamps for frontend
+			'createdTime': self.created_at.isoformat(),
+			'modifiedTime': self.modified_at.isoformat(),
 			'modified': self.modified_at.isoformat(),
 			'owner_id': self.owner_id
 		}
@@ -1425,6 +1428,84 @@ def get_collections():
 		path = request.args.get('path', '')
 		user_id = current_user.id
 
+		# Optional owner browsing (shared folder deep navigation)
+		owner_id_param = request.args.get('owner_id')
+		if owner_id_param and int(owner_id_param) != user_id and path not in ('shared', 'permitted'):
+			owner_id = int(owner_id_param)
+			# Check that requested path (or its parent) is shared with the user
+			shared_entries = SharedFile.query.filter_by(owner_id=owner_id, shared_with_id=user_id).all()
+			allowed = False
+			for s in shared_entries:
+				# Allow browsing inside shared folder hierarchy
+				# Allow if requested path matches a shared item OR is a parent folder of a shared item
+				if s.path == path or s.path.startswith(path.rstrip('/') + '/') or path.startswith(s.path.rstrip('/') + '/'):
+					allowed = True
+					break
+			if not allowed:
+				return jsonify({'error': 'Access denied: item not shared with you'}), 403
+
+			# Switch context to owner directory
+			user_collections_dir = get_user_collections_dir(owner_id)
+			abs_path = os.path.join(user_collections_dir, path.lstrip('/'))
+
+			# If dir doesn't exist
+			if not os.path.exists(abs_path):
+				# The folder may be virtual (path segment of shared items). Build listing from shared entries.
+				virtual_items = []
+				child_names = set()
+				for entry in shared_entries:
+					if entry.path.startswith(path.rstrip('/') + '/'):
+						remaining = entry.path[len(path.rstrip('/') + '/'):]
+						first_seg = remaining.split('/', 1)[0]
+						# Skip if already added
+						if first_seg in child_names:
+							continue
+						child_names.add(first_seg)
+						child_abs = os.path.join(user_collections_dir, path.lstrip('/'), first_seg)
+						is_dir = '/' in remaining
+						item = {
+							'name': first_seg,
+							'path': f"{path.rstrip('/')}/{first_seg}".lstrip('/'),
+							'type': 'folder' if is_dir else 'file',
+							'isDir': is_dir,
+							'owner_id': owner_id
+						}
+						if os.path.exists(child_abs):
+							item['createdTime'] = datetime.fromtimestamp(os.path.getctime(child_abs)).isoformat()
+							item['modifiedTime'] = datetime.fromtimestamp(os.path.getmtime(child_abs)).isoformat()
+						virtual_items.append(item)
+				# If we found virtual items, return them instead of 404
+				if virtual_items:
+					virtual_items.sort(key=lambda x: (0 if x.get('isDir') else 1, x['name'].lower()))
+					return jsonify(virtual_items)
+				return jsonify({'error': 'Path does not exist'}), 404
+
+			items = []
+			for item_name in os.listdir(abs_path):
+				item_path = os.path.join(abs_path, item_name)
+				rel_path = os.path.join(path, item_name) if path else item_name
+
+				item = {
+					'name': item_name,
+					'path': rel_path,
+					'type': 'folder' if os.path.isdir(item_path) else 'file',
+					'isDir': os.path.isdir(item_path),
+					'owner_id': owner_id,
+					'createdTime': datetime.fromtimestamp(os.path.getctime(item_path)).isoformat(),
+					'modifiedTime': datetime.fromtimestamp(os.path.getmtime(item_path)).isoformat()
+				}
+				if os.path.isfile(item_path):
+					item['size'] = os.path.getsize(item_path)
+					if is_image_file(item_name):
+						item['isImage'] = True
+				items.append(item)
+
+			# Sort items folders first
+			items.sort(key=lambda x: (0 if x.get('isDir') else 1, x['name'].lower()))
+
+			return jsonify(items)
+
+
 		# Validate and sanitize path to prevent directory traversal
 		if not is_safe_path(path):
 			app.logger.warning(f"Invalid path attempt: User {user_id} tried to access unsafe path '{path}'")
@@ -1442,18 +1523,18 @@ def get_collections():
 		# Create absolute path to the user's specific directory
 		abs_path = os.path.join(user_collections_dir, path)
 
-		# Check if path exists
-		if not os.path.exists(abs_path):
-			# If the path doesn't exist but it's the root, create it
-			if not path:
-				os.makedirs(abs_path, exist_ok=True)
-			else:
-				return jsonify({'error': 'Path does not exist'}), 404
+		# Check if path exists (skip virtual folders)
+		if path not in ('recent', 'favorites', 'shared', 'permitted', 'trash'):
+			if not os.path.exists(abs_path):
+				# If the path doesn't exist but it's the root, create it
+				if not path:
+					os.makedirs(abs_path, exist_ok=True)
+				else:
+					return jsonify({'error': 'Path does not exist'}), 404
 
 		# Get items in directory
 		items = []
 
-		# Special case for "recent" virtual folder
 		if path == 'recent':
 			# Get recent collections from database
 			recent_files = Collection.query.filter_by(
@@ -1477,7 +1558,7 @@ def get_collections():
 					app.logger.error(f"Error processing favorite file {favorite.file_path}: {str(e)}")
 
 		# Special case for "shared" virtual folder
-		elif path == 'shared':
+		elif path in ('shared', 'permitted'):
 			# Get files shared with this user
 			shared_files = SharedFile.query.filter_by(shared_with_id=user_id).all()
 
@@ -1505,6 +1586,7 @@ def get_collections():
 					if collection:
 						# Use the collection entry
 						item_dict = collection.to_dict()
+						item_dict['owner_id'] = shared.owner_id
 					else:
 						# Create a dictionary with file information
 						is_dir = os.path.isdir(owner_path)
@@ -1513,9 +1595,11 @@ def get_collections():
 						item_dict = {
 							'name': filename,
 							'path': shared.path,
+							'owner_id': shared.owner_id,
 							'type': 'folder' if is_dir else 'file',
 							'isDir': is_dir,
-							'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat()
+							'createdTime': datetime.fromtimestamp(os.path.getctime(owner_path)).isoformat(),
+                                'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat()
 						}
 
 						# Add size for files
@@ -1546,8 +1630,8 @@ def get_collections():
 				except Exception as e:
 					app.logger.error(f"Error processing trash file {trash.file_path}: {str(e)}")
 
-		# Special case for "permitted" virtual folder
-		elif path == 'permitted':
+		elif False:  # removed duplicate permitted block
+		# ---
 			# Get files shared with the user
 			shared_files = SharedFile.query.filter_by(shared_with_id=user_id).all()
 
@@ -1575,6 +1659,7 @@ def get_collections():
 					if collection:
 						# Use the collection entry
 						item_dict = collection.to_dict()
+						item_dict['owner_id'] = shared.owner_id
 					else:
 						# Create a dictionary with file information
 						is_dir = os.path.isdir(owner_path)
@@ -1583,9 +1668,11 @@ def get_collections():
 						item_dict = {
 							'name': filename,
 							'path': shared.path,
+							'owner_id': shared.owner_id,
 							'type': 'folder' if is_dir else 'file',
 							'isDir': is_dir,
-							'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat()
+							'createdTime': datetime.fromtimestamp(os.path.getctime(owner_path)).isoformat(),
+                                'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat()
 						}
 
 						# Add size for files
@@ -1617,7 +1704,8 @@ def get_collections():
 						'path': rel_path,
 						'type': 'folder' if os.path.isdir(item_path) else 'file',
 						'isDir': os.path.isdir(item_path),
-						'modifiedTime': datetime.fromtimestamp(os.path.getmtime(item_path)).isoformat()
+						'createdTime': datetime.fromtimestamp(os.path.getctime(item_path)).isoformat(),
+                        'modifiedTime': datetime.fromtimestamp(os.path.getmtime(item_path)).isoformat()
 					}
 
 					# Add size for files
@@ -1784,8 +1872,11 @@ def upload_to_collection():
 					# Get file size
 					file_size = os.path.getsize(file_path)
 
-					# Process image if it's an image file
+					# Detect file type
 					is_image = is_image_file(filename)
+					is_video = is_video_file(filename)
+
+					# Create thumbnail only for images
 					if is_image:
 						create_thumbnail(file_path)
 
@@ -1806,7 +1897,8 @@ def upload_to_collection():
 						'name': filename,
 						'path': file_rel_path,
 						'size': file_size,
-						'isImage': is_image
+						'isImage': is_image,
+						'isVideo': is_video
 					})
 				except Exception as e:
 					app.logger.error(f"Error uploading file {filename}: {str(e)}")
@@ -1864,14 +1956,14 @@ def get_collection_file(path):
 		shared_record = SharedFile.query.filter_by(path=path, shared_with_id=user_id).first()
 		if shared_record:
 			owner_id = shared_record.owner_id
-			file_path = os.path.join(get_user_collections_dir(owner_id), path)
+			file_path = os.path.join(get_user_collections_dir(owner_id), path.lstrip('/'))
 			if not (os.path.exists(file_path) and os.path.isfile(file_path)):
 				return jsonify({'error': 'File not found'}), 404
 		else:
 			owner_id = user_id
 
 	# Create absolute path using the owner's directory
-	file_path = os.path.join(get_user_collections_dir(owner_id), path)
+	file_path = os.path.join(get_user_collections_dir(owner_id), path.lstrip('/'))
 
 	# Security check: verify the requested path is within this user's collections directory
 	if not os.path.normpath(file_path).startswith(os.path.normpath(get_user_collections_dir(owner_id))):
@@ -1919,14 +2011,14 @@ def get_collection_thumbnail(path):
 		shared_record = SharedFile.query.filter_by(path=path, shared_with_id=user_id).first()
 		if shared_record:
 			owner_id = shared_record.owner_id
-			file_path = os.path.join(get_user_collections_dir(owner_id), path)
+			file_path = os.path.join(get_user_collections_dir(owner_id), path.lstrip('/'))
 			if not (os.path.exists(file_path) and os.path.isfile(file_path)):
 				return jsonify({'error': 'File not found'}), 404
 		else:
 			owner_id = user_id
 
 	# Create absolute path using the owner's directory
-	file_path = os.path.join(get_user_collections_dir(owner_id), path)
+	file_path = os.path.join(get_user_collections_dir(owner_id), path.lstrip('/'))
 
 	# Security check: verify the requested path is within this user's collections directory
 	if not os.path.normpath(file_path).startswith(os.path.normpath(get_user_collections_dir(owner_id))):
@@ -1996,7 +2088,7 @@ def analyze_collection_image():
 			owner_id = user_id
 
 		# Create absolute path using the owner's directory
-		file_path = os.path.join(get_user_collections_dir(owner_id), path)
+		file_path = os.path.join(get_user_collections_dir(owner_id), path.lstrip('/'))
 
 		# Check if file exists
 		if not os.path.exists(file_path) or not os.path.isfile(file_path):
@@ -2086,6 +2178,13 @@ def is_image_file(filename):
 	image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp']
 	_, ext = os.path.splitext(filename)
 	return ext.lower() in image_extensions
+
+
+def is_video_file(filename):
+    """Check if a file is a video based on extension"""
+    video_extensions = ['.mp4', '.mov', '.avi', '.mkv', '.webm']
+    _, ext = os.path.splitext(filename)
+    return ext.lower() in video_extensions
 
 
 def get_thumbnail_path(file_path):
@@ -2864,6 +2963,7 @@ def get_file_info(file_path, user_id=None):
 			'path': file_path,
 			'type': 'folder' if os.path.isdir(abs_path) else 'file',
 			'isDir': os.path.isdir(abs_path),
+			'createdTime': datetime.fromtimestamp(os.path.getctime(abs_path)).isoformat(),
 			'modifiedTime': datetime.fromtimestamp(os.path.getmtime(abs_path)).isoformat()
 		}
 
@@ -2893,7 +2993,8 @@ def get_collection_items(collection_path, sort_by='name', limit=None):
 				'path': item_path,
 				'type': 'folder' if os.path.isdir(item_path) else 'file',
 				'isDir': os.path.isdir(item_path),
-				'modifiedTime': datetime.fromtimestamp(os.path.getmtime(item_path)).isoformat()
+				'createdTime': datetime.fromtimestamp(os.path.getctime(item_path)).isoformat(),
+                        'modifiedTime': datetime.fromtimestamp(os.path.getmtime(item_path)).isoformat()
 			}
 
 			# Add size for files
@@ -2920,7 +3021,11 @@ def get_collection_items(collection_path, sort_by='name', limit=None):
 
 
 def get_shared_items(user_id):
-	"""Get files shared with the user"""
+	"""
+	Get files shared with the user
+
+	Returns a list of dictionaries, each containing information about a shared file
+	"""
 	try:
 		# Get files shared with the user
 		shared_files = SharedFile.query.filter_by(shared_with_id=user_id).all()
@@ -2948,6 +3053,8 @@ def get_shared_items(user_id):
 				if collection:
 					# Use the collection entry
 					item_dict = collection.to_dict()
+					item_dict['owner_id'] = shared.owner_id
+					item_dict['owner_id'] = shared.owner_id
 				else:
 					# Create a dictionary with file information
 					is_dir = os.path.isdir(owner_path)
@@ -2956,9 +3063,12 @@ def get_shared_items(user_id):
 					item_dict = {
 						'name': filename,
 						'path': shared.path,
+							'owner_id': shared.owner_id,
+						'owner_id': shared.owner_id,
 						'type': 'folder' if is_dir else 'file',
 						'isDir': is_dir,
-						'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat()
+						'createdTime': datetime.fromtimestamp(os.path.getctime(owner_path)).isoformat(),
+                                'modifiedTime': datetime.fromtimestamp(os.path.getmtime(owner_path)).isoformat()
 					}
 
 					# Add size for files
