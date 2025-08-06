@@ -384,6 +384,11 @@ def resize_image(image_path, max_size=1920, quality=85):
 def index():
 	return render_template('index.html')
 
+@app.route('/health')
+def health_check():
+	"""Health check endpoint for Railway deployment"""
+	return {'status': 'healthy', 'message': 'PhotoGeni app is running!'}, 200
+
 @app.route('/interactive', methods=['GET', 'POST'])
 def interactive():
 	return render_template('interactive.html')
