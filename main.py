@@ -3147,4 +3147,7 @@ def get_collection_file_query():
 
 
 if __name__ == '__main__':
-	app.run(debug=True)
+	# Get port from environment variable or default to 5000
+	port = int(os.environ.get('PORT', 5000))
+	# Run in production mode, bind to all interfaces
+	app.run(host='0.0.0.0', port=port, debug=False)
