@@ -50,7 +50,10 @@ var/
 
 # IDE files
 .idea/
+.idea
 .vscode/
+.vscode
 *.swp
 *.swo
 photogenic.db
+runtime.txt
