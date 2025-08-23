@@ -18,6 +18,8 @@ collections/
 instance/
 uploads/
 thumbnails/
+# Media directory is included in the repository
+# Media/
 static/generated/
 
 # Alternatively, if you want to ignore only certain file types in these folders:

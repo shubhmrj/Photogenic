@@ -9,34 +9,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-dark.css') }}">
     <style>
-        :root {
-            --primary: #6C63FF;
-            --primary-dark: #5A52D5;
-            --primary-light: #8F89FF;
-            --primary-dark-rgb: 90, 82, 213;
-            --text-dark: #333;
-            --text-light: #f5f5f5;
-            --bg-light: #f9f9f9;
-            --bg-dark: #333;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            color: var(--text-dark);
-            background-color: var(--bg-light);
-        }
-        
-        .profile-content-box {
-            padding: 20px 0;
-        }
+        .profile-content-box { padding: 20px 0; }
         
         .settings-group {
             display: flex;
@@ -101,16 +76,7 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
         
-        .custom-file-upload {
-            display: inline-block;
-            padding: 8px 16px;
-            background-color: var(--primary);
-            color: white;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
+        .custom-file-upload { display:inline-block; padding:8px 16px; background-color: var(--primary); color:#fff; border-radius: 30px; cursor:pointer; transition: all 0.3s ease; text-align:center; }
         
         .custom-file-upload:hover {
             background-color: var(--primary-dark);
@@ -122,9 +88,7 @@
             margin-right: 8px;
         }
         
-        input[type="file"] {
-            display: none;
-        }
+        input[type="file"] { display:none; }
     </style>
 </head>
 <body>
@@ -162,6 +126,9 @@
     {% endwith %}
     
     <div class="profile-container" id="main-content">
+        <div class="page-title-bar">
+            <h1>Edit Profile</h1>
+        </div>
         <div class="profile-content">
             <div class="profile-sidebar">
                 <div class="sidebar-header">
@@ -181,7 +148,7 @@
                 <div class="profile-section">
                     <h2 class="profile-section-title">
                         <i class="fas fa-edit"></i> Edit Profile
-                        <a href="{{ url_for('profile') }}" class="profile-btn profile-btn-outline" style="font-size: 14px; padding: 6px 12px;">
+                        <a href="{{ url_for('profile') }}" class="profile-btn profile-btn-outline" style="font-size: 14px; padding: 6px 12px; margin-left:auto;">
                             <i class="fas fa-arrow-left"></i> Back to Profile
                         </a>
                     </h2>
@@ -231,13 +198,22 @@
         // Preview image before upload
         function previewImage(input) {
             if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    document.getElementById('imagePreview').src = e.target.result;
+                const file = input.files[0];
+                const maxSizeMB = 5;
+                const allowed = ['image/png','image/jpeg','image/jpg','image/gif','image/webp'];
+                if (!allowed.includes(file.type)) {
+                    alert('Please select a valid image file (png, jpg, jpeg, gif, webp).');
+                    input.value = '';
+                    return;
                 }
-                
-                reader.readAsDataURL(input.files[0]);
+                if (file.size > maxSizeMB * 1024 * 1024) {
+                    alert('Image is too large. Max ' + maxSizeMB + ' MB.');
+                    input.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) { document.getElementById('imagePreview').src = e.target.result; }
+                reader.readAsDataURL(file);
             }
         }
         

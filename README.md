@@ -11,7 +11,11 @@
 
 👉 [Live Demo](https://photogeni.example.com) | 📚 [API Documentation](https://docs.photogeni.example.com) | 🔑 [Get API Key](https://photogeni.example.com/api-keys)
 
-![Photogeni Interface Demo](https://via.placeholder.com/1200x600?text=Photogeni+Showcase+GIF)
+## 🎥 Video Demo
+
+https://github.com/shubhmrj/Photogenic/raw/main/Media/Photogenic%20videos.mp4
+
+*Click the video above to view the full demo. If the video doesn't play, you can [download it here](https://github.com/shubhmrj/Photogenic/raw/main/Media/Photogenic%20videos.mp4).*
 
 ## Table of Contents
 1. [The Problem](#the-problem-)

@@ -233,7 +233,7 @@ def load_user(user_id):
 
 
 # Configure upload paths
-UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
+UPLOAD_FOLDER = os.path.join(app.static_folder, 'uploads')
 COLLECTIONS_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'collections')
 THUMBNAILS_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'thumbnails')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)

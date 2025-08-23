@@ -9,45 +9,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-dark.css') }}">
     <style>
-        :root {
-            --primary: #6C63FF;
-            --primary-dark: #5A52D5;
-            --primary-light: #8F89FF;
-            --primary-dark-rgb: 90, 82, 213;
-            --text-dark: #333;
-            --text-light: #f5f5f5;
-            --bg-light: #f9f9f9;
-            --bg-dark: #333;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            color: var(--text-dark);
-            background-color: var(--bg-light);
-        }
-        
-        .api-card-body {
-            padding: 20px;
-        }
+        .api-card-body { padding: 20px; }
         
         .api-info {
             margin-bottom: 20px;
             padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border);
         }
         
-        .api-info p {
-            margin: 0 0 10px;
-            color: #777;
-        }
+        .api-info p { margin: 0 0 10px; color: var(--muted); }
         
         .api-info a {
             color: var(--primary);
@@ -123,9 +95,10 @@
             align-items: center;
             overflow: hidden;
             border-radius: 8px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border);
             transition: all 0.3s ease;
             margin-bottom: 10px;
+            background: var(--surface-1);
         }
         
         .api-key-input:focus-within {
@@ -138,18 +111,18 @@
             padding: 12px 15px;
             border: none;
             font-size: 16px;
-            background-color: rgba(var(--primary-dark-rgb), 0.02);
+            color: var(--text-dark);
+            background-color: var(--surface-1);
             transition: all 0.3s ease;
         }
         
-        .api-key-input input:focus {
-            outline: none;
-            background-color: white;
-        }
+        .api-key-input input:focus { outline: none; background-color: var(--surface-1); }
         
         .api-key-input button {
-            background-color: #f0f0f0;
+            background-color: var(--surface-1);
+            color: var(--text-dark);
             border: none;
+            border-left: 1px solid var(--border);
             padding: 12px 15px;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -158,9 +131,7 @@
             justify-content: center;
         }
         
-        .api-key-input button:hover {
-            background-color: #e5e5e5;
-        }
+        .api-key-input button:hover { background-color: var(--surface-3); }
         
         .api-key-actions {
             display: flex;
@@ -189,15 +160,9 @@
             background-color: var(--primary-dark);
         }
         
-        .api-key-actions .clear-btn {
-            background-color: #f5f5f5;
-            color: #777;
-        }
+        .api-key-actions .clear-btn { background-color: var(--surface-1); color: var(--muted); }
         
-        .api-key-actions .clear-btn:hover {
-            background-color: #eee;
-            color: #555;
-        }
+        .api-key-actions .clear-btn:hover { background-color: var(--surface-3); color: var(--text-dark); }
         
         .api-key-actions button i {
             margin-right: 8px;
@@ -238,7 +203,33 @@
     {% endif %}
     {% endwith %}
     
+    {% if success or error %}
+    <div class="flash-messages">
+        {% if success %}
+        <div class="flash-message flash-success">
+            <div class="flash-content">
+                <div class="flash-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="flash-text">{{ success }}</div>
+                <button class="flash-close">&times;</button>
+            </div>
+        </div>
+        {% endif %}
+        {% if error %}
+        <div class="flash-message flash-error">
+            <div class="flash-content">
+                <div class="flash-icon"><i class="fas fa-exclamation-circle"></i></div>
+                <div class="flash-text">{{ error }}</div>
+                <button class="flash-close">&times;</button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
     <div class="profile-container" id="main-content">
+        <div class="page-title-bar">
+            <h1>API Keys</h1>
+        </div>
         <div class="profile-content">
             <div class="profile-sidebar">
                 <div class="sidebar-header">
@@ -264,11 +255,13 @@
                     </h2>
                     
                     <div class="api-notice">
-                        <h4>AI Animation Feature Update</h4>
-                        <p>Good news! You no longer need to provide your own API keys for our AI animation features. We've integrated our own API keys to provide a seamless experience.</p>
+                        <h4>AI Feature Update</h4>
+                        <p>We include built-in keys for a seamless experience. You can still add your own keys for customization and higher limits.</p>
                     </div>
                     
-                    <form method="POST" action="{{ url_for('api_keys') }}" class="profile-form">
+                    <!-- OpenAI -->
+                    <form method="POST" action="{{ url_for('api_keys') }}" class="profile-form" style="margin-bottom:16px;">
+                        <input type="hidden" name="service" value="openai">
                         <div class="api-card">
                             <div class="api-card-header">
                                 <h3>OpenAI API Key</h3>
@@ -276,54 +269,55 @@
                             </div>
                             <div class="api-card-body">
                                 <div class="api-info">
-                                    <p>OpenAI powers our advanced AI features for text generation and image descriptions. While we provide a built-in key, you can use your own for custom settings and higher rate limits.</p>
+                                    <p>OpenAI powers stories, captions, and other text features. Your own key may improve reliability and limits.</p>
                                     <p>Don't have a key? <a href="https://platform.openai.com/account/api-keys" target="_blank">Get one from OpenAI <i class="fas fa-external-link-alt" style="font-size: 0.8em;"></i></a></p>
                                 </div>
-                                
                                 <div class="api-key-input">
-                                    <input type="password" id="openai_key" name="openai_key" placeholder="Enter your OpenAI API key" value="{{ current_user.openai_api_key or '' }}">
+                                    <input type="password" id="openai_key" name="api_key" placeholder="Enter your OpenAI API key" value="{{ current_user.get_api_key('openai') or '' }}">
                                     <button type="button" onclick="togglePasswordVisibility('openai_key')" title="Show/Hide API Key">
                                         <i class="far fa-eye" id="openai_key_toggle"></i>
                                     </button>
                                 </div>
-                                <div class="tooltip">
-                                    <i class="fas fa-info-circle"></i> What's this key used for?
-                                    <span class="tooltiptext">This key is used for generating AI stories, captions, and enhancing your images with descriptions.</span>
+                                <div class="api-key-actions">
+                                    <button type="submit" class="save-btn">
+                                        <i class="fas fa-save"></i> Save
+                                    </button>
+                                    <button type="button" class="clear-btn" onclick="document.getElementById('openai_key').value='';">
+                                        <i class="fas fa-times-circle"></i> Clear
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        
+                    </form>
+                    
+                    <!-- Pixabay -->
+                    <form method="POST" action="{{ url_for('api_keys') }}" class="profile-form">
+                        <input type="hidden" name="service" value="pixabay">
                         <div class="api-card">
                             <div class="api-card-header">
-                                <h3>Stability AI Key</h3>
+                                <h3>Pixabay API Key</h3>
                                 <span class="api-badge api-badge-default">Optional</span>
                             </div>
                             <div class="api-card-body">
                                 <div class="api-info">
-                                    <p>Stability AI powers our image generation features. You can use your own key for higher priority and better customization options.</p>
-                                    <p>Don't have a key? <a href="https://stability.ai/platform" target="_blank">Get one from Stability AI <i class="fas fa-external-link-alt" style="font-size: 0.8em;"></i></a></p>
+                                    <p>Pixabay is used for image search in some features. Adding your key can improve rate limits.</p>
+                                    <p>Don't have a key? <a href="https://pixabay.com/api/docs/" target="_blank">Get one from Pixabay <i class="fas fa-external-link-alt" style="font-size: 0.8em;"></i></a></p>
                                 </div>
-                                
                                 <div class="api-key-input">
-                                    <input type="password" id="stability_key" name="stability_key" placeholder="Enter your Stability AI key" value="{{ current_user.stability_api_key or '' }}">
-                                    <button type="button" onclick="togglePasswordVisibility('stability_key')" title="Show/Hide API Key">
-                                        <i class="far fa-eye" id="stability_key_toggle"></i>
+                                    <input type="password" id="pixabay_key" name="api_key" placeholder="Enter your Pixabay API key" value="{{ current_user.get_api_key('pixabay') or '' }}">
+                                    <button type="button" onclick="togglePasswordVisibility('pixabay_key')" title="Show/Hide API Key">
+                                        <i class="far fa-eye" id="pixabay_key_toggle"></i>
                                     </button>
                                 </div>
-                                <div class="tooltip">
-                                    <i class="fas fa-info-circle"></i> What's this key used for?
-                                    <span class="tooltiptext">This key is used for generating AI images with various styles and options.</span>
+                                <div class="api-key-actions">
+                                    <button type="submit" class="save-btn">
+                                        <i class="fas fa-save"></i> Save
+                                    </button>
+                                    <button type="button" class="clear-btn" onclick="document.getElementById('pixabay_key').value='';">
+                                        <i class="fas fa-times-circle"></i> Clear
+                                    </button>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="api-key-actions">
-                            <button type="submit" class="save-btn">
-                                <i class="fas fa-save"></i> Save API Keys
-                            </button>
-                            <button type="button" class="clear-btn" onclick="clearAllKeys()">
-                                <i class="fas fa-trash-alt"></i> Clear All
-                            </button>
                         </div>
                     </form>
                 </div>
@@ -351,8 +345,8 @@
         // Clear all API keys
         function clearAllKeys() {
             if (confirm('Are you sure you want to clear all your API keys?')) {
-                document.getElementById('openai_key').value = '';
-                document.getElementById('stability_key').value = '';
+                const ids = ['openai_key', 'pixabay_key'];
+                ids.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
             }
         }
         

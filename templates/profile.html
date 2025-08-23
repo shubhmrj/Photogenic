@@ -9,30 +9,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-dark.css') }}">
     <style>
-        :root {
-            --primary: #6C63FF;
-            --primary-dark: #5A52D5;
-            --primary-light: #8F89FF;
-            --primary-dark-rgb: 90, 82, 213;
-            --text-dark: #333;
-            --text-light: #f5f5f5;
-            --bg-light: #f9f9f9;
-            --bg-dark: #333;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            color: var(--text-dark);
-            background-color: var(--bg-light);
-        }
+        .profile-avatar { cursor: pointer; transition: transform 0.3s ease; }
+        .profile-avatar:hover { transform: scale(1.05); }
     </style>
 </head>
 <body>
@@ -70,6 +50,9 @@
     {% endwith %}
     
     <div class="profile-container" id="main-content">
+        <div class="page-title-bar">
+            <h1>Profile</h1>
+        </div>
         <div class="profile-header">
             {% if current_user.profile_image and current_user.profile_image != 'default_profile.jpg' %}
                 <img src="{{ url_for('static', filename=current_user.profile_image) }}" alt="{{ current_user.username }}" class="profile-avatar">
@@ -77,6 +60,11 @@
                 <img src="{{ url_for('static', filename='img/default_profile.jpg') }}" alt="{{ current_user.username }}" class="profile-avatar">
             {% endif %}
             
+            <input type="file" id="profileImageInput" accept="image/*" style="display:none;">
+            <div class="avatar-actions" style="margin-top:10px; display:flex; gap:8px;">
+                <button id="saveImageBtn" class="profile-btn profile-btn-primary" style="display:none;" disabled>Save Photo</button>
+                <button id="cancelImageBtn" class="profile-btn profile-btn-outline" style="display:none;">Cancel</button>
+            </div>
             <div class="profile-info">
                 <h1>{{ current_user.username }}</h1>
                 <div class="profile-meta">
@@ -117,54 +105,124 @@
             
             <div class="profile-main">
                 <div class="profile-section">
-                    <h2 class="profile-section-title"><i class="fas fa-user-circle"></i> About Me</h2>
-                    
+                    <h2 class="profile-section-title"><i class="fas fa-id-card"></i> Personal information
+                        <a href="{{ url_for('edit_profile') }}" class="profile-btn profile-btn-primary" style="margin-left:auto;">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                    </h2>
                     <div class="profile-content-box">
-                        {% if current_user.bio %}
-                            <p>{{ current_user.bio }}</p>
-                        {% else %}
-                            <p class="text-muted">No bio information added yet. <a href="{{ url_for('edit_profile') }}">Add now</a></p>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                <div class="profile-section">
-                    <h2 class="profile-section-title"><i class="fas fa-image"></i> Recent Creations</h2>
-                    
-                    <div class="profile-content-box">
-                        <p>Your recent generated images and stories will appear here.</p>
-                    </div>
-                </div>
-                
-                <div class="profile-section">
-                    <h2 class="profile-section-title"><i class="fas fa-cog"></i> Account Settings</h2>
-                    
-                    <div class="profile-content-box">
-                        <div class="settings-group">
-                            <div class="settings-item">
-                                <div class="settings-info">
-                                    <h4>Email Address</h4>
-                                    <p>{{ current_user.email }}</p>
-                                </div>
-                                <a href="{{ url_for('edit_profile') }}" class="settings-action">Change</a>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                            <div>
+                                <div class="text-muted">Full name</div>
+                                <div>{{ current_user.username }}</div>
                             </div>
-                            
-                            <div class="settings-item">
-                                <div class="settings-info">
-                                    <h4>Password</h4>
-                                    <p>••••••••</p>
-                                </div>
-                                <a href="#" class="settings-action">Change</a>
+                            <div>
+                                <div class="text-muted">Date of birth</div>
+                                <div>—</div>
                             </div>
-                            
-                            <div class="settings-item">
-                                <div class="settings-info">
-                                    <h4>API Keys</h4>
-                                    <p>Manage your API keys for external services</p>
-                                </div>
-                                <a href="{{ url_for('api_keys') }}" class="settings-action">Manage</a>
+                            <div>
+                                <div class="text-muted">Gender</div>
+                                <div>—</div>
+                            </div>
+                            <div>
+                                <div class="text-muted">Marital status</div>
+                                <div>—</div>
+                            </div>
+                            <div>
+                                <div class="text-muted">Phone</div>
+                                <div>—</div>
+                            </div>
+                            <div>
+                                <div class="text-muted">Email</div>
+                                <div>{{ current_user.email }}</div>
+                            </div>
+                            <div style="grid-column:1 / -1;">
+                                <div class="text-muted">Address</div>
+                                <div>—</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h2 class="profile-section-title"><i class="fas fa-folder"></i> Documents</h2>
+                    <div class="doc-grid">
+                        <a href="#" class="doc-card">
+                            <img class="doc-thumb" src="{{ url_for('static', filename='img/tropical-leaves.jpg') }}" alt="Employment contract">
+                            <div class="doc-title"><span>Employment contract</span><small>Feb 05, 2024</small></div>
+                        </a>
+                        <a href="#" class="doc-card">
+                            <img class="doc-thumb" src="{{ url_for('static', filename='img/default_profile.jpg') }}" alt="Curriculum Vitae">
+                            <div class="doc-title"><span>Curriculum Vitae</span><small>Jan 12, 2024</small></div>
+                        </a>
+                        <a href="#" class="doc-card">
+                            <img class="doc-thumb" src="{{ url_for('static', filename='images/image-error.png') }}" alt="Training certificate">
+                            <div class="doc-title"><span>Training certificate</span><small>Jul 25, 2024</small></div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h2 class="profile-section-title"><i class="fas fa-id-badge"></i> ID Card</h2>
+                    <div class="id-card">
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            {% if current_user.profile_image and current_user.profile_image != 'default_profile.jpg' %}
+                                <img src="{{ url_for('static', filename=current_user.profile_image) }}" alt="{{ current_user.username }}" class="id-photo">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='img/default_profile.jpg') }}" alt="{{ current_user.username }}" class="id-photo">
+                            {% endif %}
+                            <div>
+                                <div class="id-name">{{ current_user.username }}</div>
+                                <div class="id-role">Product Designer</div>
+                            </div>
+                        </div>
+                        <div class="id-meta" style="color:var(--muted);font-size:12px;display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                            <div>EMP-{{ current_user.id or '0000' }}</div>
+                            <div>{% if current_user.created_at %}{{ current_user.created_at.strftime('%b %d, %Y') }}{% endif %}</div>
+                            <div>PhotoGenic</div>
+                            <div>Springfield Office</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h2 class="profile-section-title"><i class="fas fa-users"></i> Team</h2>
+                    <div class="people-list">
+                        <div class="person">
+                            <div class="left">
+                                <img class="avatar" src="{{ url_for('static', filename='img/default_profile.jpg') }}" alt="{{ current_user.username }}">
+                                <div>
+                                    <div class="title">{{ current_user.username }}</div>
+                                    <div class="subtitle">Product Designer</div>
+                                </div>
+                            </div>
+                            <span class="subtitle">You</span>
+                        </div>
+                        <div class="person">
+                            <div class="left">
+                                <img class="avatar" src="{{ url_for('static', filename='img/default_profile.jpg') }}" alt="Member">
+                                <div>
+                                    <div class="title">Teammate</div>
+                                    <div class="subtitle">UI Designer</div>
+                                </div>
+                            </div>
+                            <span class="subtitle">Member</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h2 class="profile-section-title"><i class="fas fa-tasks"></i> Data completion <span style="color:var(--muted); font-weight:500; margin-left:auto;">2/5</span></h2>
+                    <div class="completion">
+                        <div class="progress-wrap"><span></span><span style="color:var(--muted);">40%</span></div>
+                        <div class="progress-bar"><div class="progress" style="width:40%"></div></div>
+                        <ul class="checklist">
+                            <li><i class="fas fa-check-circle ok"></i> Personal data & resume</li>
+                            <li><i class="fas fa-check-circle ok"></i> Email address</li>
+                            <li><i class="far fa-circle todo"></i> Work experience</li>
+                            <li><i class="far fa-circle todo"></i> Personal statement and consent</li>
+                            <li><i class="far fa-circle todo"></i> Certification</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -194,6 +252,72 @@
                         }, 500);
                     });
                 }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const avatar = document.querySelector('.profile-avatar');
+            const fileInput = document.getElementById('profileImageInput');
+            const saveBtn = document.getElementById('saveImageBtn');
+            const cancelBtn = document.getElementById('cancelImageBtn');
+            if (!avatar || !fileInput) return;
+
+            // Store original src so we can revert on cancel
+            avatar.dataset.original = avatar.src;
+
+            // Click avatar to open file dialog
+            avatar.addEventListener('click', () => fileInput.click());
+
+            let selectedFile = null;
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files[0]) {
+                    selectedFile = e.target.files[0];
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        avatar.src = ev.target.result;
+                    };
+                    reader.readAsDataURL(selectedFile);
+                    saveBtn.style.display = 'inline-block';
+                    cancelBtn.style.display = 'inline-block';
+                    saveBtn.disabled = false;
+                }
+            });
+
+            cancelBtn.addEventListener('click', () => {
+                avatar.src = avatar.dataset.original;
+                fileInput.value = '';
+                saveBtn.style.display = 'none';
+                cancelBtn.style.display = 'none';
+                saveBtn.disabled = true;
+            });
+
+            saveBtn.addEventListener('click', () => {
+                if (!selectedFile) return;
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Uploading...';
+                const formData = new FormData();
+                formData.append('username', '{{ current_user.username }}');
+                formData.append('email', '{{ current_user.email }}');
+                formData.append('bio', '{{ current_user.bio or "" }}');
+                formData.append('profile_image', selectedFile);
+
+                fetch('{{ url_for("edit_profile") }}', {
+                    method: 'POST',
+                    body: formData
+                }).then(resp => {
+                    if (resp.ok) {
+                        location.reload();
+                    } else {
+                        resp.text().then(t => alert('Upload failed: ' + t));
+                        saveBtn.disabled = false;
+                        saveBtn.textContent = 'Save Photo';
+                    }
+                }).catch(err => {
+                    alert('Upload failed: ' + err);
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save Photo';
+                });
             });
         });
     </script>
