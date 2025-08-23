@@ -13,9 +13,9 @@
 
 ## 🎥 Video Demo
 
-https://github.com/shubhmrj/Photogenic/raw/main/Media/Photogenic%20videos.mp4
+[![Watch the video](https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)](https://youtu.be/YOUR_VIDEO_ID)
 
-*Click the video above to view the full demo. If the video doesn't play, you can [download it here](https://github.com/shubhmrj/Photogenic/raw/main/Media/Photogenic%20videos.mp4).*
+*Click the image above to watch the demo video on YouTube*
 
 ## Table of Contents
 1. [The Problem](#the-problem-)
